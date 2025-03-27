@@ -35,7 +35,7 @@ const pageHeader = {
 export default async function FileListPage() {
   const files = await fetchFiles({ fileType: "all" });
   const usage = await checkUsage();
-  return (
+  return (  
     <>
       <PageHeader title={pageHeader.title} breadcrumb={pageHeader.breadcrumb}>
         <UploadButton modalView={<FileUpload />} />
