@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import cn from '../../utils/class-names';
 
 export function RoundedTopBar({

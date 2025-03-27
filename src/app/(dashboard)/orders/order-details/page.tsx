@@ -33,6 +33,9 @@ export default async function OrderDetailsPage({
     : searchParams.orderNumber || ""; 
 
   const session = await auth();
+  if (!session) {
+    throw new Error("User session is not available.");
+  }
   const pageHeader = {
     title: `Order #${orderNumber}`,
     breadcrumb: [

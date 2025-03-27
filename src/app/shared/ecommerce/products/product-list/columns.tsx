@@ -9,8 +9,8 @@ import AvatarCard from "@core/ui/avatar-card";
 import { createColumnHelper } from "@tanstack/react-table";
 import Link from "next/link";
 import { ActionIcon, Checkbox, Flex, Text, Tooltip } from "rizzui";
-import { ProductsTableMeta } from "./table";
 import { StatusSelect } from "@/core/components/table-utils/status-select";
+import { CustomTableMeta } from "@/app/shared/dashboard/recent-order";
 
 const statusOptions = [
   { label: "Active", value: "Active" },
@@ -117,7 +117,7 @@ export const productsListColumns = [
       },
     }) => {
       // Cast meta to ProductsTableMeta
-      const tableMeta = meta as ProductsTableMeta;
+      const tableMeta = meta as CustomTableMeta<ProductType>;
 
       return (
         <Flex align="center" justify="end" gap="3" className="pe-4">

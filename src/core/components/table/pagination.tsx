@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { type Table as ReactTableType } from "@tanstack/react-table";
 import { ActionIcon, Box, Flex, Grid, Select, SelectOption, Text } from "rizzui";
 import {

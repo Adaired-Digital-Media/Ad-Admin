@@ -6,6 +6,7 @@ import { metaObject } from "@/config/site.config";
 import UploadButton from "@/app/shared/upload-button";
 import PageLayout from "@/app/(dashboard)/file-manager/page-layout";
 import { checkUsage, fetchFiles } from "@/data/cloudinary-files";
+import { Suspense } from "react";
 const FileUpload = dynamic(() => import("@/app/shared/file-upload"), {
   ssr: false,
 });
@@ -41,7 +42,9 @@ export default async function FileListPage() {
       </PageHeader>
 
       <FileStats className="mb-6 @5xl:mb-8 @7xl:mb-11" usage={usage} />
+      <Suspense fallback={<div>Loading files...</div>}>
       <PageLayout files={files} />
+      </Suspense>
     </>
   );
 }

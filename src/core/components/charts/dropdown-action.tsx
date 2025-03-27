@@ -39,7 +39,9 @@ export default function DropdownAction({
   const [viewType, setViewType] = useState(options[0]);
   function handleOnChange(data: Options) {
     setViewType(data);
-    onChange && onChange(data.value);
+    if (onChange) {
+      onChange(data.value);
+    }
   }
 
   return (

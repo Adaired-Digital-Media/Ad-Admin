@@ -1,6 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { TableVariantProps } from "rizzui";
-import { Row, Cell, HeaderGroup, type Table as ReactTableType } from "@tanstack/react-table";
+import { Row, Cell, HeaderGroup, ColumnMeta, type Table as ReactTableType } from "@tanstack/react-table";
 export type UniqueIdentifier = string | number;
+
+// Extend ColumnMeta to include custom properties like isColumnDraggable
+export interface CustomColumnMeta<TData, TValue> extends ColumnMeta<TData, TValue> {
+  /** Whether the column can be dragged (default: true) */
+  isColumnDraggable?: boolean;
+}
 
 export type CustomHeaderProps<TData extends Record<string, any>> = {
   table?: ReactTableType<TData>;

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
@@ -8,6 +9,7 @@ import { Title, Text, Avatar } from "rizzui";
 import cn from "@core/utils/class-names";
 import { toCurrency } from "@core/utils/to-currency";
 import { formatDate } from "@core/utils/format-date";
+import { Session } from "next-auth";
 
 const orderStatus = [
   { id: "Pending", label: "Order Pending" },
@@ -76,10 +78,10 @@ function WidgetCard({
 
 export default function OrderView({
   order,
-  // session,
+  session,
 }: {
   order: any;
-  // session: Session;
+  session: Session;
 }) {
   // const { items, total, totalItems } = useCart();
   // const { price: subtotal } = usePrice(

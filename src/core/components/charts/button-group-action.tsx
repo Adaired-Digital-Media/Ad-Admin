@@ -26,7 +26,9 @@ export default function ButtonGroupAction({
   );
   function handleOnChange(value: string) {
     setState(() => value);
-    onChange && onChange(value);
+    if (onChange) {
+      onChange(value);
+    }
   }
 
   return (

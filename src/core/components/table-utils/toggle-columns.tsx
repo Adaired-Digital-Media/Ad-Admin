@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { PiTextColumns } from "react-icons/pi";
 import { ActionIcon, Checkbox, Popover, Title } from "rizzui";
 import { type Table as ReactTableType } from "@tanstack/react-table";

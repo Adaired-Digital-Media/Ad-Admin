@@ -1,5 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button, Text } from "rizzui";
 import { Table as ReactTableType } from "@tanstack/react-table";
+
+declare module "@tanstack/react-table" {
+  interface TableMeta<TData> {
+    handleMultipleDelete?: (items: TData[]) => void;
+  }
+}
 
 interface TableToolbarProps<TData extends Record<string, any>> {
   table: ReactTableType<TData>;

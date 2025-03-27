@@ -11,16 +11,11 @@ import TableFooter from "@core/components/table/footer";
 import { TableClassNameProps } from "@core/components/table/table-types";
 import cn from "@core/utils/class-names";
 import { exportToCSV } from "@core/utils/export-to-csv";
-
-import { TableMeta } from "@tanstack/react-table";
 import { useApiCall } from "@/core/utils/api-config";
 import toast from "react-hot-toast";
+import { CustomTableMeta } from "@/app/shared/dashboard/recent-order";
 
-// Define the meta type
-export interface ProductsTableMeta extends TableMeta<ProductType> {
-  handleDeleteRow: (row: { _id: string }) => void;
-  handleMultipleDelete: (rows: ProductType[]) => void;
-}
+
 
 export default function ProductsTable({
   products = [],
@@ -54,19 +49,6 @@ export default function ProductsTable({
         },
       },
       meta: {
-        handleDeleteRow: async (row: { _id: string }) => {
-          setData((prev) => prev.filter((r) => r._id !== row._id));
-          const _response = await apiCall<{ message: string }>({
-            url: `/product/delete-product?query=${row._id}`,
-            method: "DELETE",
-          });
-          if (_response.status === 200) {
-            toast.success(_response.data.message);
-            await fetch("/api/revalidateTags?tags=products", {
-              method: "GET",
-            });
-          }
-        },
         handleMultipleDelete: async (rows: any) => {
           setData((prev) => prev.filter((r) => !rows.includes(r)));
           rows.forEach(async (r: ProductType) => {
@@ -82,7 +64,20 @@ export default function ProductsTable({
             method: "GET",
           });
         },
-      },
+        handleDeleteRow: async (row: { _id: string }) => {
+          setData((prev) => prev.filter((r) => r._id !== row._id));
+          const _response = await apiCall<{ message: string }>({
+            url: `/product/delete-product?query=${row._id}`,
+            method: "DELETE",
+          });
+          if (_response.status === 200) {
+            toast.success(_response.data.message);
+            await fetch("/api/revalidateTags?tags=products", {
+              method: "GET",
+            });
+          }
+        },
+      } as CustomTableMeta<ProductType>,
       enableColumnResizing: false,
     },
   });

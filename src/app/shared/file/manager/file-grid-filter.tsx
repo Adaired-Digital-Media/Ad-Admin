@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import { Title, Input } from 'rizzui';
@@ -7,12 +8,12 @@ import FileTypeDropdown from '@/app/shared/file/manager/file-sortby-type';
 import FileDateSortingDropdown from '@/app/shared/file/manager/file-sortby-date';
 
 export default function FileGridFilters({
-  filters,
+  // filters,
   updateFilter,
   onSearch,
   searchTerm,
 }: {
-  filters?: { [key: string]: any };
+  // filters?: { [key: string]: any };
   updateFilter?: (columnId: string, filterValue: string | any[]) => void;
   onSearch: (searchTerm: string) => void;
   searchTerm: string;

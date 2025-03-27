@@ -79,7 +79,7 @@ export default function CustomFields({ className }: ProductIdentifiersProps) {
               placeholder="Select a form type"
               displayValue={(selectedValue: string) =>
                 forms.length > 0
-                  ? forms.find((f) => f._id === selectedValue)?.productType ||
+                  ? forms.find((f:any) => f._id === selectedValue)?.productType ||
                     ""
                   : ""
               }

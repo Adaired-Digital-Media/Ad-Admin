@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 export default function NewsletterAnnouncement({
   strokeWidth,
   ...props

@@ -85,9 +85,11 @@ export default function FileSortbyDate() {
                           item.id === modifiedOptions.length && 'hidden sm:flex'
                         )}
                         onClick={() => {
-                          item.id === modifiedOptions.length
-                            ? setCustomDateRange((prev) => !prev)
-                            : setSelected(item.value);
+                          if (item.id === modifiedOptions.length) {
+                            setCustomDateRange((prev) => !prev);
+                          } else {
+                            setSelected(item.value);
+                          }
                         }}
                       >
                         {item.name}

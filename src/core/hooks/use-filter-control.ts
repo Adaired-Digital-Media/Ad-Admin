@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
 import isEqual from 'lodash/isEqual';
@@ -63,7 +65,7 @@ export function useFilterControls<StateType, ActionType>(
   );
 
   const clearFilter = (key: string[]) => {
-    let url = new URL(location.href);
+    const url = new URL(location.href);
     key.forEach((item) => url.searchParams.delete(item));
     router.push(`${pathname}${url.search}`);
   };

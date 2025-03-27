@@ -13,44 +13,6 @@ import {
 import { BarChart, Bar, ResponsiveContainer } from "recharts";
 import { OrderType } from "@/core/types";
 
-const orderData = [
-  {
-    day: "Sunday",
-    sale: 4000,
-    cost: 2400,
-  },
-  {
-    day: "Monday",
-    sale: 3000,
-    cost: 1398,
-  },
-  {
-    day: "Tuesday",
-    sale: 2000,
-    cost: 9800,
-  },
-  {
-    day: "Wednesday",
-    sale: 2780,
-    cost: 3908,
-  },
-  {
-    day: "Thursday",
-    sale: 1890,
-    cost: 4800,
-  },
-  {
-    day: "Friday",
-    sale: 2390,
-    cost: 3800,
-  },
-  {
-    day: "Saturday",
-    sale: 3490,
-    cost: 4300,
-  },
-];
-
 const salesData = [
   {
     day: "Sunday",

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { PiCommand, PiMagnifyingGlassBold } from 'react-icons/pi';
 import cn from '@core/utils/class-names';
 

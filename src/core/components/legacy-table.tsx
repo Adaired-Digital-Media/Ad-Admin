@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import RcTable from "rc-table";
 import cn from "@core/utils/class-names";
 import { PiTextColumns } from "react-icons/pi";

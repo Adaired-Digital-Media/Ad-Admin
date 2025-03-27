@@ -1,8 +1,8 @@
 import { PiStarFill } from 'react-icons/pi';
 
 export function getRatings(rating: number[]) {
-  let totalRating = rating.reduce((partialSum, value) => partialSum + value, 0);
-  let review = totalRating / rating?.length;
+  const totalRating = rating.reduce((partialSum, value) => partialSum + value, 0);
+  const review = totalRating / rating?.length;
 
   return (
     <div className="flex items-center">

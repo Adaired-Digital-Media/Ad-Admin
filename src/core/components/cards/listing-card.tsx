@@ -3,7 +3,7 @@ import { Title, Text } from 'rizzui';
 import cn from '../../utils/class-names';
 import Link from 'next/link';
 import { PiStarFill } from 'react-icons/pi';
-import WishlistButton from '../wishlist-button';
+// import WishlistButton from '../wishlist-button';
 
 export function RatingsCount({
   rating,
@@ -76,7 +76,7 @@ export default function ListingCard({
             {tag}
           </Text>
         )}
-        <WishlistButton className="absolute end-3 top-3" />
+        {/* <WishlistButton className="absolute end-3 top-3" /> */}
       </div>
       <div className="pt-3">
         <div className="mb-1 flex items-center justify-between">

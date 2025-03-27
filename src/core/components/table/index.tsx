@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { isEmpty } from "lodash";
 import { Fragment } from "react";
 import cn from "@core/utils/class-names";

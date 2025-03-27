@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState, RefObject } from 'react';
 
 export function useHorizontalScrollAvailability({

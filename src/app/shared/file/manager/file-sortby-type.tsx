@@ -82,7 +82,9 @@ export default function FileSortbyType({
                       variant="text"
                       className="flex w-full items-center justify-start rounded-md px-2 text-sm font-normal leading-5 text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-50"
                       onClick={() => {
-                        updateFilter && updateFilter('type', item.value);
+                        if (updateFilter) {
+                          updateFilter('type', item.value);
+                        }
                         setOpen(false);
                       }}
                     >

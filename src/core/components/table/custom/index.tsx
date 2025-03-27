@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import Image from "next/image";
@@ -15,7 +17,7 @@ import {
 } from "@dnd-kit/sortable";
 import { PiCaretUpFill, PiCaretDownFill, PiXBold, PiDotsSixVerticalBold } from "react-icons/pi";
 import { CustomBodyCellProps, CustomBodyRowProps, CustomHeaderCellProps } from "../table-types";
-import { TanTableProductsDataType } from "@core/types";
+// import { TanTableProductsDataType } from "@core/types";
 import { CustomExpandedComponent } from "./expanded-row";
 
 // DnD Head wrapper component

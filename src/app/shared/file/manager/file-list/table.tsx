@@ -12,13 +12,14 @@ import TablePagination from "@core/components/table/pagination";
 import { allFilesColumns } from "./columns";
 import FileTableFilters from "../file-table-filters";
 import { useModal } from "@/app/shared/modal-views/use-modal";
-import { TableMeta } from "@tanstack/react-table";
+
 import toast from "react-hot-toast";
 import { EditFileModalView } from "../edit-file-modal-view";
 import { useEffect, useState } from "react";
+import { CustomTableMeta } from "@/app/shared/dashboard/recent-order";
 
 // Define the meta type
-export interface CloudinaryFileMeta extends TableMeta<CloudinaryFile> {
+export interface CloudinaryFileMeta extends CustomTableMeta<CloudinaryFile> {
   handleDeleteRow: (row: { public_id: string }) => void;
   handleCopyLink: (row: { secure_url: string }) => void;
   handleMultipleDelete: (rows: CloudinaryFile[]) => void;
@@ -71,7 +72,7 @@ export default function FileListTable({
           });
           table.resetRowSelection();
         },
-      },
+      } as CloudinaryFileMeta,
       enableColumnResizing: false,
     },
   });

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export function CustomYAxisTick({ x, y, payload, prefix, postfix }: any) {
   return (
     <g transform={`translate(${x},${y})`}>

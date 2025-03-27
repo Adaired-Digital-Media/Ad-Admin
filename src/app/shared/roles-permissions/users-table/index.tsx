@@ -11,6 +11,13 @@ import { useApiCall } from "@/core/utils/api-config";
 import toast from "react-hot-toast";
 import { useModal } from "@/app/shared/modal-views/use-modal";
 import CreateUser from "../create-user";
+import { CustomTableMeta } from "../../dashboard/recent-order";
+
+export interface UsersTableMeta<T> extends CustomTableMeta<T> {
+  handleDeleteRow?: (row: T) => void;
+  handleMultipleDelete?: (rows: T[]) => void;
+  handleEditRow?: (row: T) => void;
+}
 
 export default function UsersTable({ users }: { users: UserTypes[] }) {
   const { apiCall } = useApiCall();
@@ -54,7 +61,7 @@ export default function UsersTable({ users }: { users: UserTypes[] }) {
           });
           table.resetRowSelection();
         },
-      },
+      } as UsersTableMeta<UserTypes>,
       enableColumnResizing: false,
     },
   });

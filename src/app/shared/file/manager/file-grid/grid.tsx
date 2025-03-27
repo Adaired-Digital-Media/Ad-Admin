@@ -54,8 +54,8 @@ export function Card({
         <div className="flex">
           <MoreActions
             onDelete={() => onDeleteItem(item.id)}
-            onCopy={() => handleCopyLink?.(row.original)}
-            onEdit={() => handleEditFile?.(row.original)}
+            // onCopy={() => handleCopyLink?.(row.original)}
+            // onEdit={() => handleEditFile?.(row.original)}
           />
         </div>
       </div>
