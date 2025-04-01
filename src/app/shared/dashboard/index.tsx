@@ -11,12 +11,21 @@ import { PiPlusBold } from "react-icons/pi";
 import { Button } from "rizzui";
 import StatCards from "./stat-cards";
 import SalesReport from "./sales-report";
-import { ordersWithActionsAtom } from "@/store/atoms/orders.atom";
-import { useEffect } from "react";
+import {
+  orderStatsWithActionsAtom,
+  ordersWithActionsAtom,
+  salesReportWithActionsAtom,
+} from "@/store/atoms/orders.atom";
+import { useEffect, useState } from "react";
 import RecentOrder from "./recent-order";
+import TicketsWidget from "./tickets-report";
+import OrdersWidget from "./orders-report";
 
 const Index = ({ session }: { session: Session }) => {
   const [orders, setOrders] = useAtom(ordersWithActionsAtom);
+  const [orderStats, setOrderStats] = useAtom(orderStatsWithActionsAtom);
+  const [salesReport, setSalesReport] = useAtom(salesReportWithActionsAtom);
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   // Fetch orders when component mounts
   useEffect(() => {
     if (session?.user?.accessToken) {
@@ -24,8 +33,23 @@ const Index = ({ session }: { session: Session }) => {
         type: "fetch",
         accessToken: session.user.accessToken,
       });
+      setOrderStats({
+        type: "fetch",
+        accessToken: session.user.accessToken,
+      });
+      setSalesReport({
+        type: "fetch",
+        accessToken: session.user.accessToken,
+        year: selectedYear,
+      });
     }
-  }, [session?.user?.accessToken, setOrders]);
+  }, [
+    session?.user?.accessToken,
+    setOrders,
+    setOrderStats,
+    setSalesReport,
+    selectedYear,
+  ]);
 
   const getGreeting = () => {
     const currentHour = new Date().getHours();
@@ -71,11 +95,30 @@ const Index = ({ session }: { session: Session }) => {
           </Link>
         </WelcomeBanner>
 
-        <StatCards className="@2xl:grid-cols-3 @3xl:gap-6 @4xl:col-span-2 @7xl:col-span-8" orderData={orders}/>
+        <StatCards
+          className="@2xl:grid-cols-3 @3xl:gap-6 @4xl:col-span-2 @7xl:col-span-8"
+          orderStats={orderStats}
+        />
+        <TicketsWidget className="h-[464px] @sm:h-[520px] @7xl:col-span-4 @7xl:col-start-9 @7xl:row-start-1 @7xl:row-end-3 @7xl:h-full" />
 
-        <SalesReport className="@4xl:col-span-2 @7xl:col-span-8" />
+        <SalesReport
+          className="@4xl:col-span-2 @7xl:col-span-8"
+          salesReport={salesReport}
+          selectedYear={selectedYear}
+          setSelectedYear={setSelectedYear}
+          accessToken={session.user.accessToken!}
+          setSalesReport={setSalesReport}
+        />
 
-        <RecentOrder className="relative @4xl:col-span-2 @7xl:col-span-12" orderData={orders}/>
+        <OrdersWidget
+          orderStats={orderStats}
+          className="@4xl:col-start-2 @4xl:row-start-3 @7xl:col-span-4 @7xl:col-start-auto @7xl:row-start-auto"
+        />
+
+        <RecentOrder
+          className="relative @4xl:col-span-2 @7xl:col-span-12"
+          orderData={orders}
+        />
       </div>
     </div>
   );

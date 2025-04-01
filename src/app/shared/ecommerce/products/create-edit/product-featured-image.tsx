@@ -10,12 +10,13 @@ export default function ProductFeaturedImage({
   className,
 }: ProductFeaturedImageProps) {
   const {
-    watch,
+    // watch,
     formState: { errors },
+    getValues,
   } = useFormContext();
 
   // Watch the featuredImage field value
-  const featuredImageValue = watch("featuredImage");
+  // const featuredImageValue = watch("featuredImage");
   return (
     <FormGroup
       title="Upload new featured image"
@@ -26,7 +27,7 @@ export default function ProductFeaturedImage({
         name="featuredImage"
         label="Featured Image"
         className="col-span-full"
-        image={featuredImageValue}
+        image={getValues("featuredImage")}
         error={errors.featuredImage?.message as string}
       />
     </FormGroup>

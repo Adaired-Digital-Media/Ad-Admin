@@ -1,8 +1,6 @@
-'use client';
-
-import { useState } from 'react';
-import WidgetCard from '@core/components/cards/widget-card';
-import { DatePicker } from '@core/ui/datepicker';
+"use client";
+import WidgetCard from "@core/components/cards/widget-card";
+import { DatePicker } from "@core/ui/datepicker";
 import {
   Bar,
   XAxis,
@@ -12,101 +10,57 @@ import {
   ResponsiveContainer,
   Area,
   ComposedChart,
-} from 'recharts';
-import { Badge } from 'rizzui';
-import { useMedia } from '@core/hooks/use-media';
-import { CustomYAxisTick } from '@core/components/charts/custom-yaxis-tick';
-import { CustomTooltip } from '@core/components/charts/custom-tooltip';
-import SimpleBar from '@core/ui/simplebar';
+} from "recharts";
+import { Badge } from "rizzui";
+import { useMedia } from "@core/hooks/use-media";
+import { CustomYAxisTick } from "@core/components/charts/custom-yaxis-tick";
+import { CustomTooltip } from "@core/components/charts/custom-tooltip";
+import SimpleBar from "@core/ui/simplebar";
+import { SalesReportProps } from "@/core/types";
 
-const data = [
-  {
-    month: 'Jan',
-    revenue: 5000,
-    expense: 1500,
-  },
-  {
-    month: 'Feb',
-    revenue: 4600,
-    expense: 3798,
-  },
-  {
-    month: 'Mar',
-    revenue: 5900,
-    expense: 1300,
-  },
-  {
-    month: 'Apr',
-    revenue: 5780,
-    expense: 3908,
-  },
-  {
-    month: 'May',
-    revenue: 4890,
-    expense: 2500,
-  },
-  {
-    month: 'Jun',
-    revenue: 8000,
-    expense: 3200,
-  },
-  {
-    month: 'Jul',
-    revenue: 4890,
-    expense: 2500,
-  },
-  {
-    month: 'Aug',
-    revenue: 3780,
-    expense: 3908,
-  },
-  {
-    month: 'Sep',
-    revenue: 7800,
-    expense: 2800,
-  },
-  {
-    month: 'Oct',
-    revenue: 5780,
-    expense: 1908,
-  },
-  {
-    month: 'Nov',
-    revenue: 2780,
-    expense: 3908,
-  },
-  {
-    month: 'Dec',
-    revenue: 7500,
-    expense: 3000,
-  },
-];
+export default function SalesReport({
+  className,
+  salesReport,
+  selectedYear,
+  setSelectedYear,
+  accessToken,
+  setSalesReport,
+}: SalesReportProps) {
+  const isTablet = useMedia("(max-width: 820px)", false);
+  const handleYearChange = (date: Date | null) => {
+    if (date) {
+      const newYear = date.getFullYear();
+      setSelectedYear(newYear);
+      setSalesReport({
+        type: "fetch",
+        accessToken,
+        year: newYear,
+      });
+    }
+  };
 
-export default function SalesReport({ className }: { className?: string }) {
-  const isTablet = useMedia('(max-width: 820px)', false);
-  const [startDate, setStartDate] = useState<Date | null>(new Date());
   return (
     <WidgetCard
-      title={'Sales Report'}
+      title={"Sales Report"}
       description={
         <>
           <Badge renderAsDot className="me-0.5 bg-[#282ECA]" /> Revenue
           <Badge
             renderAsDot
             className="me-0.5 ms-4 bg-[#B8C3E9] dark:bg-[#7c88b2]"
-          />{' '}
-          Expense
+          />{" "}
+          Sales
         </>
       }
       descriptionClassName="text-gray-500 mt-1.5"
       action={
         <DatePicker
-          selected={startDate}
-          onChange={(date: Date | null) => setStartDate(date)}
+          selected={new Date(selectedYear, 0, 1)}
+          onChange={handleYearChange}
           dateFormat="yyyy"
           placeholderText="Select Year"
           showYearPicker
-          inputProps={{ variant: 'text', inputClassName: 'p-0 px-1 h-auto' }}
+          inputProps={{ variant: "text", inputClassName: "p-0 px-1 h-auto" }}
           popperPlacement="bottom-end"
           className="w-[100px]"
         />
@@ -118,10 +72,10 @@ export default function SalesReport({ className }: { className?: string }) {
           <ResponsiveContainer
             width="100%"
             height="100%"
-            {...(isTablet && { minWidth: '700px' })}
+            {...(isTablet && { minWidth: "700px" })}
           >
             <ComposedChart
-              data={data}
+              data={salesReport}
               barSize={isTablet ? 20 : 24}
               className="[&_.recharts-tooltip-cursor]:fill-opacity-20 dark:[&_.recharts-tooltip-cursor]:fill-opacity-10 [&_.recharts-cartesian-axis-tick-value]:fill-gray-500 [&_.recharts-cartesian-axis.yAxis]:-translate-y-3 rtl:[&_.recharts-cartesian-axis.yAxis]:-translate-x-12 [&_.recharts-cartesian-grid-vertical]:opacity-0"
             >
@@ -140,7 +94,7 @@ export default function SalesReport({ className }: { className?: string }) {
               <YAxis
                 axisLine={false}
                 tickLine={false}
-                tick={<CustomYAxisTick prefix={'$'} />}
+                tick={<CustomYAxisTick prefix={"$"} />}
               />
               <Tooltip
                 content={
@@ -154,7 +108,7 @@ export default function SalesReport({ className }: { className?: string }) {
                 radius={[0, 0, 4, 4]}
               />
               <Bar
-                dataKey="expense"
+                dataKey="sales"
                 stackId="a"
                 fill="#B8C3E9"
                 fillOpacity={0.9}

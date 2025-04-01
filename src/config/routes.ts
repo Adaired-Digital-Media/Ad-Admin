@@ -11,6 +11,10 @@ export const routes = {
   rolesNpermissions: {
     roles: "/roles-permissions",
   },
+  profileSettings: {
+    myDetails:"/profile-settings",
+    password:"/profile-settings/password",
+  },
   products: {
     products: "/products",
     createProduct: "/products/create",

@@ -19,14 +19,15 @@ const initialValues: LoginSchema = {
 export default function SignInForm() {
   const isMedium = useMedia("(max-width: 1200px)", false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
+  const [loading, setLoading] = useState(false);
   const onSubmit: SubmitHandler<LoginSchema> = async (data) => {
-    console.log(data);
+    setLoading(true);
     const result = await signIn("credentials", {
       ...data,
       redirect: false,
-      callbackUrl: routes.root.dashboard
+      callbackUrl: routes.root.dashboard,
     });
+    setLoading(false);
 
     if (result?.error) {
       // Display error message if authentication fails
@@ -88,6 +89,7 @@ export default function SignInForm() {
               className="w-full"
               type="submit"
               size={isMedium ? "lg" : "xl"}
+              isLoading={loading}
             >
               Sign In
             </Button>

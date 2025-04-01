@@ -53,7 +53,7 @@ import {
   // PiUserDuotone,
   // PiUserGearDuotone,
   // PiUserPlusDuotone,
-  PiFilesDuotone,
+  // PiFilesDuotone,
 } from "react-icons/pi";
 // Note: do not add href in the label object, it is rendering as label
 export const menuItems = [
@@ -133,22 +133,22 @@ export const menuItems = [
     icon: <PiFolder />,
   },
 
-  // label start
-  {
-    name: "Static Pages",
-  },
-  // label end
-  {
-    name: "Pages",
-    href: "#",
-    icon: <PiFilesDuotone />,
-    dropdownItems: [
-      {
-        name: "Terms and Conditions",
-        href: routes?.staticPages?.termsPage,
-      },
-    ],
-  },
+  // // label start
+  // {
+  //   name: "Static Pages",
+  // },
+  // // label end
+  // {
+  //   name: "Pages",
+  //   href: "#",
+  //   icon: <PiFilesDuotone />,
+  //   dropdownItems: [
+  //     {
+  //       name: "Terms and Conditions",
+  //       href: routes?.staticPages?.termsPage,
+  //     },
+  //   ],
+  // },
   // {
   //   name: "Pages",
   //   href: routes?.staticPages?.pages,

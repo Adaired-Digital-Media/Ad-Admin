@@ -1,17 +1,18 @@
 import { type DefaultSession } from "next-auth";
 import "next-auth/jwt";
 
+// Type Declarations
 declare module "next-auth" {
   interface User {
     _id: string;
-    image: string;
-    name: string;
-    userName: string;
+    image?: string;
+    name?: string;
+    userName?: string;
     email: string;
-    contact: string;
+    contact?: string;
     isAdmin: boolean;
     userStatus: boolean;
-    isVerifiedUser: boolean;
+    isVerifiedUser?: boolean;
     role?: Role;
     accessToken?: string;
   }
@@ -22,16 +23,17 @@ declare module "next-auth" {
 
   interface RolePermission {
     _id: string;
-    entityName: string;
-    entityValues: number[];
+    module: string;
+    permissions: number[];
   }
 
   interface Role {
     _id: string;
-    roleName: string;
-    roleDescription: string;
-    roleStatus: boolean;
-    rolePermissions: RolePermission[];
+    name: string;
+    description: string;
+    status: boolean;
+    permissions: RolePermission[];
+    users: string[];
     createdAt: string;
     updatedAt: string;
     __v: number;
@@ -41,14 +43,14 @@ declare module "next-auth" {
 declare module "next-auth/jwt" {
   interface JWT {
     _id: string;
-    image: string;
-    name: string;
-    userName: string;
+    image?: string;
+    name?: string;
+    userName?: string;
     email: string;
-    contact: string;
+    contact?: string;
     isAdmin: boolean;
     userStatus: boolean;
-    isVerifiedUser: boolean;
+    isVerifiedUser?: boolean;
     role?: Role;
     accessToken?: string;
   }

@@ -1,6 +1,6 @@
 import axios from "axios";
 import { atom } from "jotai";
-import { OrderType } from "@/core/types";
+import { OrderStats, OrderType, SalesReport } from "@/core/types";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URI || "";
 
@@ -52,3 +52,47 @@ export const ordersWithActionsAtom = atom(
     }
   }
 );
+
+
+export const orderStatsAtom = atom<OrderStats | null>(null);
+
+export const orderStatsWithActionsAtom = atom(
+  (get) => get(orderStatsAtom),
+  async (
+    get,
+    set,
+    action: { type: "fetch"; accessToken: string }
+  ) => {
+    if (action.type === "fetch") {
+      const response = await fetch(`${API_BASE_URL}/orders/stats`, {
+        headers: { Authorization: `Bearer ${action.accessToken}` },
+      });
+      if (!response.ok) throw new Error("Failed to fetch order stats");
+      const data = await response.json();
+      set(orderStatsAtom, data);
+    }
+  }
+);
+
+export const salesReportAtom = atom<SalesReport[]>([]);
+
+export const salesReportWithActionsAtom = atom(
+  (get) => get(salesReportAtom),
+  async (
+    get,
+    set,
+    action: { type: "fetch"; accessToken: string; year?: number }
+  ) => {
+    if (action.type === "fetch") {
+      const selectedYear = action.year || new Date().getFullYear();
+      const response = await fetch(`${API_BASE_URL}/orders/sales-report?year=${selectedYear}`, {
+        headers: { Authorization: `Bearer ${action.accessToken}` },
+      });
+      if (!response.ok) throw new Error("Failed to fetch sales report");
+      const data = await response.json();
+      set(salesReportAtom, data.data);
+    }
+  }
+);
+
+

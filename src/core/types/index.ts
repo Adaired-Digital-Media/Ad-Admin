@@ -84,20 +84,25 @@ export interface OrderType {
   _id?: string;
   userId?: UserType;
   orderNumber?: string;
-  products?: ProductType[];
-  totalQuantity?: number;
-  totalPrice?: number;
-  discountedPrice?: number;
-  couponId?: string;
-  couponDiscount?: number;
-  paymentId?: string;
-  invoiceId?: string;
-  zohoInvoiceId?: string;
-  paymentUrl?: string;
-  status: "Pending" | "Processing" | "Confirmed" | "Completed" | "Cancelled";
+  products: ProductType[];
+  totalQuantity: number;
+  totalPrice: number;
+  couponDiscount: number;
+  finalPrice: number;
+  couponId?: string | null;
+  paymentId: string;
+  invoiceId: string;
+  zohoInvoiceId: string;
+  paymentUrl: string;
+  status:
+    | "Pending"
+    | "Processing"
+    | "Confirmed"
+    | "Cancelled"
+    | "Completed"
   paymentStatus: "Unpaid" | "Paid" | "Refunded" | "Failed";
   paymentMethod: "Razorpay" | "Stripe";
-  paymentDate?: string;
+  paymentDate: Date;
   createdAt?: Date;
   updatedAt?: Date;
   __v?: number;
@@ -111,4 +116,47 @@ export interface OrderItemType {
   additionalInfo: string;
   product: ProductType;
   addedAt: Date;
+}
+
+interface newOrders {
+  day: string;
+  orders: number;
+}
+interface totalSales {
+  day: string; 
+  sales: number;
+}
+interface totalSales {
+  day: string;
+  revenue: number;
+}
+
+export interface OrderStats {
+  newOrders: { count: number; percentageChange: number; trend: string };
+  sales: { total: number; percentageChange: number; trend: string };
+  revenue: { total: number; percentageChange: number; trend: string };
+  allOrders: number;
+  paidOrders: number;
+  dailyOrders: number;
+  completedOrders: number;
+  chartData: {
+    newOrders: newOrders[];
+    sales: totalSales[];
+    revenue: totalSales[];
+  };
+}
+
+export interface SalesReport  {
+  month: string;
+  sales: number;
+  revenue: number;
+};
+
+export interface SalesReportProps {
+  className?: string;
+  salesReport: SalesReport[];
+  selectedYear: number;
+  setSelectedYear: (year: number) => void;
+  accessToken: string;
+  setSalesReport: (action: { type: "fetch"; accessToken: string; year?: number }) => void;
 }

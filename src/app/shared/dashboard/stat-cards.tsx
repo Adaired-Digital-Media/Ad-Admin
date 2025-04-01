@@ -11,114 +11,46 @@ import {
   PiChartPieSliceDuotone,
 } from "react-icons/pi";
 import { BarChart, Bar, ResponsiveContainer } from "recharts";
-import { OrderType } from "@/core/types";
+import { OrderStats } from "@/core/types";
 
-const salesData = [
-  {
-    day: "Sunday",
-    sale: 2000,
-    cost: 2400,
-  },
-  {
-    day: "Monday",
-    sale: 3000,
-    cost: 1398,
-  },
-  {
-    day: "Tuesday",
-    sale: 2000,
-    cost: 9800,
-  },
-  {
-    day: "Wednesday",
-    sale: 2780,
-    cost: 3908,
-  },
-  {
-    day: "Thursday",
-    sale: 1890,
-    cost: 4800,
-  },
-  {
-    day: "Friday",
-    sale: 2390,
-    cost: 3800,
-  },
-  {
-    day: "Saturday",
-    sale: 3490,
-    cost: 4300,
-  },
-];
-
-const revenueData = [
-  {
-    day: "Sunday",
-    sale: 2000,
-    cost: 2400,
-  },
-  {
-    day: "Monday",
-    sale: 2800,
-    cost: 1398,
-  },
-  {
-    day: "Tuesday",
-    sale: 3500,
-    cost: 9800,
-  },
-  {
-    day: "Wednesday",
-    sale: 2780,
-    cost: 3908,
-  },
-  {
-    day: "Thursday",
-    sale: 1890,
-    cost: 4800,
-  },
-  {
-    day: "Friday",
-    sale: 2390,
-    cost: 3800,
-  },
-  {
-    day: "Saturday",
-    sale: 3490,
-    cost: 4300,
-  },
-];
-
-
+// Helper to format numbers as currency
+const formatCurrency = (value: number) => {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(value);
+};
 
 export default function StatCards({
   className,
-  orderData,
+  orderStats,
 }: {
   className?: string;
-  orderData: OrderType[];
+  orderStats: OrderStats | null;
 }) {
-  const newOrders = orderData.filter((order) => order.status !== "Completed");
-  // const sales = orderData.reduce((acc, order) => acc + order.total, 0);
-  // const revenue = orderData.reduce((acc, order) => acc + order.totalPrice, 0);
-  // const percentage =
-  // ((sales - revenue) / revenue) * 100 > 0? "+32.40%" : "-4.40%";
-  // const percentageClassName = percentage.startsWith("+")? "text-[#10b981]" : "text-[#ff4747]";
-  // const iconClassName = stat.increased? "text-[#10b981]" : "text-[#ff4747]";
-  // const chartClassName = cn(
-  //   "hidden @[200px]:flex @[200px]:items-center h-14 w-24",
-  //   className
-  // );
+  const orderData = orderStats?.chartData?.newOrders.map((item) => {
+    return {
+      day: item.day,
+      sale: item.orders,
+    };
+  });
+
+  const revenueData = orderStats?.chartData?.revenue.map((item) => {
+    return {
+      day: item.day,
+      sale: item.revenue,
+    };
+  });
 
   const eComDashboardStatData = [
     {
       id: "1",
       icon: <PiGiftDuotone className="h-6 w-6" />,
       title: "New Orders",
-      metric: newOrders.length,
-      increased: true,
-      decreased: false,
-      percentage: "+32.40",
+      metric: orderStats?.newOrders.count ?? 0,
+      increased: orderStats?.newOrders.trend === "increased",
+      decreased: orderStats?.newOrders.trend === "decreased",
+      percentage: orderStats?.newOrders.percentageChange.toFixed(2) ?? "0.00",
       style: "text-[#3872FA]",
       fill: "#3872FA",
       chart: orderData,
@@ -127,25 +59,25 @@ export default function StatCards({
       id: "2",
       icon: <PiChartPieSliceDuotone className="h-6 w-6" />,
       title: "Sales",
-      metric: "$57,890",
-      increased: false,
-      decreased: true,
-      percentage: "-4.40",
+      metric: formatCurrency(orderStats?.sales.total ?? 0),
+      increased: orderStats?.sales.trend === "increased",
+      decreased: orderStats?.sales.trend === "decreased",
+      percentage: orderStats?.sales.percentageChange.toFixed(2) ?? "0.00",
       style: "text-[#10b981]",
       fill: "#10b981",
-      chart: salesData,
+      chart: orderStats?.chartData.sales ?? [],
     },
     {
       id: "3",
       icon: <PiBankDuotone className="h-6 w-6" />,
       title: "Revenue",
-      metric: "$12,390",
-      increased: true,
-      decreased: false,
-      percentage: "+32.40",
+      metric: formatCurrency(orderStats?.revenue.total ?? 0),
+      increased: orderStats?.revenue.trend === "increased",
+      decreased: orderStats?.revenue.trend === "decreased",
+      percentage: orderStats?.revenue.percentageChange.toFixed(2) ?? "0.00",
       style: "text-[#7928ca]",
       fill: "#7928ca",
-      chart: revenueData,
+      chart: revenueData ?? [],
     },
   ];
 
