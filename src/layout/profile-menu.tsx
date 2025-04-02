@@ -21,6 +21,7 @@ export default function ProfileMenu({
   username?: boolean;
 }) {
   const { data: session } = useSession();
+
   return (
     <ProfileMenuPopover>
       <Popover.Trigger>
@@ -33,7 +34,11 @@ export default function ProfileMenu({
           <Avatar
             src={
               session?.user?.image ||
-              "https://isomorphic-furyroad.s3.amazonaws.com/public/avatars/avatar-11.webp"
+              `https://avatar.iran.liara.run/username?username=${
+                session?.user?.name?.split(" ")[0] || ""
+              }+${
+                session?.user?.name?.split(" ")[1] || ""
+              }`
             }
             name={session?.user?.name ?? "User"}
             className={cn("!h-9 w-9 sm:!h-10 sm:!w-10", avatarClassName)}

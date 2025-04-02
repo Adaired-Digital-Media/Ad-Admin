@@ -9,7 +9,7 @@ export const createUserSchema = z.object({
   email: validateEmail,
   password: validatePassword,
   contact: z.string().min(1, { message: messages.phoneNumberIsRequired }),
-  role: z.string().min(1, { message: messages.roleIsRequired }),
+  role: z.string().optional(),
   status: z.string().min(1, { message: messages.statusIsRequired }),
 });
 

@@ -83,19 +83,6 @@ export default function OrderView({
   order: any;
   session: Session;
 }) {
-  // const { items, total, totalItems } = useCart();
-  // const { price: subtotal } = usePrice(
-  //   items && {
-  //     amount: total,
-  //   }
-  // );
-  // const { price: totalPrice } = usePrice({
-  //   amount: total,
-  // });
-  // const orderNote = useAtomValue(orderNoteAtom);
-  // const billingAddress = useAtomValue(billingAddressAtom);
-  // const shippingAddress = useAtomValue(shippingAddressAtom);
-
   // Find the matching payment method image
   const matchedPayment = Images.find(
     (image) => image.paymentMethod.name === order.paymentMethod
@@ -122,7 +109,7 @@ export default function OrderView({
         </span>
         <span className="my-2 border-r border-muted px-5 py-0.5 first:ps-0 last:border-r-0">
           Total :{" "}
-          <span className="font-bold">{toCurrency(order.discountedPrice)}</span>
+          <span className="font-bold">{toCurrency(order.finalPrice)}</span>
         </span>
 
         <span
@@ -146,13 +133,13 @@ export default function OrderView({
             <div className="border-t border-muted pt-7 @5xl:mt-3">
               <div className="ms-auto max-w-lg space-y-6">
                 <div className="flex justify-between font-medium">
-                  Subtotal <span>{toCurrency(order.discountedPrice)}</span>
+                  Subtotal <span>{toCurrency(order.totalPrice)}</span>
                 </div>
                 <div className="flex justify-between font-medium">
-                  Discount <span>{toCurrency(0)}</span>
+                  Discount <span>{toCurrency(order.couponDiscount)}</span>
                 </div>
                 <div className="flex justify-between border-t border-muted pt-5 text-base font-semibold">
-                  Total <span>{toCurrency(order.discountedPrice)}</span>
+                  Total <span>{toCurrency(order.finalPrice)}</span>
                 </div>
               </div>
             </div>

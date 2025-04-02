@@ -8,6 +8,7 @@ import { type Table as ReactTableType } from "@tanstack/react-table";
 import { PiMagnifyingGlassBold, PiTrashDuotone } from "react-icons/pi";
 import ModalButton from "@/app/shared/modal-button";
 import CreateUser from "../create-user";
+import { Session } from "next-auth";
 
 export const statusOptions = [
   {
@@ -20,17 +21,15 @@ export const statusOptions = [
   },
 ];
 
-// const roles = rolesList.map((role) => ({
-//   label: role.name,
-//   value: role.name,
-// }));
 
 interface TableToolbarProps<T extends Record<string, any>> {
   table: ReactTableType<T>;
+  session:Session
 }
 
 export default function Filters<TData extends Record<string, any>>({
   table,
+  session
 }: TableToolbarProps<TData>) {
   const isFiltered =
     table.getState().globalFilter || table.getState().columnFilters.length > 0;
@@ -105,7 +104,7 @@ export default function Filters<TData extends Record<string, any>>({
         <Box className="order-2 ms-4 @2xl:order-3 @2xl:ms-0 @4xl:order-4 @4xl:shrink-0">
           <ModalButton
             label="Add New User"
-            view={<CreateUser />}
+            view={<CreateUser session={session} />}
             customSize="600px"
             className="mt-0"
           />

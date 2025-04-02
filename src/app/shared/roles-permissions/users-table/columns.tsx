@@ -48,7 +48,7 @@ export const usersColumns = [
     cell: ({ row }) => (
       <AvatarCard
         src={row.original.image || ""}
-        name={row.original.name}
+        name={row.original.name || ""}
         description={row.original.email}
       />
     ),

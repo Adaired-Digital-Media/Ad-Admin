@@ -26,6 +26,7 @@ const Index = ({ session }: { session: Session }) => {
   const [orderStats, setOrderStats] = useAtom(orderStatsWithActionsAtom);
   const [salesReport, setSalesReport] = useAtom(salesReportWithActionsAtom);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  
   // Fetch orders when component mounts
   useEffect(() => {
     if (session?.user?.accessToken) {

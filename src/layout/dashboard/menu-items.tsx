@@ -59,7 +59,7 @@ import {
 export const menuItems = [
   // label start
   {
-    name: "General",
+    name: "Dashboards",
   },
   // label end
   {

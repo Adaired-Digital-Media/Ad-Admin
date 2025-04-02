@@ -22,9 +22,10 @@ export default function GlobalModal() {
           onClose={closeModal}
           customSize={modal.customSize}
           size={modal.size}
-          overlayClassName="dark:bg-opacity-40 dark:backdrop-blur-lg"
+          overlayClassName="backdrop-blur-sm dark:bg-opacity-40 dark:backdrop-blur-lg"
           containerClassName="dark:bg-gray-100"
-          className="z-[9999] [&_.pointer-events-none]:overflow-visible"
+          className="z-[9999] [&_.pointer-events-none]:overflow-visible "
+
         >
           {modal.view}
         </Modal>

@@ -86,7 +86,7 @@ export default async function UserAndRoles() {
         </div>
       </PageHeader>
       <RolesGrid initialRoles={roles} modules={modules} session={session} />
-      <UsersTable users={users} />
+      <UsersTable users={users} session={session} />
     </>
   );
 }

@@ -27,10 +27,10 @@ export default function ProfileSettingsView() {
 
   const defaultValuesWithSession = {
     ...defaultValues,
-    first_name: session?.user.name?.split(" ")[0] || "User",
-    last_name: session?.user.name?.split(" ")[1] || "Name",
-    username: session?.user?.userName || "username",
-    email: session?.user?.email || "user@mail.com",
+    first_name: session?.user.name?.split(" ")[0] || "",
+    last_name: session?.user.name?.split(" ")[1] || "",
+    username: session?.user?.userName || "",
+    email: session?.user?.email || "",
     image: session?.user?.image || "",
   };
 
@@ -97,7 +97,7 @@ export default function ProfileSettingsView() {
           <>
             <ProfileHeader
               image={session?.user?.image || ""}
-              title={session?.user?.name || "Your Profile"}
+              title={session?.user?.name || ""}
               description="Update your photo and personal details."
               status={status}
             />
@@ -215,7 +215,7 @@ export function ProfileHeader({
           <Image
             src={
               image ||
-              "https://isomorphic-furyroad.s3.amazonaws.com/public/profile-image.webp"
+              `https://avatar.iran.liara.run/username?username=${title.split(" ")[0]}+${title.split(" ")[1]}`
             }
             alt="profile-pic"
             fill

@@ -7,11 +7,14 @@ import Table from "@core/components/table";
 import TableFooter from "@core/components/table/footer";
 import TablePagination from "@core/components/table/pagination";
 import Filters from "./filters";
-import { useApiCall } from "@/core/utils/api-config";
 import toast from "react-hot-toast";
 import { useModal } from "@/app/shared/modal-views/use-modal";
 import CreateUser from "../create-user";
 import { CustomTableMeta } from "../../dashboard/recent-order";
+import { Session } from "next-auth";
+import { useAtom } from "jotai";
+import { usersWithActionsAtom } from "@/store/atoms/users.atom";
+import { useEffect } from "react";
 
 export interface UsersTableMeta<T> extends CustomTableMeta<T> {
   handleDeleteRow?: (row: T) => void;
@@ -19,13 +22,19 @@ export interface UsersTableMeta<T> extends CustomTableMeta<T> {
   handleEditRow?: (row: T) => void;
 }
 
-export default function UsersTable({ users }: { users: UserTypes[] }) {
-  const { apiCall } = useApiCall();
+export default function UsersTable({
+  users: initialUsers,
+  session,
+}: {
+  users: UserTypes[];
+  session: Session;
+}) {
+  const [users, setUsers] = useAtom(usersWithActionsAtom);
   const { openModal } = useModal();
-  
 
+  // Initialize table with users from atom or initialUsers
   const { table, setData } = useTanStackTable<UserTypes>({
-    tableData: users,
+    tableData: users.length ? users : initialUsers,
     columnConfig: usersColumns,
     options: {
       initialState: {
@@ -36,28 +45,28 @@ export default function UsersTable({ users }: { users: UserTypes[] }) {
       },
       meta: {
         handleDeleteRow: async (row: UserTypes) => {
-          setData((prev) => prev.filter((r) => r._id !== row._id));
-          const response = await apiCall<{ message: string }>({
-            url: `/user/delete?identifier=${row._id}`,
-            method: "DELETE",
+          setUsers({
+            type: "delete",
+            id: row._id!,
+            accessToken: session.user.accessToken!,
           });
-          if (response.status === 200) toast.success(response.data.message);
+          toast.success("User deleted successfully");
           table.resetRowSelection();
         },
         handleMultipleDelete: async (rows: UserTypes[]) => {
-          setData((prev) => prev.filter((r) => !rows.includes(r)));
-          rows.forEach(async (r) => {
-            const response = await apiCall<{ message: string }>({
-              url: `/user/delete?identifier=${r._id}`,
-              method: "DELETE",
-            });
-            if (response.status === 200) toast.success(response.data.message);
-          });
+          rows.forEach((row) =>
+            setUsers({
+              type: "delete",
+              id: row._id!,
+              accessToken: session.user.accessToken!,
+            })
+          );
+          toast.success("Users deleted successfully");
           table.resetRowSelection();
         },
         handleEditRow: (row: UserTypes) => {
           openModal({
-            view: <CreateUser user={row} />,
+            view: <CreateUser user={row} session={session} />,
           });
           table.resetRowSelection();
         },
@@ -65,9 +74,21 @@ export default function UsersTable({ users }: { users: UserTypes[] }) {
       enableColumnResizing: false,
     },
   });
+
+  // Sync table data with users atom or initialUsers when they change
+  useEffect(() => {
+    setData(users.length ? users : initialUsers);
+  }, [users, initialUsers, setData]);
+
+  useEffect(() => {
+    if (session?.user?.accessToken) {
+      setUsers({ type: "fetch", accessToken: session.user.accessToken });
+    }
+  }, [session?.user?.accessToken, setUsers, users]);
+
   return (
     <div className="mt-14">
-      <Filters table={table} />
+      <Filters table={table} session={session} />
       <Table
         table={table}
         variant="modern"
