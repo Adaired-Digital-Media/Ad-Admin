@@ -85,6 +85,7 @@ export default function CreateUser({
               role: data.role,
               status: data.status,
               contact: data.contact,
+              password: data.password,
             },
             accessToken,
           });

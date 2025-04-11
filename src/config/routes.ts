@@ -12,8 +12,8 @@ export const routes = {
     roles: "/roles-permissions",
   },
   profileSettings: {
-    myDetails:"/profile-settings",
-    password:"/profile-settings/password",
+    myDetails: "/profile-settings",
+    password: "/profile-settings/password",
   },
   products: {
     products: "/products",
@@ -28,10 +28,19 @@ export const routes = {
     orderDetails: (id: string) => `/orders/order-details?orderNumber=${id}`,
     deletedOrders: "/orders/deleted",
   },
+  coupons: {
+    allCoupons: "/coupons",
+    createCoupon: "/coupons/create",
+    editCoupon:(id:string)=>`/coupons/edit?couponId=${id}`
+  },
+  support: {
+    support: "/support",
+    inbox: (id: string) => `/support/inbox?tkt=${id}`,
+  },
   file: {
-    manager: "/file-manager",
-    upload: "/file-manager/upload",
-    create: "/file-manager/create",
+    manager: "/media-manager",
+    upload: "/media-manager/upload",
+    create: "/media-manager/create",
   },
   staticPages: {
     termsPage: "/static-pages/terms",

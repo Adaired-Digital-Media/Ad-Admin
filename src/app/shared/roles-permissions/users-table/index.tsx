@@ -10,7 +10,7 @@ import Filters from "./filters";
 import toast from "react-hot-toast";
 import { useModal } from "@/app/shared/modal-views/use-modal";
 import CreateUser from "../create-user";
-import { CustomTableMeta } from "../../dashboard/recent-order";
+import { CustomTableMeta } from "@/app/shared/dashboard/recent-order";
 import { Session } from "next-auth";
 import { useAtom } from "jotai";
 import { usersWithActionsAtom } from "@/store/atoms/users.atom";

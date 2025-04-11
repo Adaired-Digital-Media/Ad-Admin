@@ -30,7 +30,7 @@ export default function TableRowActionGroup({
       {editUrl && (
         <Tooltip size="sm" content="Edit" placement="top" color="invert">
           {typeof editUrl === "string" ? (
-            <Link href={editUrl}>
+            <Link href={editUrl.toString()}>
               <ActionIcon
                 as="span"
                 size="sm"

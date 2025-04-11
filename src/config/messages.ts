@@ -77,4 +77,7 @@ export const messages = {
   invalidWordCount: 'Invalid Word Count',
   required: 'Required',
   categoryIsRequired: 'Category is required',
+  invalidDiscountValue: "Discount value must be positive",
+  invalidAmount: "Amount must be positive",
+  invalidLimit: "Limit must be at least 1",
 };

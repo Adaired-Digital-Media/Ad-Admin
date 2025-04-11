@@ -32,7 +32,7 @@ export interface WishlistItem {
 
 export interface ProductCategoryType {
   _id?: string;
-  name?: string;
+  name: string;
   description?: string;
   parentCategory?: string | null;
   children?: string[];
@@ -51,7 +51,7 @@ export interface ProductCategoryType {
 }
 
 export type ProductType = {
-  _id: string;
+  _id?: string;
   featuredImage: string;
   name: string;
   description: string;
