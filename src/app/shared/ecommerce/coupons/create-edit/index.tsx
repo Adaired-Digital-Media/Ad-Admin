@@ -81,7 +81,6 @@ const CreateEditCoupon = ({ className, couponId, accessToken }: Props) => {
   }
 
   const onSubmit: SubmitHandler<CouponFormValues> = async (data) => {
-    console.log(data);
     setLoading(true);
     try {
       if (couponId) {

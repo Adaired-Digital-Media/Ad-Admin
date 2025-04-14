@@ -22,5 +22,6 @@ export function couponDefaultValues(coupon?: CouponTypes): CouponFormValues {
     totalUsageLimit: coupon?.totalUsageLimit || Infinity,
     usedCount: coupon?.usedCount || 0, 
     userUsage: coupon?.userUsage || [],
+    
   };
 }

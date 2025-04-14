@@ -40,7 +40,7 @@ export default function BasicInformation({
     >
       <div>
         <Text className={cn(`block pb-1.5 font-normal text-[#515151]`)}>
-          Discount Type
+          Code
           <span className="text-red-500"> *</span>
         </Text>
         <Input
