@@ -23,7 +23,7 @@ export interface CouponTypes {
     userId: string;
     usageCount: number;
   }[];
-  status?: string;
+  status: string;
   expiresAt?: Date | string | null;
   createdBy?: string | UserRef;
   updatedBy?: string | UserRef | null;
