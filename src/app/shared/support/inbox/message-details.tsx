@@ -334,7 +334,6 @@ export default function MessageDetails({
         >
           <Avatar
             name={session?.user?.name || "You"}
-            // initials={getInitials(session?.user?.name || "You")}
             src={session?.user?.image || ""}
             className="!h-8 !w-8 bg-[#70C5E0] font-medium text-white xl:!h-12 xl:!w-12"
           />

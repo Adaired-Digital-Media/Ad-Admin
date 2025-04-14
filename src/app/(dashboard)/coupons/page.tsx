@@ -16,7 +16,7 @@ const ENDPOINTS = {
   couponStats: "/coupons/usageStats",
 };
 
-export const fetchData = async (
+const fetchData = async (
   endpoint: string,
   accessToken: string,
   tag: string
