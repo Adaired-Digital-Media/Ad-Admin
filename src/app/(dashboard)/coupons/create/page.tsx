@@ -1,25 +1,23 @@
-import Link from "next/link";
-import { PiPlusBold } from "react-icons/pi";
-import CreateEditProduct from "@/app/shared/ecommerce/products/create-edit";
 import { metaObject } from "@/config/site.config";
 import PageHeader from "@/app/shared/page-header";
-import { Button } from "rizzui";
 import { routes } from "@/config/routes";
+import CreateEditCoupon from "@/app/shared/ecommerce/coupons/create-edit";
+import { auth } from "@/auth";
 
 export const metadata = {
-  ...metaObject("Create Product"),
+  ...metaObject("Create Coupon"),
 };
 
 const pageHeader = {
-  title: "Create Product",
+  title: "Create Coupon",
   breadcrumb: [
     {
       href: routes.root.dashboard,
       name: "Dashboard",
     },
     {
-      href: routes.products.products,
-      name: "Products",
+      href: routes?.coupons?.allCoupons,
+      name: "Coupons",
     },
     {
       name: "Create",
@@ -27,11 +25,14 @@ const pageHeader = {
   ],
 };
 
-export default function CreateProductPage() {
+export default async function CreateCouponPage() {
+  const session = await auth();
+  if (!session) return;
   return (
     <>
       <PageHeader title={pageHeader.title} breadcrumb={pageHeader.breadcrumb} />
-      <CreateEditProduct />
+
+      <CreateEditCoupon accessToken={session?.user?.accessToken} />
     </>
   );
 }

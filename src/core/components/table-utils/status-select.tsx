@@ -9,7 +9,7 @@ import {
   PiArchiveBold,
   PiEmptyBold,
   PiHourglassBold,
-  PiChecksBold  
+  PiChecksBold,
 } from "react-icons/pi";
 import { Select, SelectOption, Text } from "rizzui";
 
@@ -20,7 +20,9 @@ export function StatusSelect({
   method,
   endpoint,
   revalidatePath,
+  placeholder = "Select",
 }: {
+  placeholder?: string;
   toUpdate?: string;
   selectItem?: string;
   options: SelectOption[];
@@ -33,7 +35,6 @@ export function StatusSelect({
   const { apiCall } = useApiCall();
 
   const handleStatusChange = async (selectedOption: SelectOption) => {
-
     const response = await apiCall<{ message: string }>({
       url: endpoint,
       method: method ?? "PATCH",
@@ -56,7 +57,7 @@ export function StatusSelect({
     <Select
       dropdownClassName="!z-10"
       className="min-w-[140px]"
-      placeholder="Select Role"
+      placeholder={placeholder}
       options={options}
       value={value}
       onChange={(value: SelectOption) => {
@@ -189,7 +190,7 @@ function renderOptionDisplayValue(value: string) {
     case "Completed":
       return (
         <div className="flex items-center">
-          <PiChecksBold  className="shrink-0 fill-green-dark text-lg" />
+          <PiChecksBold className="shrink-0 fill-green-dark text-lg" />
           <Text className="ms-1.5 text-sm font-medium capitalize text-gray-700">
             {value}
           </Text>

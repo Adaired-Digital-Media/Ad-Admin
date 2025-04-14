@@ -26,11 +26,12 @@ import {
   // PiEnvelopeDuotone,
   // PiEnvelopeSimpleOpenDuotone,
   // PiFeatherDuotone,
-  PiFolder,
+  // PiFolder,
   PiFolderLockDuotone,
+  PiImageDuotone,
   // PiGridFourDuotone,
   // PiHammerDuotone,
-  // PiHeadsetDuotone,
+  PiHeadsetDuotone,
   // PiHourglassSimpleDuotone,
   // PiHouseLineDuotone,
   // PiListNumbersDuotone,
@@ -54,18 +55,20 @@ import {
   // PiUserGearDuotone,
   // PiUserPlusDuotone,
   // PiFilesDuotone,
+  PiTicketDuotone,
 } from "react-icons/pi";
+import { MdOutlineDashboard } from "react-icons/md";
 // Note: do not add href in the label object, it is rendering as label
 export const menuItems = [
   // label start
   {
-    name: "Dashboards",
+    name: "Home",
   },
   // label end
   {
     name: "Dashboard",
     href: "/",
-    icon: <PiFolder />,
+    icon: <MdOutlineDashboard />,
   },
   // label start
   {
@@ -106,6 +109,7 @@ export const menuItems = [
       },
     ],
   },
+
   {
     name: "Orders",
     href: "#",
@@ -121,6 +125,32 @@ export const menuItems = [
       // },
     ],
   },
+  {
+    name: "Coupons",
+    href: "#",
+    icon: <PiTicketDuotone />,
+    dropdownItems: [
+      {
+        name: "All Coupons",
+        href: routes?.coupons?.allCoupons,
+      },
+      {
+        name: "Create Coupon",
+        href: routes?.coupons?.createCoupon,
+      },
+    ],
+  },
+
+  // label start
+  {
+    name: "Help Center",
+  },
+  // label end
+  {
+    name: "Support",
+    href: routes?.support?.support,
+    icon: <PiHeadsetDuotone />,
+  },
 
   // label start
   {
@@ -128,9 +158,9 @@ export const menuItems = [
   },
   // label end
   {
-    name: "File Manager",
+    name: "Media Manager",
     href: routes?.file?.manager,
-    icon: <PiFolder />,
+    icon: <PiImageDuotone />,
   },
 
   // // label start

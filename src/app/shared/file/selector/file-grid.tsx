@@ -1,12 +1,14 @@
 "use client";
 
 import cn from "@/core/utils/class-names";
-import { CloudinaryFile, fetchFiles } from "@/data/cloudinary-files";
+import { CloudinaryFile } from "@/data/cloudinary-files";
 import { useEffect, useState } from "react";
 import FileCard from "./file-card";
 import { AdvancedRadio, Button, RadioGroup } from "rizzui";
 import { Skeleton } from "@/core/ui/skeleton";
 import { useModal } from "@/app/shared/modal-views/use-modal";
+import { useAtom } from "jotai";
+import { cloudinaryFilesWithActionsAtom } from "@/store/atoms/files.atom";
 
 interface FileGridProps {
   onImageSelect: (image: CloudinaryFile) => void;
@@ -14,8 +16,7 @@ interface FileGridProps {
 
 const FileGrid = ({ onImageSelect }: FileGridProps) => {
   const countPerPage = 12;
-  const [files, setFiles] = useState<CloudinaryFile[]>([]);
-  const [isInitialLoading, setInitialLoading] = useState(true);
+  const [files, setFiles] = useAtom(cloudinaryFilesWithActionsAtom);
   const [isLoadingMore, setLoadingMore] = useState(false);
   const [nextPage, setNextPage] = useState(countPerPage);
   const [selectedImage, setSelectedImage] = useState<
@@ -24,19 +25,8 @@ const FileGrid = ({ onImageSelect }: FileGridProps) => {
   const { closeModal } = useModal();
 
   useEffect(() => {
-    const getFiles = async () => {
-      try {
-        setInitialLoading(true);
-        const response = await fetchFiles({ fileType: "all" });
-        setFiles(response);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setInitialLoading(false);
-      }
-    };
-    getFiles();
-  }, []);
+    setFiles({ type: "fetch" });
+  }, [setFiles]);
 
   useEffect(() => {
     if (selectedImage) {
@@ -75,7 +65,7 @@ const FileGrid = ({ onImageSelect }: FileGridProps) => {
   return (
     <>
       <div className={cn(`@container`)}>
-        {isInitialLoading ? (
+        {files.length === 0 ? (
           <SkeletonGrid />
         ) : (
           <>

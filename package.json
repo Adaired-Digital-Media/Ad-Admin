@@ -23,6 +23,7 @@
     "dayjs": "^1.11.13",
     "html-react-parser": "^5.2.2",
     "jotai": "^2.11.1",
+    "jotai-cache": "^0.5.0",
     "lodash": "^4.17.21",
     "next": "14.2.16",
     "next-auth": "5.0.0-beta.25",

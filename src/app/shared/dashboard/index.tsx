@@ -16,21 +16,29 @@ import {
   ordersWithActionsAtom,
   salesReportWithActionsAtom,
 } from "@/store/atoms/orders.atom";
+import { cloudinaryFilesWithActionsAtom } from "@/store/atoms/files.atom";
 import { useEffect, useState } from "react";
 import RecentOrder from "./recent-order";
 import TicketsWidget from "./tickets-report";
 import OrdersWidget from "./orders-report";
+import { productsWithActionsAtom } from "@/store/atoms/products.atom";
 
 const Index = ({ session }: { session: Session }) => {
   const [orders, setOrders] = useAtom(ordersWithActionsAtom);
+  const [, setProducts] = useAtom(productsWithActionsAtom);
   const [orderStats, setOrderStats] = useAtom(orderStatsWithActionsAtom);
   const [salesReport, setSalesReport] = useAtom(salesReportWithActionsAtom);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  
+  const [, setFiles] = useAtom(cloudinaryFilesWithActionsAtom);
+
   // Fetch orders when component mounts
   useEffect(() => {
     if (session?.user?.accessToken) {
       setOrders({
+        type: "fetch",
+        accessToken: session.user.accessToken,
+      });
+      setProducts({
         type: "fetch",
         accessToken: session.user.accessToken,
       });
@@ -43,13 +51,16 @@ const Index = ({ session }: { session: Session }) => {
         accessToken: session.user.accessToken,
         year: selectedYear,
       });
+      setFiles({ type: "fetch" });
     }
   }, [
     session?.user?.accessToken,
     setOrders,
+    setProducts,
     setOrderStats,
     setSalesReport,
     selectedYear,
+    setFiles,
   ]);
 
   const getGreeting = () => {

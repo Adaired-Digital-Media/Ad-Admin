@@ -4,7 +4,7 @@ import { routes } from "@/config/routes";
 import FileStats from "@/app/shared/file/manager/file-stats";
 import { metaObject } from "@/config/site.config";
 import UploadButton from "@/app/shared/upload-button";
-import PageLayout from "@/app/(dashboard)/file-manager/page-layout";
+import PageLayout from "@/app/(dashboard)/media-manager/page-layout";
 import { checkUsage, fetchFiles } from "@/data/cloudinary-files";
 import { Suspense } from "react";
 const FileUpload = dynamic(() => import("@/app/shared/file-upload"), {
@@ -12,11 +12,11 @@ const FileUpload = dynamic(() => import("@/app/shared/file-upload"), {
 });
 
 export const metadata = {
-  ...metaObject("File Manager"),
+  ...metaObject("Media Manager"),
 };
 
 const pageHeader = {
-  title: "File Manager",
+  title: "Media Manager",
   breadcrumb: [
     {
       href: routes.root.dashboard,
@@ -24,7 +24,7 @@ const pageHeader = {
     },
     {
       href: routes.file.manager,
-      name: "File Manager",
+      name: "Media Manager",
     },
     {
       name: "List",
