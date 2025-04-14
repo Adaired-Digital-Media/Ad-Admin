@@ -1,9 +1,6 @@
-import Link from "next/link";
-import { PiPlusBold } from "react-icons/pi";
 import CreateEditProduct from "@/app/shared/ecommerce/products/create-edit";
 import { metaObject } from "@/config/site.config";
 import PageHeader from "@/app/shared/page-header";
-import { Button } from "rizzui";
 import { routes } from "@/config/routes";
 
 export const metadata = {

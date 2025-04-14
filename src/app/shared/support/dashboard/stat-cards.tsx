@@ -7,14 +7,13 @@ import MetricCard from "@core/components/cards/metric-card";
 import TagIcon2 from "@core/components/icons/tag-2";
 import TagIcon3 from "@core/components/icons/tag-3";
 
-import { useAtom } from "jotai";
+// import { useAtom } from "jotai";
 import {
   AdminStats,
   SupportStats,
-  ticketsWithActionsAtom,
+  // ticketsWithActionsAtom,
 } from "@/store/atoms/tickets.atom";
-import { useState, useEffect } from "react";
-import axios from "axios";
+// import { useState } from "react";
 
 const ticketStats = [
   {
@@ -45,14 +44,14 @@ const ticketStats = [
 
 export default function StatCards({
   className,
-  initialStats,
+  // initialStats,
 }: {
   className?: string;
   initialStats: AdminStats | SupportStats;
 }) {
-  const [stats, setStats] = useAtom(ticketsWithActionsAtom);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // const [stats, setStats] = useAtom(ticketsWithActionsAtom);
+  // const [loading, setLoading] = useState(true);
+  // const [error, setError] = useState<string | null>(null);
 
   
 
