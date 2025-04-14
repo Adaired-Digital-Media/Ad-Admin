@@ -15,7 +15,7 @@ export interface TicketAttachment {
 }
 
 export interface TicketMessage {
-  _id?: string;
+  _id: string;
   sender: UserRef;
   message: string;
   attachments: TicketAttachment[];

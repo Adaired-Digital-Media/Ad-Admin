@@ -1,18 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useAtomValue, useSetAtom } from "jotai";
 import { z } from "zod";
 import { useState } from "react";
-import {
-  Title,
-  Text,
-  Badge,
-  Button,
-  Avatar,
-  Empty,
-  Select,
-  Loader,
-} from "rizzui";
+import { Title, Text, Badge, Button, Avatar, Empty, Select } from "rizzui";
 import cn from "@core/utils/class-names";
 import { SubmitHandler, Controller } from "react-hook-form";
 import { Form } from "@core/ui/form";
@@ -21,19 +13,22 @@ import SimpleBar from "@core/ui/simplebar";
 import { useElementSize } from "@core/hooks/use-element-size";
 import { useMedia } from "@core/hooks/use-media";
 import dynamic from "next/dynamic";
-import Image from "next/image";
 import {
   selectedTicketAtom,
   ticketsWithActionsAtom,
 } from "@/store/atoms/tickets.atom";
-// import { getInitials } from "@core/utils/get-initials";
-import { useSession } from "next-auth/react";
-// import { uploadFiles } from "@/utils/upload";
-import { TicketStatus, TicketPriority } from "@/data/tickets.types";
+import {
+  TicketStatus,
+  //  TicketPriority
+} from "@/data/tickets.types";
 import { PiCaretDownBold } from "react-icons/pi";
 import ActionDropdown from "./action-dropdown";
-import Upload from "@/core/ui/upload";
-import FileUpload, { FileInput, fileType } from "../../file-upload";
+// import Upload from "@/core/ui/upload";
+import {
+  //  FileUpload,
+  FileInput,
+  // fileType
+} from "../../file-upload";
 import { LuReply } from "react-icons/lu";
 import { Session } from "next-auth";
 
@@ -208,20 +203,20 @@ export default function MessageDetails({
     }
   };
 
-  const getPriorityColor = (priority: TicketPriority) => {
-    switch (priority) {
-      case TicketPriority.LOW:
-        return "success";
-      case TicketPriority.MEDIUM:
-        return "warning";
-      case TicketPriority.HIGH:
-        return "danger";
-      case TicketPriority.URGENT:
-        return "danger";
-      default:
-        return "primary";
-    }
-  };
+  // const getPriorityColor = (priority: TicketPriority) => {
+  //   switch (priority) {
+  //     case TicketPriority.LOW:
+  //       return "success";
+  //     case TicketPriority.MEDIUM:
+  //       return "warning";
+  //     case TicketPriority.HIGH:
+  //       return "danger";
+  //     case TicketPriority.URGENT:
+  //       return "danger";
+  //     default:
+  //       return "primary";
+  //   }
+  // };
 
   if (!selectedTicket || !session?.user?.accessToken) {
     return (
@@ -350,7 +345,7 @@ export default function MessageDetails({
             }}
           >
             <Form<FormValues> onSubmit={onSubmit} validationSchema={FormSchema}>
-              {({ control, formState: { errors }, reset }) => (
+              {({ control, formState: { errors } }) => (
                 <>
                   <div className="relative mb-2.5 flex items-center justify-between">
                     <Select
