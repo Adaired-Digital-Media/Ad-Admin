@@ -1,5 +1,5 @@
 import { Controller, useFormContext } from "react-hook-form";
-import { Input } from "rizzui";
+import { Input, Text } from "rizzui";
 import cn from "@/core/utils/class-names";
 import FormGroup from "@/app/shared/form-group";
 import dynamic from "next/dynamic";
@@ -38,45 +38,61 @@ export default function BasicInformation({
       description="Set the coupon's core details"
       className={cn(className)}
     >
-      <Input
-        label="Code"
-        placeholder="e.g., BUY100FLAT50"
-        {...register("code")}
-        error={errors?.code?.message as string}
-      />
-      <Controller
-        name="status"
-        control={control}
-        render={({ field: { onChange, value } }) => (
-          <Select
-            label="Status"
-            options={statusOptions}
-            value={value}
-            onChange={(selected: StatusOption) => onChange(selected?.value)}
-            getOptionValue={(option) => option.value}
-            displayValue={(selected) =>
-              statusOptions.find((s) => s.value === selected)?.label ?? ""
-            }
-            error={errors?.status?.message as string}
-          />
-        )}
-      />
-      <Controller
-        name="expiresAt"
-        control={control}
-        render={({ field: { value, onChange, onBlur } }) => (
-          <DatePicker
-            selected={value}
-            onChange={onChange}
-            minDate={new Date()}
-            showTimeSelect
-            dateFormat="MMMM d, yyyy h:mm aa"
-            placeholderText="e.g., April 11, 2025 04:03 PM"
-            onBlur={onBlur}
-            inputProps={{ label: "Expires At" }}
-          />
-        )}
-      />
+      <div>
+        <Text className={cn(`block pb-1.5 font-normal text-[#515151]`)}>
+          Discount Type
+          <span className="text-red-500"> *</span>
+        </Text>
+        <Input
+          placeholder="e.g., BUY100FLAT50"
+          required
+          {...register("code")}
+          error={errors?.code?.message as string}
+        />
+      </div>
+
+      <div>
+        <Text className={cn(`block pb-1.5 font-normal text-[#515151]`)}>
+          Status
+        </Text>
+        <Controller
+          name="status"
+          control={control}
+          render={({ field: { onChange, value } }) => (
+            <Select
+              value={value}
+              options={statusOptions}
+              onChange={onChange}
+              getOptionValue={(option) => option.value}
+              displayValue={(selected) =>
+                statusOptions.find((s) => s.value === selected)?.label ?? ""
+              }
+              error={errors?.status?.message as string}
+            />
+          )}
+        />
+      </div>
+
+      <div>
+        <Text className={cn(`block pb-1.5 font-normal text-[#515151]`)}>
+          Expires At
+        </Text>
+        <Controller
+          name="expiresAt"
+          control={control}
+          render={({ field: { value, onChange, onBlur } }) => (
+            <DatePicker
+              selected={value}
+              onChange={onChange}
+              minDate={new Date()}
+              showTimeSelect
+              dateFormat="MMMM d, yyyy h:mm aa"
+              placeholderText="e.g., April 11, 2025 04:03 PM"
+              onBlur={onBlur}
+            />
+          )}
+        />
+      </div>
     </FormGroup>
   );
 }

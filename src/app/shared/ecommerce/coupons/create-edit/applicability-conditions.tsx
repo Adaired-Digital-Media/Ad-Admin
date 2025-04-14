@@ -1,5 +1,5 @@
 import { Controller, useFormContext } from "react-hook-form";
-import { Input } from "rizzui";
+import { Input, Text } from "rizzui";
 import cn from "@/core/utils/class-names";
 import FormGroup from "@/app/shared/form-group";
 import dynamic from "next/dynamic";
@@ -27,7 +27,7 @@ const applicabilityOptions = [
 ];
 
 const couponTypeOptions = [
-  { label: "All", value: "all" },
+  { label: "Amount Based", value: "amountBased" },
   { label: "Quantity Based", value: "quantityBased" },
 ];
 
@@ -58,7 +58,7 @@ export default function ApplicabilityConditions({
     control,
     watch,
     formState: { errors },
-    trigger
+    trigger,
   } = useFormContext();
   const couponApplicableOn = watch("couponApplicableOn");
   const couponType = watch("couponType");
@@ -69,108 +69,143 @@ export default function ApplicabilityConditions({
       description="Define applicability and usage conditions"
       className={cn(className)}
     >
-      <Controller
-        name="couponApplicableOn"
-        control={control}
-        render={({ field: { onChange, value } }) => (
-          <Select
-            label="Applicable On"
-            options={applicabilityOptions}
-            value={value}
-            onChange={onChange}
-            getOptionValue={(option) => option.value}
-            displayValue={(selected) =>
-              applicabilityOptions.find((r) => r.value === selected)?.label ??
-              ""
-            }
-            error={errors?.couponApplicableOn?.message as string}
-          />
-        )}
-      />
-      {couponApplicableOn === "specificProducts" && (
+      <div>
+        <Text className={cn(`block pb-1.5 font-normal text-[#515151]`)}>
+          Applicable On
+          <span className="text-red-500"> *</span>
+        </Text>
         <Controller
-          name="specificProducts"
+          name="couponApplicableOn"
           control={control}
           render={({ field: { onChange, value } }) => (
-            <MultiSelect
-              dropdownClassName="h-auto"
-              options={products.products.map((product) => ({
-                value: product._id as string,
-                label: product.name,
-              }))}
+            <Select
+              options={applicabilityOptions}
               value={value}
               onChange={onChange}
-              label="Products"
-              error={errors?.specificProducts?.message as string}
+              getOptionValue={(option) => option.value}
+              displayValue={(selected) =>
+                applicabilityOptions.find((r) => r.value === selected)?.label ??
+                ""
+              }
+              error={errors?.couponApplicableOn?.message as string}
             />
           )}
         />
+      </div>
+      {couponApplicableOn === "specificProducts" && (
+        <div>
+          <Text className={cn(`block pb-1.5 font-normal text-[#515151]`)}>
+            Products
+            <span className="text-red-500"> *</span>
+          </Text>
+          <Controller
+            name="specificProducts"
+            control={control}
+            render={({ field: { onChange, value } }) => (
+              <MultiSelect
+                dropdownClassName="h-auto"
+                options={products.products.map((product) => ({
+                  value: product._id as string,
+                  label: product.name,
+                }))}
+                value={value}
+                onChange={onChange}
+                error={errors?.specificProducts?.message as string}
+              />
+            )}
+          />
+        </div>
       )}
       {couponApplicableOn === "productCategories" && (
+        <div>
+          <Text className={cn(`block pb-1.5 font-normal text-[#515151]`)}>
+            Products Categories
+            <span className="text-red-500"> *</span>
+          </Text>
+          <Controller
+            name="productCategories"
+            control={control}
+            render={({ field: { onChange, value } }) => (
+              <MultiSelect
+                dropdownClassName="h-auto"
+                options={products.categories.map((category) => ({
+                  value: category._id as string,
+                  label: category.name,
+                }))}
+                value={value}
+                onChange={(selected) => {
+                  onChange(selected || []);
+                  trigger("productCategories");
+                }}
+                error={errors?.productCategories?.message as string}
+              />
+            )}
+          />
+        </div>
+      )}
+
+      <div>
+        <Text className={cn(`block pb-1.5 font-normal text-[#515151]`)}>
+          Coupon Type
+          <span className="text-red-500"> *</span>
+        </Text>
         <Controller
-          name="productCategories"
+          name="couponType"
           control={control}
           render={({ field: { onChange, value } }) => (
-            <MultiSelect
-              dropdownClassName="h-auto"
-              options={products.categories.map((category) => ({
-                value: category._id as string,
-                label: category.name,
-              }))}
+            <Select
+              label=""
+              options={couponTypeOptions}
               value={value}
-              // onChange={onChange}
-              onChange={(selected) => {
-                onChange(selected || []);
-                trigger("productCategories"); // Revalidate immediately
-              }}
-              label="Product Categories"
-              error={errors?.productCategories?.message as string}
+              onChange={onChange}
+              getOptionValue={(option) => option.value}
+              displayValue={(selected) =>
+                couponTypeOptions.find((r) => r.value === selected)?.label ?? ""
+              }
+              error={errors?.couponType?.message as string}
             />
           )}
         />
-      )}
-      <Controller
-        name="couponType"
-        control={control}
-        render={({ field: { onChange, value } }) => (
-          <Select
-            label="Coupon Type"
-            options={couponTypeOptions}
-            value={value}
-            onChange={onChange}
-            getOptionValue={(option) => option.value}
-            displayValue={(selected) =>
-              couponTypeOptions.find((r) => r.value === selected)?.label ?? ""
-            }
-            error={errors?.couponType?.message as string}
-          />
-        )}
-      />
+      </div>
       {couponType === "quantityBased" && (
         <>
-          <Input
-            label="Minimum Quantity"
-            type="number"
-            placeholder="e.g., 100"
-            {...register("minQuantity", { valueAsNumber: true })}
-            error={errors?.minQuantity?.message as string}
-          />
-          <Input
-            label="Maximum Quantity"
-            type="number"
-            placeholder="e.g., 500"
-            {...register("maxQuantity", { valueAsNumber: true })}
-            error={errors?.maxQuantity?.message as string}
-          />
+          <div>
+            <Text className={cn(`block pb-1.5 font-normal text-[#515151]`)}>
+              Minimum Quantity
+              <span className="text-red-500"> *</span>
+            </Text>
+            <Input
+              type="number"
+              placeholder="e.g., 100"
+              {...register("minQuantity")}
+              error={errors?.minQuantity?.message as string}
+            />
+          </div>
+          <div>
+            <Text className={cn(`block pb-1.5 font-normal text-[#515151]`)}>
+              Maximum Quantity
+            </Text>
+            <Input
+              type="number"
+              placeholder="e.g., 500"
+              {...register("maxQuantity")}
+              error={errors?.maxQuantity?.message as string}
+            />
+          </div>
         </>
       )}
-      <Input
-        label="Maximum Word Count"
-        type="number"
-        placeholder="e.g., 1000"
-        {...register("maxWordCount", { valueAsNumber: true })}
-        error={errors?.maxWordCount?.message as string}
-      />
+
+      <div>
+        <Text className={cn(`block pb-1.5 font-normal text-[#515151]`)}>
+          Maximum Word Count
+        </Text>
+        <Input
+          type="number"
+          placeholder="e.g., 1000"
+          {...register("maxWordCount")}
+          error={errors?.maxWordCount?.message as string}
+        />
+      </div>
     </FormGroup>
   );
 }

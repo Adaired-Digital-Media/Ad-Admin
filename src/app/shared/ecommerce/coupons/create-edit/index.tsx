@@ -97,12 +97,7 @@ const CreateEditCoupon = ({ className, couponId, accessToken }: Props) => {
           accessToken: accessToken as string,
           payload: data,
         });
-        reset(couponDefaultValues(undefined), {
-          keepDefaultValues: false,
-          keepDirty: false,
-          keepTouched: false,
-          keepErrors: false,
-        });
+        reset(couponDefaultValues(undefined));
       }
     } catch (error) {
       console.error("Failed to save coupon:", error);

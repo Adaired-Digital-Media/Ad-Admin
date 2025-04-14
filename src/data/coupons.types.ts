@@ -6,7 +6,7 @@ export interface CouponTypes {
   _id?: string;
   code: string;
   couponApplicableOn: "allProducts" | "specificProducts" | "productCategories";
-  couponType: "all" | "quantityBased";
+  couponType: "amountBased" | "quantityBased";
   discountType: "percentage" | "flat";
   discountValue: number;
   minOrderAmount?: number;
@@ -14,8 +14,8 @@ export interface CouponTypes {
   specificProducts?: string[];
   productCategories?: string[];
   minQuantity?: number;
-  maxQuantity?: number;
-  maxWordCount?: number;
+  maxQuantity?: number | null;
+  maxWordCount?: number | null;
   usageLimitPerUser?: number;
   totalUsageLimit?: number;
   usedCount?: number;
@@ -24,9 +24,9 @@ export interface CouponTypes {
     usageCount: number;
   }[];
   status?: string;
-  expiresAt?: Date | string;
+  expiresAt?: Date | string | null;
   createdBy?: string | UserRef;
-  updatedBy?: string | UserRef;
+  updatedBy?: string | UserRef | null;
   createdAt?: Date | string;
-  updatedAt?: Date | string;
+  updatedAt?: Date | string | null;
 }

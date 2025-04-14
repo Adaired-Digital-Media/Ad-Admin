@@ -8,45 +8,63 @@ export const couponFormSchema = z
       .string()
       .min(1, { message: messages.required })
       .transform((val) => val.toUpperCase().trim()),
-    couponApplicableOn: z.enum(["allProducts", "specificProducts", "productCategories"]),
-    couponType: z.enum(["all", "quantityBased"]),
-    discountType: z.enum(["percentage", "flat"]),
-    discountValue: z
+
+    couponApplicableOn: z.enum(
+      ["allProducts", "specificProducts", "productCategories"],
+      {
+        errorMap: () => ({ message: "Please select where the coupon applies" }),
+      }
+    ),
+
+    couponType: z.enum(["amountBased", "quantityBased"], {
+      errorMap: () => ({ message: "Please select the coupon type" }),
+    }),
+
+    discountType: z.enum(["percentage", "flat"], {
+      errorMap: () => ({ message: "Please select the discount type" }),
+    }),
+
+    discountValue: z.coerce
       .number()
       .min(0, { message: messages.invalidDiscountValue }),
-    minOrderAmount: z
+
+    minOrderAmount: z.coerce
       .number()
-      .min(0, { message: messages.invalidAmount })
-      .optional()
-      .default(0),
-    maxDiscountAmount: z
-      .number()
-      .min(0, { message: messages.invalidAmount })
-      .optional(),
-    specificProducts: z.array(z.string()).optional().default([]),
-    productCategories: z.array(z.string()).optional().default([]),
-    minQuantity: z
-      .number()
-      .min(1, { message: messages.invalidQuantity })
-      .optional()
+      .min(1, { message: "Minimum order amount must be at least 1" })
       .default(1),
-    maxQuantity: z
+
+    maxDiscountAmount: z.coerce
+      .number({ invalid_type_error: "Enter a valid number" })
+      .default(Infinity),
+
+    specificProducts: z.array(z.string()).default([]),
+    productCategories: z.array(z.string()).default([]),
+
+    minQuantity: z.coerce
       .number()
-      .min(1, { message: messages.invalidQuantity })
+      .min(1, { message: "Minimum quantity must be at least 1" })
+      .default(1),
+    maxQuantity: z.coerce
+      .number({ invalid_type_error: "Enter a valid number" })
+      .nullable()
       .optional(),
-    maxWordCount: z
+
+    maxWordCount: z.coerce
+      .number({ invalid_type_error: "Enter a valid number" })
+      .nullable()
+      .optional(),
+
+    usageLimitPerUser: z.coerce
       .number()
-      .min(1, { message: messages.invalidWordCount })
-      .optional(),
-    usageLimitPerUser: z
+      .min(1, { message: "Usage limit must be at least 1" })
+      .default(Infinity),
+    totalUsageLimit: z.coerce
       .number()
-      .min(1, { message: messages.invalidLimit })
-      .optional(),
-    totalUsageLimit: z
-      .number()
-      .min(1, { message: messages.invalidLimit })
-      .optional(),
-    usedCount: z.number().optional().default(0),
+      .min(1, { message: "Total usage limit must be at least 1" })
+      .default(Infinity),
+
+    usedCount: z.number().default(0),
+
     userUsage: z
       .array(
         z.object({
@@ -55,10 +73,18 @@ export const couponFormSchema = z
         })
       )
       .optional(),
-    status: z.string().optional().default("Active"),
-    expiresAt: z.date().or(z.string()).optional(),
+
+    status: z.string().default("Active"),
+
+    expiresAt: z
+      .union([z.coerce.date(), z.string()])
+      .nullable()
+      .optional()
+      .transform((val) => (val ? new Date(val) : null)),
+
     createdBy: z.string().optional(),
-    updatedBy: z.string().optional(),
+    updatedBy: z.string().nullable().optional(),
+
     createdAt: z.string().optional(),
     updatedAt: z.string().optional(),
     __v: z.number().optional(),
@@ -79,7 +105,8 @@ export const couponFormSchema = z
     ) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "At least one product is required for specific products applicability",
+        message:
+          "At least one product is required for specific products applicability",
         path: ["specificProducts"],
       });
     }
@@ -90,15 +117,17 @@ export const couponFormSchema = z
     ) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "At least one category is required for product categories applicability",
+        message:
+          "At least one category is required for product categories applicability",
         path: ["productCategories"],
       });
     }
 
-    if (data.couponType === "quantityBased" && data.minQuantity < 2) {
+    if (data.couponType === "quantityBased" && data.minQuantity <= 1) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "Minimum quantity must be greater than 1 for quantity-based coupons",
+        message:
+          "Minimum quantity must be at least 1 for quantity-based coupons",
         path: ["minQuantity"],
       });
     }
