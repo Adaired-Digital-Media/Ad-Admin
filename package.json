@@ -37,6 +37,7 @@
     "rc-table": "^7.50.2",
     "react": "^18",
     "react-colorful": "^5.6.1",
+    "react-countdown": "^2.3.6",
     "react-datepicker": "^8.0.0",
     "react-dom": "^18",
     "react-dropzone": "^14.3.5",
@@ -51,6 +52,7 @@
     "rizzui": "^0.8.7",
     "sharp": "^0.33.5",
     "simplebar-react": "^3.3.0",
+    "socket.io-client": "^4.8.1",
     "tailwind-merge": "^2.6.0",
     "zod": "^3.24.1"
   },

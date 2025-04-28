@@ -25,7 +25,7 @@ export const couponsListColumns = [
         className="ps-3.5"
         aria-label="Select all rows"
         checked={table.getIsAllPageRowsSelected()}
-        onChange={() => table.toggleAllPageRowsSelected}
+        onChange={() => table.toggleAllPageRowsSelected()}
       />
     ),
     cell: ({ row }) => (

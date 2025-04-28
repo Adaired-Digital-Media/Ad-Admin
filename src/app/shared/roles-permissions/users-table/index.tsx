@@ -12,8 +12,8 @@ import { useModal } from "@/app/shared/modal-views/use-modal";
 import CreateUser from "../create-user";
 import { CustomTableMeta } from "@/app/shared/dashboard/recent-order";
 import { Session } from "next-auth";
-import { useAtom } from "jotai";
-import { usersWithActionsAtom } from "@/store/atoms/users.atom";
+import { useAtom, useSetAtom } from "jotai";
+import { userActionsAtom, usersAtom } from "@/store/atoms/users.atom";
 import { useEffect } from "react";
 
 export interface UsersTableMeta<T> extends CustomTableMeta<T> {
@@ -29,7 +29,8 @@ export default function UsersTable({
   users: UserTypes[];
   session: Session;
 }) {
-  const [users, setUsers] = useAtom(usersWithActionsAtom);
+  const [users] = useAtom(usersAtom);
+  const setUsers = useSetAtom(userActionsAtom);
   const { openModal } = useModal();
 
   // Initialize table with users from atom or initialUsers
@@ -45,22 +46,29 @@ export default function UsersTable({
       },
       meta: {
         handleDeleteRow: async (row: UserTypes) => {
-          setUsers({
+          await setUsers({
             type: "delete",
-            id: row._id!,
-            accessToken: session.user.accessToken!,
+            payload: {
+              id: row._id,
+            },
+            token: session.user.accessToken!,
           });
           toast.success("User deleted successfully");
           table.resetRowSelection();
         },
         handleMultipleDelete: async (rows: UserTypes[]) => {
-          rows.forEach((row) =>
-            setUsers({
-              type: "delete",
-              id: row._id!,
-              accessToken: session.user.accessToken!,
-            })
+          await Promise.all(
+            rows.map((row) =>
+              setUsers({
+                type: "delete",
+                token: session.user.accessToken!,
+                payload: { id: row._id },
+              })
+            )
           );
+          await fetch("/api/revalidateTags?tags=users", {
+            method: "GET",
+          });
           toast.success("Users deleted successfully");
           table.resetRowSelection();
         },
@@ -75,16 +83,29 @@ export default function UsersTable({
     },
   });
 
-  // Sync table data with users atom or initialUsers when they change
-  useEffect(() => {
-    setData(users.length ? users : initialUsers);
-  }, [users, initialUsers, setData]);
-
+  // Fetch users on mount and when access token changes
   useEffect(() => {
     if (session?.user?.accessToken) {
-      setUsers({ type: "fetch", accessToken: session.user.accessToken });
+      const fetchUsers = async () => {
+        try {
+          const res = await setUsers({
+            type: "fetchAll",
+            token: session.user.accessToken!,
+          });
+          console.log("Fetched users: ", res);
+        } catch (error) {
+          toast.error("Failed to fetch users");
+          console.log("Failed to fetch users : ", error);
+        }
+      };
+      fetchUsers();
     }
-  }, [session?.user?.accessToken, setUsers, users]);
+  }, [session?.user?.accessToken, setUsers]);
+
+  // Sync table data with users atom
+  useEffect(() => {
+    setData(users.length > 0 ? users : initialUsers);
+  }, [users, initialUsers, setData]);
 
   return (
     <div className="mt-14">

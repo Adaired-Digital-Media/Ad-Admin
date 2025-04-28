@@ -10,7 +10,7 @@ export interface OrderHistoryItem {
 }
 
 export interface UserTypes {
-  _id?: string;
+  _id: string;
   image?: string | null;
   name: string;
   userName?: string;

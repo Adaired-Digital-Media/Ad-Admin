@@ -71,7 +71,7 @@ export function StatusSelect({
   );
 }
 
-function renderOptionDisplayValue(value: string) {
+export function renderOptionDisplayValue(value: string) {
   switch (value) {
     case "Scheduled":
       return (
@@ -238,6 +238,44 @@ function renderOptionDisplayValue(value: string) {
       return (
         <div className="flex items-center">
           <PiEmptyBold className="shrink-0 fill-red-dark text-lg" />
+          <Text className="ms-1.5 text-sm font-medium capitalize text-gray-700">
+            {value}
+          </Text>
+        </div>
+      );
+
+    // Tickets methods
+    case "Open":
+      return (
+        <div className="flex items-center">
+          <PiHourglassBold className="shrink-0 fill-black text-base" />
+          <Text className="ms-1.5 text-sm font-medium capitalize text-gray-700">
+            {value}
+          </Text>
+        </div>
+      );
+    case "In Progress":
+      return (
+        <div className="flex items-center">
+          <PiClockBold className="shrink-0 fill-orange text-base" />
+          <Text className="ms-1.5 text-sm font-medium capitalize text-gray-700">
+            {value}
+          </Text>
+        </div>
+      );
+    case "Resolved":
+      return (
+        <div className="flex items-center">
+          <PiCheckCircleBold className="shrink-0 fill-green-dark text-base" />
+          <Text className="ms-1.5 text-sm font-medium capitalize text-gray-700">
+            {value}
+          </Text>
+        </div>
+      );
+    case "Reopened":
+      return (
+        <div className="flex items-center">
+          <PiHourglassBold className="shrink-0 fill-black text-base" />
           <Text className="ms-1.5 text-sm font-medium capitalize text-gray-700">
             {value}
           </Text>

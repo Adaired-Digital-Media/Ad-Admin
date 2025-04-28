@@ -19,6 +19,7 @@ export interface TicketMessage {
   sender: UserRef;
   message: string;
   attachments: TicketAttachment[];
+  readBy?: string[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -45,15 +46,16 @@ export interface TicketMetadata {
 }
 
 export interface Ticket {
-  _id?: string;
+  _id: string;
   ticketId: string;
   subject: string;
   description: string;
   status: TicketStatus;
   priority: TicketPriority;
   createdBy: UserRef;
-  assignedTo: UserRef;
+  assignedTo: string | UserRef;
   customer: UserRef;
+  participants?: string[];
   messages: TicketMessage[];
   metadata: TicketMetadata;
   createdAt: Date;
@@ -66,3 +68,23 @@ export const chatType = {
   Chat: "Chat",
   Email: "Email",
 } as const;
+
+export interface AdminStats {
+  totalTickets: number;
+  openTickets: number;
+  resolvedTickets: number;
+  closedTickets: number;
+  ticketsAssignedToMe: number;
+}
+
+export interface SupportStats {
+  totalAssignedToMe: number;
+  pendingTickets: number;
+  deliveredTickets: number;
+  myEfficiency: number;
+}
+
+export interface StatsResponse {
+  success: boolean;
+  stats: AdminStats | SupportStats;
+}

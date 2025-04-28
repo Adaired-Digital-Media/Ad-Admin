@@ -15,6 +15,7 @@ declare module "next-auth" {
     isVerifiedUser?: boolean;
     role?: Role;
     accessToken?: string;
+    expiresAt?: string; // ISO string for expiration
   }
 
   interface Session {
@@ -53,5 +54,6 @@ declare module "next-auth/jwt" {
     isVerifiedUser?: boolean;
     role?: Role;
     accessToken?: string;
+    expiresAt?: string; // ISO string for expiration
   }
 }

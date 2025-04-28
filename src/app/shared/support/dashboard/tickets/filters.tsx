@@ -1,37 +1,43 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-'use client';
+"use client";
 
-import { Badge, Button, Flex, Input, Text } from 'rizzui';
-import StatusField from '@core/components/controlled-table/status-field';
-import DateFiled from '@core/components/controlled-table/date-field';
+import { Button, Flex, Input } from "rizzui";
+import StatusField from "@core/components/controlled-table/status-field";
+import DateFiled from "@core/components/controlled-table/date-field";
 import {
   PiFunnel,
   PiMagnifyingGlassBold,
   PiTrashDuotone,
-} from 'react-icons/pi';
-import { type Table as ReactTableType } from '@tanstack/react-table';
-import ToggleColumns from '@core/components/table-utils/toggle-columns';
-import { useState } from 'react';
-import { useMedia } from 'react-use';
-import cn from '@core/utils/class-names';
-import { FilterDrawerView } from '@core/components/controlled-table/table-filter';
+} from "react-icons/pi";
+import { type Table as ReactTableType } from "@tanstack/react-table";
+import ToggleColumns from "@core/components/table-utils/toggle-columns";
+import { useEffect, useState } from "react";
+import { useMedia } from "react-use";
+import cn from "@core/utils/class-names";
+import { FilterDrawerView } from "@core/components/controlled-table/table-filter";
+import { renderOptionDisplayValue } from "@/core/components/table-utils/status-select";
 
 const statuses = [
   {
-    value: 'InProgress',
-    label: 'In Progress',
+    value: "Open",
+    label: "Open",
   },
   {
-    value: 'Completed',
-    label: 'Completed',
+    value: "In Progress",
+    label: "In Progress",
   },
   {
-    value: 'Open',
-    label: 'Open',
+    value: "Resolved",
+    label: "Resolved",
   },
   {
-    value: 'Closed',
-    label: 'Closed',
+    value: "Closed",
+    label: "Closed",
+  },
+
+  {
+    value: "Reopened",
+    label: "Reopened",
   },
 ];
 
@@ -42,7 +48,7 @@ export default function Filters<TData extends Record<string, any>>({
 }) {
   const [openDrawer, setOpenDrawer] = useState(false);
   const [showFilters, setShowFilters] = useState(true);
-  const isMediumScreen = useMedia('(max-width: 1860px)', false);
+  const isMediumScreen = useMedia("(max-width: 1860px)", false);
 
   return (
     <Flex align="center" justify="between" className="my-6 px-5">
@@ -52,8 +58,8 @@ export default function Filters<TData extends Record<string, any>>({
           clearable={true}
           inputClassName="h-[36px]"
           placeholder="Search by anything..."
-          onClear={() => table.setGlobalFilter('')}
-          value={table.getState().globalFilter ?? ''}
+          onClear={() => table.setGlobalFilter("")}
+          value={table.getState().globalFilter ?? ""}
           prefix={<PiMagnifyingGlassBold className="size-4" />}
           onChange={(e) => table.setGlobalFilter(e.target.value)}
           className="w-full max-w-64"
@@ -80,14 +86,14 @@ export default function Filters<TData extends Record<string, any>>({
                 },
               }
             : { onClick: () => setShowFilters(() => !showFilters) })}
-          variant={'outline'}
+          variant={"outline"}
           className={cn(
-            'h-[34px] pe-3 ps-2.5',
-            !isMediumScreen && showFilters && 'border-dashed border-gray-700'
+            "h-[34px] pe-3 ps-2.5",
+            !isMediumScreen && showFilters && "border-dashed border-gray-700"
           )}
         >
           <PiFunnel className="me-1.5 h-[18px] w-[18px]" strokeWidth={1.7} />
-          {!isMediumScreen && showFilters ? 'Hide' : 'Filters'}
+          {!isMediumScreen && showFilters ? "Hide" : "Filters"}
         </Button>
 
         <ToggleColumns table={table} />
@@ -104,6 +110,18 @@ function FilterElements<TData extends Record<string, any>>({
   const [state, setState] = useState<[Date | null, Date | null]>([null, null]);
   const isFiltered =
     table.getState().globalFilter || table.getState().columnFilters.length > 0;
+
+  useEffect(() => {
+    const column = table.getColumn("createdAt");
+    if (column) {
+      if (state[0] && state[1]) {
+        // Ensure we pass valid dates
+        column.setFilterValue([state[0], state[1]]);
+      } else {
+        column.setFilterValue(undefined);
+      }
+    }
+  }, [state, table]);
   return (
     <>
       <DateFiled
@@ -117,8 +135,8 @@ function FilterElements<TData extends Record<string, any>>({
         maxDate={new Date()}
         className="w-full 3xl:w-auto"
         inputProps={{
-          label: 'Created Date',
-          labelClassName: '3xl:hidden block',
+          label: "Created Date",
+          labelClassName: "3xl:hidden block",
         }}
       />
       <StatusField
@@ -127,8 +145,8 @@ function FilterElements<TData extends Record<string, any>>({
         options={statuses}
         dropdownClassName="!z-10 h-auto"
         getOptionValue={(option) => option.label}
-        value={table.getColumn('status')?.getFilterValue() ?? ''}
-        onChange={(e) => table.getColumn('status')?.setFilterValue(e)}
+        value={table.getColumn("status")?.getFilterValue() ?? ""}
+        onChange={(e) => table.getColumn("status")?.setFilterValue(e)}
         label="Status"
         labelClassName="3xl:hidden block"
         getOptionDisplayValue={(option: { value: any }) =>
@@ -151,45 +169,4 @@ function FilterElements<TData extends Record<string, any>>({
       )}
     </>
   );
-}
-
-function renderOptionDisplayValue(value: string) {
-  switch (value) {
-    case 'InProgress':
-      return (
-        <div className="flex items-center">
-          <Badge color="warning" renderAsDot />
-          <Text className="ms-2 font-medium capitalize text-orange-dark">
-            {value}
-          </Text>
-        </div>
-      );
-    case 'Completed':
-      return (
-        <div className="flex items-center">
-          <Badge color="success" renderAsDot />
-          <Text className="ms-2 font-medium capitalize text-green-dark">
-            {value}
-          </Text>
-        </div>
-      );
-    case 'Open':
-      return (
-        <div className="flex items-center">
-          <Badge color="danger" renderAsDot />
-          <Text className="ms-2 font-medium capitalize text-red-dark">
-            {value}
-          </Text>
-        </div>
-      );
-    default:
-      return (
-        <div className="flex items-center">
-          <Badge renderAsDot className="bg-gray-400" />
-          <Text className="ms-2 font-medium capitalize text-gray-600">
-            {value}
-          </Text>
-        </div>
-      );
-  }
 }

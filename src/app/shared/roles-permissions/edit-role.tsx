@@ -14,8 +14,8 @@ import {
 import { Form } from "@/core/ui/form";
 import toast from "react-hot-toast";
 import { PermissionModule, PermissionTypes } from "@/data/roles-permissions";
-import { rolesWithActionsAtom } from "@/store/atoms/roles.atom";
-import { useAtom } from "jotai";
+import { roleActionsAtom } from "@/store/atoms/roles.atom";
+import { useSetAtom } from "jotai";
 import { Session } from "next-auth";
 
 interface Permission {
@@ -46,7 +46,7 @@ export default function EditRole({
   session: Session;
 }) {
   const { closeModal } = useModal();
-  const [, setRoles] = useAtom(rolesWithActionsAtom);
+  const setRoles = useSetAtom(roleActionsAtom);
   const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
@@ -66,9 +66,11 @@ export default function EditRole({
       };
       await setRoles({
         type: "update",
-        id: id || "",
-        data: submitData,
-        accessToken,
+        payload: {
+          id,
+          ...submitData,
+        },
+        token: accessToken,
       });
       toast.success("Role updated successfully");
       closeModal();

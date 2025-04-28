@@ -5,22 +5,26 @@ import TableRowActionGroup from "@core/components/table-utils/table-row-action-g
 import AvatarCard from "@core/ui/avatar-card";
 import DateCell from "@core/ui/date-cell";
 import { createColumnHelper } from "@tanstack/react-table";
-import { Badge, Checkbox,Text } from "rizzui";
+import { Badge, Checkbox, Text } from "rizzui";
 import { Ticket } from "@/data/tickets.types";
 import { CustomTableMeta } from "@/app/shared/dashboard/recent-order";
 import { routes } from "@/config/routes";
+import { StatusSelect } from "@/core/components/table-utils/status-select";
+import { UserSelect } from "@/core/components/table-utils/user-select";
+
+const statusOptions = [
+  { label: "Open", value: "Open" },
+  { label: "In Progress", value: "In Progress" },
+  { label: "Resolved", value: "Resolved" },
+  { label: "Closed", value: "Closed" },
+  { label: "Reopened", value: "Reopened" },
+];
 
 const colors = {
   Low: "success",
   Medium: "warning",
   High: "danger",
-};
-
-const statusColors = {
-  "In Progress": "info",
-  Completed: "success",
-  Open: "secondary",
-  Closed: "danger",
+  urgent: "danger",
 };
 
 const columnHelper = createColumnHelper<Ticket>();
@@ -44,15 +48,13 @@ export const ticketsColumns = [
     size: 50,
     header: "Ticket ID",
     cell: ({ row }) => (
-      <Text className="font-medium text-gray-700">
-        {row.original.ticketId}
-      </Text>
+      <Text className="font-medium text-gray-700">{row.original.ticketId}</Text>
     ),
   }),
   columnHelper.accessor("subject", {
-    id: "issue",
+    id: "subject",
     size: 150,
-    header: "Issue",
+    header: "Subject",
     cell: ({ row }) => <p className="line-clamp-1">{row.original.subject}</p>,
   }),
   columnHelper.accessor("customer", {
@@ -63,17 +65,10 @@ export const ticketsColumns = [
       <AvatarCard
         src={row.original.customer.image || ""}
         name={row.original.customer.name}
-      />
-    ),
-  }),
-  columnHelper.accessor("assignedTo", {
-    id: "agent",
-    size: 150,
-    header: "Assigned To",
-    cell: ({ row }) => (
-      <AvatarCard
-        src={row.original.assignedTo.image || ""}
-        name={row.original.assignedTo.name}
+        avatarProps={{
+          name: row.original.customer.name,
+          size: "sm",
+        }}
       />
     ),
   }),
@@ -82,6 +77,20 @@ export const ticketsColumns = [
     size: 150,
     header: "Date Created",
     cell: ({ row }) => <DateCell date={new Date(row.original.createdAt)} />,
+    filterFn: (row, columnId, filterValue: [Date, Date]) => {
+      const date = new Date(row.getValue(columnId));
+      const [start, end] = filterValue;
+      
+      // Add null checks and proper date comparison
+      if (!start || !end) return true;
+      
+      // Compare dates without time component
+      const dateTime = date.setHours(0, 0, 0, 0);
+      const startTime = start.setHours(0, 0, 0, 0);
+      const endTime = end.setHours(0, 0, 0, 0);
+      
+      return dateTime >= startTime && dateTime <= endTime;
+    }
   }),
   columnHelper.accessor("priority", {
     id: "priority",
@@ -101,16 +110,29 @@ export const ticketsColumns = [
     id: "status",
     size: 140,
     header: "Status",
+    cell: ({ row }) => {
+      const ticket = row.original;
+      return (
+        <StatusSelect
+          key={`status-${ticket._id}`}
+          selectItem={ticket.status}
+          options={statusOptions}
+          endpoint={`/tickets/update?id=${ticket._id}`}
+          revalidatePath={[`/api/revalidateTags?tags=tickets`]}
+        />
+      );
+    },
+  }),
+  columnHelper.accessor("assignedTo", {
+    id: "agent",
+    size: 150,
+    header: "Assigned To",
     cell: ({ row }) => (
-      <Badge
-        variant="outline"
-        className="w-[90px] font-medium"
-        color={
-          statusColors[row.original.status as keyof typeof statusColors] as any
-        }
-      >
-        {row.original.status}
-      </Badge>
+      <UserSelect
+        assignedTo={row.original.assignedTo}
+        endpoint={`/tickets/update?id=${row.original._id}`}
+        revalidatePath={[`/api/revalidateTags?tags=tickets`]}
+      />
     ),
   }),
   columnHelper.display({

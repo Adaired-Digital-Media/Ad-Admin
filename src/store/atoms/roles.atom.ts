@@ -1,162 +1,115 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { atom } from "jotai";
-import { PermissionTypes, RoleTypes } from "@/data/roles-permissions";
+import { RoleTypes } from "@/data/roles-permissions";
 import axios from "axios";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URI || "";
 
+// Base atom
 export const rolesAtom = atom<RoleTypes[]>([]);
 
-export const rolesWithActionsAtom = atom(
-  (get) => get(rolesAtom),
+// Helper function for API calls
+const roleApiRequest = async (
+  method: "get" | "post" | "patch" | "delete",
+  endpoint: string,
+  token: string,
+  data?: any
+) => {
+  try {
+    const response = await axios({
+      method,
+      url: `${API_BASE_URL}${endpoint}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      data,
+    });
+    return response.data;
+  } catch (error) {
+    console.error(`Role API ${method.toUpperCase()} error:`, error);
+    throw error;
+  }
+};
+
+export const roleActionsAtom = atom(
+  null,
   async (
     get,
     set,
-    action:
-      | { type: "set"; payload: RoleTypes[] }
-      | { type: "fetch"; accessToken: string }
-      | {
-          type: "create";
-          data: {
-            name: string;
-            description?: string;
-            permissions?: PermissionTypes[];
-            status?: string;
-          };
-          accessToken: string;
-        }
-      | {
-          type: "update";
-          id: string;
-          data: {
-            name?: string;
-            description?: string;
-            permissions?: PermissionTypes[];
-            status?: string;
-          };
-          accessToken: string;
-        }
-      | { type: "delete"; id: string; accessToken: string }
-      | {
-          type: "moduleCreate";
-          data: { name: string; value: string };
-          accessToken: string;
-        }
+    action: {
+      type: "fetchAll" | "create" | "update" | "delete" | "createModule";
+      token: string;
+      payload?: any;
+    }
   ) => {
-    const fetchRoles = async (accessToken: string) => {
-      const response = await fetch(`${API_BASE_URL}/role/find`, {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      });
-      if (!response.ok) throw new Error("Failed to fetch roles");
-      const { data } = await response.json();
-      return data as RoleTypes[];
-    };
-
     switch (action.type) {
-      case "set":
-        set(rolesAtom, action.payload);
-        break;
-      case "fetch":
-        try {
-          const roles = await fetchRoles(action.accessToken);
-          set(rolesAtom, roles);
-        } catch (error) {
-          console.error("Fetch roles failed:", error);
-        }
-        break;
-      case "create":
-        try {
-          const response = await axios.post(
-            `${API_BASE_URL}/role/create`,
-            action.data,
-            {
-              headers: {
-                Authorization: `Bearer ${action.accessToken}`,
-                "Content-Type": "application/json",
-              },
-            }
-          );
-          if (response.status !== 201) throw new Error("Failed to create role");
-          const { data: newRole } = response;
-          set(rolesAtom, [...get(rolesAtom), newRole]);
-          await fetch("/api/revalidateTags?tags=roles", { method: "GET" });
-          const updatedRoles = await fetchRoles(action.accessToken);
-          set(rolesAtom, updatedRoles);
-        } catch (error) {
-          console.error("Create role failed:", error);
-          throw error;
-        }
-        break;
-      case "update":
-        try {
-          const response = await axios.patch(
-            `${API_BASE_URL}/role/update?identifier=${action.id}`,
-            action.data,
-            {
-              headers: { Authorization: `Bearer ${action.accessToken}` },
-            }
-          );
-          if (response.status !== 200) throw new Error("Failed to update role");
-          const updatedRole = response.data;
-          set(
-            rolesAtom,
-            get(rolesAtom).map((role) =>
-              role._id === action.id ? updatedRole : role
-            )
-          );
-          await fetch("/api/revalidateTags?tags=roles", { method: "GET" });
-          const refreshedRoles = await fetchRoles(action.accessToken);
-          set(rolesAtom, refreshedRoles);
-        } catch (error) {
-          console.error("Update role failed:", error);
-          throw error;
-        }
-        break;
-      case "delete":
-        try {
-          await axios.delete(
-            `${API_BASE_URL}/role/delete?identifier=${action.id}`,
-            {
-              headers: { Authorization: `Bearer ${action.accessToken}` },
-            }
-          );
-          set(
-            rolesAtom,
-            get(rolesAtom).filter((role) => role._id !== action.id)
-          );
-          await fetch("/api/revalidateTags?tags=roles", { method: "GET" });
-          const remainingRoles = await fetchRoles(action.accessToken);
-          set(rolesAtom, remainingRoles);
-        } catch (error) {
-          console.error("Delete role failed:", error);
-          throw error;
-        }
-        break;
-      case "moduleCreate":
-        try {
-          const response = await axios.post(
-            `${API_BASE_URL}/permissionModule/create`,
-            action.data,
-            {
-              headers: {
-                Authorization: `Bearer ${action.accessToken}`,
-                "Content-Type": "application/json",
-              },
-            }
-          );
-          if (response.status !== 201)
-            throw new Error(
-              "Failed to create module: " + response.data.message
-            );
-          const { data: newModule } = response;
-          set(rolesAtom, [...get(rolesAtom), newModule]);
-          await fetch("/api/revalidateTags?tags=roles", { method: "GET" });
-          const updatedRoles = await fetchRoles(action.accessToken);
-          set(rolesAtom, updatedRoles);
-        } catch (error) {
-          console.error("Create role failed:", error);
-          throw error;
-        }
-        break;
+      case "fetchAll": {
+        const data = await roleApiRequest("get", "/role/find", action.token);
+        set(rolesAtom, data.data);
+        return data;
+      }
+
+      case "create": {
+        const data = await roleApiRequest(
+          "post",
+          "/role/create",
+          action.token,
+          action.payload
+        );
+        set(rolesAtom, (prev) => [...prev, data.data]);
+        await fetch("/api/revalidateTags?tags=roles", { method: "GET" });
+        return data;
+      }
+
+      case "update": {
+        const { id, ...updateData } = action.payload;
+        const data = await roleApiRequest(
+          "patch",
+          `/role/update?identifier=${id}`,
+          action.token,
+          updateData
+        );
+        set(rolesAtom, (prev) =>
+          prev.map((t) =>
+            t._id === id ? { ...t, ...data.data, _id: t._id } : t
+          )
+        );
+        await fetch("/api/revalidateTags?tags=roles", { method: "GET" });
+        return data;
+      }
+
+      case "delete": {
+        const { id } = action.payload;
+        await roleApiRequest(
+          "delete",
+          `/role/delete?identifier=${id}`,
+          action.token
+        );
+        set(rolesAtom, (prev) => {
+          const updatedRoles = prev.filter((role) => role._id !== id);
+          return updatedRoles;
+        });
+        await fetch("/api/revalidateTags?tags=roles", { method: "GET" });
+        return { success: true };
+      }
+
+      case "createModule": {
+        const data = await roleApiRequest(
+          "post",
+          "/permissionModule/create",
+          action.token,
+          action.payload
+        );
+        const updatedRoles = await roleApiRequest(
+          "get",
+          "/role/find",
+          action.token
+        );
+        set(rolesAtom, updatedRoles.data);
+        await fetch("/api/revalidateTags?tags=roles", { method: "GET" });
+        return data;
+      }
     }
   }
 );

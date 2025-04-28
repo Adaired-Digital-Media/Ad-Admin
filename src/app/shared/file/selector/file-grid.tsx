@@ -7,8 +7,12 @@ import FileCard from "./file-card";
 import { AdvancedRadio, Button, RadioGroup } from "rizzui";
 import { Skeleton } from "@/core/ui/skeleton";
 import { useModal } from "@/app/shared/modal-views/use-modal";
-import { useAtom } from "jotai";
-import { cloudinaryFilesWithActionsAtom } from "@/store/atoms/files.atom";
+import { useAtom, useSetAtom } from "jotai";
+import {
+  cloudinaryActionsAtom,
+  cloudinaryFilesAtom,
+} from "@/store/atoms/files.atom";
+import { useSession } from "next-auth/react";
 
 interface FileGridProps {
   onImageSelect: (image: CloudinaryFile) => void;
@@ -16,7 +20,9 @@ interface FileGridProps {
 
 const FileGrid = ({ onImageSelect }: FileGridProps) => {
   const countPerPage = 12;
-  const [files, setFiles] = useAtom(cloudinaryFilesWithActionsAtom);
+  const { data: session } = useSession();
+  const [files] = useAtom(cloudinaryFilesAtom);
+  const setFiles = useSetAtom(cloudinaryActionsAtom);
   const [isLoadingMore, setLoadingMore] = useState(false);
   const [nextPage, setNextPage] = useState(countPerPage);
   const [selectedImage, setSelectedImage] = useState<
@@ -25,8 +31,15 @@ const FileGrid = ({ onImageSelect }: FileGridProps) => {
   const { closeModal } = useModal();
 
   useEffect(() => {
-    setFiles({ type: "fetch" });
-  }, [setFiles]);
+    setFiles({
+      type: "fetch",
+      payload: {
+        nextPage: 0,
+        countPerPage,
+      },
+      token: session?.user?.accessToken ?? "",
+    });
+  }, [setFiles, session]);
 
   useEffect(() => {
     if (selectedImage) {

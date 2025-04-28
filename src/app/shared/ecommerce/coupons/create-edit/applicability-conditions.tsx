@@ -4,8 +4,8 @@ import cn from "@/core/utils/class-names";
 import FormGroup from "@/app/shared/form-group";
 import dynamic from "next/dynamic";
 import SelectLoader from "@/core/components/loader/select-loader";
-import { useAtom } from "jotai";
-import { productsWithActionsAtom } from "@/store/atoms/products.atom";
+import { useAtom, useSetAtom } from "jotai";
+import { productActionsAtom, productsAtom } from "@/store/atoms/products.atom";
 import { useEffect } from "react";
 import { useSession } from "next-auth/react";
 const Select = dynamic(() => import("rizzui").then((mod) => mod.Select), {
@@ -37,15 +37,16 @@ export default function ApplicabilityConditions({
   className?: string;
 }) {
   const { data: session } = useSession();
-  const [products, setProducts] = useAtom(productsWithActionsAtom);
+  const [products] = useAtom(productsAtom);
+  const setProducts = useSetAtom(productActionsAtom);
 
   useEffect(() => {
     if (products.products.length === 0 && session?.user?.accessToken) {
       const fetchData = async () => {
         if (session?.user?.accessToken) {
           await setProducts({
-            type: "fetch",
-            accessToken: session?.user?.accessToken,
+            type: "fetchProducts",
+            token: session?.user?.accessToken,
           });
         }
       };

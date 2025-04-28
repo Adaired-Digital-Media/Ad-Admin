@@ -1,13 +1,12 @@
 "use client";
-import { useAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { Session } from "next-auth";
 import cn from "@core/utils/class-names";
 import { useEffect, useState } from "react";
 import RoleCard from "@/app/shared/roles-permissions/role-card";
-import { rolesWithActionsAtom } from "@/store/atoms/roles.atom";
+import { roleActionsAtom, rolesAtom } from "@/store/atoms/roles.atom";
 import { generateColorFromName } from "@/core/utils/random-color";
 import { PermissionModule, RoleTypes } from "@/data/roles-permissions";
-
 
 interface RolesGridProps {
   initialRoles: RoleTypes[];
@@ -24,14 +23,16 @@ export default function RolesGrid({
   session,
   gridClassName,
 }: RolesGridProps) {
-  const [roles, setRoles] = useAtom(rolesWithActionsAtom);
+  const [roles] = useAtom(rolesAtom);
+  const setRoles = useSetAtom(roleActionsAtom);
   const [isInitialRender, setIsInitialRender] = useState(true);
 
   useEffect(() => {
     if (session?.user?.accessToken) {
-      setRoles({ type: "fetch", accessToken: session.user.accessToken }).then(
-        () => setIsInitialRender(false)
-      );
+      setRoles({
+        type: "fetchAll",
+        token: session.user.accessToken,
+      }).then(() => setIsInitialRender(false));
     }
   }, [session, setRoles]);
 

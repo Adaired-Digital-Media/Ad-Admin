@@ -1,23 +1,25 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-export interface UserType {
+
+import { RoleTypes } from "../../data/roles-permissions";
+export interface UserTypes {
   _id?: string;
-  image: string | null;
+  image?: string | null;
   name: string;
-  userName: string;
+  userName?: string;
   email: string;
-  password?: string;
-  contact?: string;
+  password?: string | null;
+  contact?: string | null;
   isAdmin?: boolean;
-  role: string | null;
-  cart?: string;
-  refreshToken?: string;
+  role: string | RoleTypes;
+  googleId?: string;
   orderHistory?: OrderHistoryItem[];
+  cart?: string;
   wishlist?: WishlistItem[];
+  status?: string;
   isVerifiedUser?: boolean;
-  status?: "Active" | "Inactive";
-  createdAt?: string;
-  updatedAt?: string;
-  __v?: number;
+  refreshToken?: string | null;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface OrderHistoryItem {
@@ -82,7 +84,7 @@ export type ProductType = {
 
 export interface OrderType {
   _id?: string;
-  userId?: UserType;
+  userId?: UserTypes;
   orderNumber?: string;
   products: ProductType[];
   totalQuantity: number;
@@ -94,12 +96,7 @@ export interface OrderType {
   invoiceId: string;
   zohoInvoiceId: string;
   paymentUrl: string;
-  status:
-    | "Pending"
-    | "Processing"
-    | "Confirmed"
-    | "Cancelled"
-    | "Completed"
+  status: "Pending" | "Processing" | "Confirmed" | "Cancelled" | "Completed";
   paymentStatus: "Unpaid" | "Paid" | "Refunded" | "Failed";
   paymentMethod: "Razorpay" | "Stripe";
   paymentDate: Date;
@@ -123,7 +120,7 @@ interface newOrders {
   orders: number;
 }
 interface totalSales {
-  day: string; 
+  day: string;
   sales: number;
 }
 interface totalSales {
@@ -146,11 +143,11 @@ export interface OrderStats {
   };
 }
 
-export interface SalesReport  {
+export interface SalesReport {
   month: string;
   sales: number;
   revenue: number;
-};
+}
 
 export interface SalesReportProps {
   className?: string;
@@ -158,5 +155,5 @@ export interface SalesReportProps {
   selectedYear: number;
   setSelectedYear: (year: number) => void;
   accessToken: string;
-  setSalesReport: (action: { type: "fetch"; accessToken: string; year?: number }) => void;
+  setSalesReport: any;
 }

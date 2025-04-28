@@ -2,6 +2,7 @@ import ReactQuill, { type ReactQuillProps } from "react-quill";
 import { FieldError } from "rizzui";
 import cn from "../utils/class-names";
 import "react-quill/dist/quill.snow.css";
+import { useMemo } from "react";
 
 interface QuillEditorProps extends ReactQuillProps {
   error?: string;
@@ -22,24 +23,39 @@ export default function QuillEditor({
   toolbarPosition = "top",
   ...props
 }: QuillEditorProps) {
-  const quillModules = {
-    toolbar: [
-      // [{ header: [1, 2, 3, 4, 5, 6, false] }],
+  const quillModules = useMemo(
+    () => ({
+      toolbar: [
+        [{ font: [] }],
+        [{ header: [1, 2, 3, 4, 5, 6, false] }],
+        ["bold", "italic", "underline", "strike"],
+        [{ color: [] }, { background: [] }],
+        [{ script: "sub" }, { script: "super" }], 
+        ["blockquote", "code-block"],
+        [{ list: "ordered" }, { list: "bullet" }],
 
-      ["bold", "italic", "underline", "strike"], // toggled buttons
-      ["blockquote", "code-block"],
+        [{ indent: "-1" }, { indent: "+1" }, { align: [] }],
 
-      [{ list: "ordered" }, { list: "bullet" }],
-      [{ script: "sub" }, { script: "super" }], // superscript/subscript
-      [{ indent: "-1" }, { indent: "+1" }], // outdent/indent
+        [{ direction: "rtl" }],
+        ["link", "image", "video"],
 
-      [{ color: [] }, { background: [] }], // dropdown with defaults from theme
-      [{ font: [] }],
-      [{ align: [] }],
+        ["clean"],
+      ],
 
-      ["clean"],
-    ],
-  };
+      history: {
+        delay: 500,
+        maxStack: 100,
+        userOnly: true,
+      },
+      clipboard: {
+        // Toggle to add extra line breaks when pasting HTML
+        matchVisual: false,
+      },
+    }),
+    []
+  );
+
+
 
   // const quillFormats = [
   //   'header',
@@ -61,7 +77,9 @@ export default function QuillEditor({
 
   return (
     <div className={cn(className)}>
-      {label && <label className={cn("mb-1.5 block", labelClassName)}>{label}</label>}
+      {label && (
+        <label className={cn("mb-1.5 block", labelClassName)}>{label}</label>
+      )}
       <ReactQuill
         modules={quillModules}
         // formats={quillFormats}
@@ -73,11 +91,7 @@ export default function QuillEditor({
         {...props}
       />
       {error && (
-        <FieldError
-          size="md"
-          error={error}
-          className={errorClassName}
-        />
+        <FieldError size="md" error={error} className={errorClassName} />
       )}
     </div>
   );

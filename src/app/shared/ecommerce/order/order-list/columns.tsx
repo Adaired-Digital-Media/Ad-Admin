@@ -1,6 +1,6 @@
 "use client";
 import { routes } from "@/config/routes";
-import { OrderType, UserType } from "@/core/types";
+import { OrderType, UserTypes } from "@/core/types";
 import TableRowActionGroup from "@core/components/table-utils/table-row-action-group";
 import TableAvatar from "@core/ui/avatar-card";
 import DateCell from "@core/ui/date-cell";
@@ -48,7 +48,7 @@ export const ordersColumns = (expanded: boolean = true) => {
         />
       ),
       filterFn: (row, id, filterValue: string) => {
-        const user = row.getValue<UserType>(id);
+        const user = row.getValue<UserTypes>(id);
         return user?.name.toLowerCase().includes(filterValue.toLowerCase());
       },
     }),

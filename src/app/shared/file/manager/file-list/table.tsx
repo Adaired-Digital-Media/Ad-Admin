@@ -1,10 +1,7 @@
 "use client";
 
 import { Box } from "rizzui";
-import {
-  CloudinaryFile,
-  deleteFile,
-} from "@/data/cloudinary-files";
+import { CloudinaryFile } from "@/data/cloudinary-files";
 import Table from "@core/components/table";
 import { useTanStackTable } from "@core/components/table/custom/use-TanStack-Table";
 import TableFooter from "@core/components/table/footer";
@@ -15,8 +12,14 @@ import { useModal } from "@/app/shared/modal-views/use-modal";
 
 import toast from "react-hot-toast";
 import { EditFileModalView } from "../edit-file-modal-view";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { CustomTableMeta } from "@/app/shared/dashboard/recent-order";
+import { useAtom, useSetAtom } from "jotai";
+import {
+  cloudinaryActionsAtom,
+  cloudinaryFilesAtom,
+} from "@/store/atoms/files.atom";
+import { useSession } from "next-auth/react";
 
 // Define the meta type
 export interface CloudinaryFileMeta extends CustomTableMeta<CloudinaryFile> {
@@ -28,16 +31,18 @@ export interface CloudinaryFileMeta extends CustomTableMeta<CloudinaryFile> {
 
 export default function FileListTable({
   className,
-  files,
+  initialFiles,
 }: {
   className?: string;
-  files: CloudinaryFile[];
+  initialFiles: CloudinaryFile[];
 }) {
   const { openModal } = useModal();
-  const [updatedFiles, setUpdatedFiles] = useState(files);
+  const { data: session } = useSession();
+  const [files] = useAtom(cloudinaryFilesAtom);
+  const setFiles = useSetAtom(cloudinaryActionsAtom);
 
   const { table, setData } = useTanStackTable<CloudinaryFile>({
-    tableData: updatedFiles,
+    tableData: files.length ? files : initialFiles,
     columnConfig: allFilesColumns,
     options: {
       initialState: {
@@ -48,15 +53,31 @@ export default function FileListTable({
       },
       meta: {
         handleDeleteRow: async (row: { public_id: string }) => {
-          setData((prev) => prev.filter((r) => r.public_id !== row.public_id));
-          const response = await deleteFile({ public_id: row.public_id });
+          const response = await setFiles({
+            type: "delete",
+            token: session?.user?.accessToken ?? "",
+            payload: { public_id: row.public_id },
+          });
           toast.success(response);
+          await fetch("/api/revalidateTags?tags=cloudinaryFiles", {
+            method: "GET",
+          });
           table.resetRowSelection();
         },
-        handleMultipleDelete: (rows: CloudinaryFile[]) => {
-          setData((prev) => prev.filter((r) => !rows.includes(r)));
-          rows.forEach((r) => deleteFile({ public_id: r.public_id }));
+        handleMultipleDelete: async (rows: CloudinaryFile[]) => {
+          await Promise.all(
+            rows.map((row) =>
+              setFiles({
+                type: "delete",
+                token: session?.user?.accessToken ?? "",
+                payload: { public_id: row.public_id },
+              })
+            )
+          );
           toast.success("Files deleted successfully!");
+          await fetch("/api/revalidateTags?tags=cloudinaryFiles", {
+            method: "GET",
+          });
           table.resetRowSelection();
         },
         handleCopyLink: (row: { secure_url: string }) => {
@@ -77,29 +98,29 @@ export default function FileListTable({
     },
   });
 
-  // Sync table data with updatedFiles whenever it changes
+  // Fetch files on mount and when access token changes
   useEffect(() => {
-    setData(updatedFiles);
-  }, [updatedFiles, setData]);
+    if (session?.user?.accessToken) {
+      const fetchTickets = async () => {
+        try {
+          await setFiles({
+            type: "fetch",
+            token: session.user.accessToken!,
+            payload: { fileType: "all" },
+          });
+        } catch (error) {
+          toast.error("Failed to fetch tickets");
+          console.log("Failed to fetch tickets : ", error);
+        }
+      };
+      fetchTickets();
+    }
+  }, [session?.user?.accessToken, setFiles]);
 
-  // Listen for filesUpdated event with new data
+  // Sync table data with initialFiles whenever it changes
   useEffect(() => {
-    const handleFilesUpdated = (event: CustomEvent) => {
-      if (event.detail?.updatedFiles) {
-        setUpdatedFiles(event.detail.updatedFiles);
-      }
-    };
-
-    window.addEventListener(
-      "filesUpdated",
-      handleFilesUpdated as EventListener
-    );
-    return () =>
-      window.removeEventListener(
-        "filesUpdated",
-        handleFilesUpdated as EventListener
-      );
-  }, []);
+    setData(files.length > 0 ? files : initialFiles);
+  }, [files, initialFiles, setData]);
 
   return (
     <Box className={className}>

@@ -1,6 +1,8 @@
 import AuthWrapper from "@/app/shared/auth-layout/auth-wrapper";
 import SignInForm from "./sign-in-form";
 import { metaObject } from "@/config/site.config";
+import { Suspense } from "react";
+
 
 
 export const metadata = {
@@ -19,7 +21,9 @@ export default async function SignInPage() {
       isSignIn
       isSocialLoginActive={true}
     >
-      <SignInForm />
+<Suspense fallback={<div>Loading...</div>}>
+        <SignInForm />
+      </Suspense>
     </AuthWrapper>
   );
 }

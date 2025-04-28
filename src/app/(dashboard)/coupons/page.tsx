@@ -7,6 +7,7 @@ import { metaObject } from "@/config/site.config";
 import CouponsTable from "@/app/shared/ecommerce/coupons/coupon-list/table";
 import { auth } from "@/auth";
 
+
 // Centralized API base URL
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URI;
 
@@ -92,7 +93,7 @@ export default async function CouponsPage() {
         </div>
       </PageHeader>
 
-      <CouponsTable pageSize={10} coupons={coupons} couponStats={couponStats} />
+      <CouponsTable pageSize={10} initialCoupons={coupons} couponStats={couponStats} session={session}/>
     </>
   );
 }
