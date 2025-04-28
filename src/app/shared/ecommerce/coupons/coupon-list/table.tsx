@@ -14,9 +14,13 @@ import cn from "@core/utils/class-names";
 import { useApiCall } from "@/core/utils/api-config";
 import toast from "react-hot-toast";
 import { CustomTableMeta } from "@/app/shared/dashboard/recent-order";
+import { useAtom } from "jotai";
+import { couponActionsAtom, couponsAtom } from "@/store/atoms/coupons.atom";
+import { Session } from "next-auth";
+import { useEffect } from "react";
 
 export default function CouponsTable({
-  coupons = [],
+  initialCoupons = [],
   // couponStats = [],
   pageSize = 5,
   // hideFilters = false,
@@ -27,6 +31,7 @@ export default function CouponsTable({
     rowClassName: "last:border-0",
   },
   paginationClassName,
+  session,
 }: {
   pageSize?: number;
   // hideFilters?: boolean;
@@ -34,12 +39,17 @@ export default function CouponsTable({
   hideFooter?: boolean;
   classNames?: TableClassNameProps;
   paginationClassName?: string;
-  coupons?: CouponTypes[];
+  initialCoupons?: CouponTypes[];
   couponStats?: any[];
+  session: Session;
 }) {
   const { apiCall } = useApiCall();
+
+  const [coupons] = useAtom(couponsAtom);
+  const [, dispatch] = useAtom(couponActionsAtom);
+
   const { table, setData } = useTanStackTable<CouponTypes>({
-    tableData: coupons,
+    tableData: coupons.length ? coupons : initialCoupons,
     columnConfig: couponsListColumns,
     options: {
       initialState: {
@@ -65,34 +75,48 @@ export default function CouponsTable({
           });
         },
         handleDeleteRow: async (row: { _id: string }) => {
-          setData((prev) => prev.filter((r) => r._id !== row._id));
-          const _response = await apiCall<{ message: string }>({
-            url: `/coupons/delete?id=${row._id}`,
-            method: "DELETE",
+          const response = await dispatch({
+            type: "delete",
+            token: session.user.accessToken!,
+            payload: { id: row._id },
           });
-          if (_response.status === 200) {
-            toast.success(_response.data.message);
-            await fetch("/api/revalidateTags?tags=coupons", {
-              method: "GET",
-            });
+          console.log("Response : ", response);
+          if (response.success) {
+            setData((prev) => prev.filter((r) => r._id !== row._id));
+            toast.success(response.message);
           }
+          table.resetRowSelection();
+          await fetch("/api/revalidateTags?tags=coupons", {
+            method: "GET",
+          });
         },
       } as CustomTableMeta<CouponTypes>,
       enableColumnResizing: false,
     },
   });
 
-  // const selectedData = table
-  //   .getSelectedRowModel()
-  //   .rows.map((row) => row.original);
+  // Fetch coupons on mount and when access token changes
+  useEffect(() => {
+    if (session?.user?.accessToken) {
+      const fetchCoupons = async () => {
+        try {
+          await dispatch({
+            type: "fetchAll",
+            token: session.user.accessToken!,
+          });
+        } catch (error) {
+          toast.error("Failed to fetch coupons");
+          console.log("Failed to fetch coupons : ", error);
+        }
+      };
+      fetchCoupons();
+    }
+  }, [session?.user?.accessToken, dispatch]);
 
-  // function handleExportData() {
-  //   exportToCSV(
-  //     selectedData,
-  //     "ID,Name,Category,Sku,Price,Stock,Status,Rating",
-  //     `product_data_${selectedData.length}`
-  //   );
-  // }
+  // Sync table data with tickets atom
+  useEffect(() => {
+    setData(coupons.length > 0 ? coupons : initialCoupons);
+  }, [coupons, initialCoupons, setData]);
 
   return (
     <>

@@ -38,7 +38,7 @@ export async function generateMetadata({
 export default async function SupportInboxPage({ searchParams }: Props) {
   const session = await auth();
 
-  if (!session) return;
+  if (!session || !searchParams.tkt) return;
 
   return (
     <>

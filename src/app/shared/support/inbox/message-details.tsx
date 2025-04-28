@@ -1,10 +1,19 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtom } from "jotai";
 import { z } from "zod";
-import { useState } from "react";
-import { Title, Text, Badge, Button, Avatar, Empty, Select } from "rizzui";
+import { useEffect, useRef, useState } from "react";
+import {
+  Title,
+  Text,
+  Badge,
+  Button,
+  Avatar,
+  Empty,
+  Select,
+  Switch,
+  SelectOption,
+} from "rizzui";
 import cn from "@core/utils/class-names";
 import { SubmitHandler, Controller } from "react-hook-form";
 import { Form } from "@core/ui/form";
@@ -13,24 +22,13 @@ import SimpleBar from "@core/ui/simplebar";
 import { useElementSize } from "@core/hooks/use-element-size";
 import { useMedia } from "@core/hooks/use-media";
 import dynamic from "next/dynamic";
-import {
-  selectedTicketAtom,
-  ticketsWithActionsAtom,
-} from "@/store/atoms/tickets.atom";
-import {
-  TicketStatus,
-  //  TicketPriority
-} from "@/data/tickets.types";
+import { ticketActionsAtom } from "@/store/atoms/tickets.atom";
+import { Ticket, TicketPriority, TicketStatus } from "@/data/tickets.types";
 import { PiCaretDownBold } from "react-icons/pi";
-import ActionDropdown from "./action-dropdown";
-// import Upload from "@/core/ui/upload";
-import {
-  //  FileUpload,
-  FileInput,
-  // fileType
-} from "../../file-upload";
-import { LuReply } from "react-icons/lu";
+import { FileInput } from "../../file-upload";
 import { Session } from "next-auth";
+import toast from "react-hot-toast";
+import { LuReply } from "react-icons/lu";
 
 const QuillEditor = dynamic(() => import("@core/ui/quill-editor"), {
   ssr: false,
@@ -44,65 +42,23 @@ type FormValues = {
   message: string;
 };
 
+const defaultValues = {
+  message: "",
+};
+
 const priorityOptions = [
-  {
-    value: "Low",
-    label: "Low",
-  },
-  {
-    value: "Medium",
-    label: "Medium",
-  },
-  {
-    value: "High",
-    label: "High",
-  },
+  { value: "Low", label: "Low" },
+  { value: "Medium", label: "Medium" },
+  { value: "High", label: "High" },
+  { value: "Urgent", label: "Urgent" },
 ];
 
-const agentsOptions = [
-  {
-    value: 1,
-    label: "Isabel Larson",
-    avatar:
-      "https://isomorphic-furyroad.s3.amazonaws.com/public/avatars-blur/avatar-10.webp",
-  },
-  {
-    value: 2,
-    label: "Elias Pouros",
-    avatar:
-      "https://isomorphic-furyroad.s3.amazonaws.com/public/avatars-blur/avatar-11.webp",
-  },
-  {
-    value: 3,
-    label: "Rose Powlowski-Paucek",
-    avatar:
-      "https://isomorphic-furyroad.s3.amazonaws.com/public/avatars-blur/avatar-13.webp",
-  },
-  {
-    value: 4,
-    label: "Milton Leannon",
-    avatar:
-      "https://isomorphic-furyroad.s3.amazonaws.com/public/avatars-blur/avatar-04.webp",
-  },
-];
-
-const contactStatuses = [
-  {
-    value: "New",
-    label: "New",
-  },
-  {
-    value: "Waiting on contact",
-    label: "Waiting on contact",
-  },
-  {
-    value: "Waiting on us",
-    label: "Waiting on us",
-  },
-  {
-    value: "Closed",
-    label: "Closed",
-  },
+const statusOptions = [
+  { value: "Open", label: "Open" },
+  { value: "In Progress", label: "In Progress" },
+  { value: "Resolved", label: "Resolved" },
+  { value: "Closed", label: "Closed" },
+  { value: "Reopened", label: "Reopened" },
 ];
 
 export const supportTypes = {
@@ -122,114 +78,119 @@ const supportOptionTypes = [
 ];
 
 export default function MessageDetails({
+  selectedTicket,
   className,
   session,
 }: {
+  selectedTicket: Ticket;
   className?: string;
   session: Session;
 }) {
-  const selectedTicket = useAtomValue(selectedTicketAtom);
-  const setTickets = useSetAtom(ticketsWithActionsAtom);
+  const [, dispatch] = useAtom(ticketActionsAtom);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
-  console.log(files);
   const [ref, { width }] = useElementSize();
   const isWide = useMedia("(min-width: 1280px) and (max-width: 1440px)", false);
+  const [priority, setPriority] = useState(selectedTicket.priority || "Medium");
+  const [status, setStatus] = useState(selectedTicket.status);
+  const [includeAttachments, setIncludeAttachments] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const [agent, setAgent] = useState();
-  const [priority, setPriority] = useState("");
-  const [contactStatus, setContactStatus] = useState(contactStatuses[0].value);
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
-  function formWidth() {
-    if (isWide) return width - 64;
-    return width - 44;
-  }
+  useEffect(() => {
+    scrollToBottom();
+  }, [selectedTicket]);
+
+  const formWidth = () => (isWide ? width - 64 : width - 44);
+  // Function to dispatch ticket update
+  const updateTicket = async (payload: Partial<Ticket>) => {
+    if (!selectedTicket || !session?.user?.accessToken) return;
+
+    try {
+      await dispatch({
+        type: "update",
+        token: session.user.accessToken,
+        payload: {
+          id: selectedTicket._id,
+          ...payload,
+        },
+      });
+      toast.success("Ticket updated successfully");
+    } catch (error) {
+      toast.error("Failed to update ticket");
+      console.error("Error:", error);
+    }
+  };
+
+  // Handle status change
+  const handleStatusChange = (newStatus: SelectOption) => {
+    setStatus(newStatus.value as TicketStatus);
+    console.log(newStatus);
+    updateTicket({ status: newStatus.value as TicketStatus });
+  };
+
+  // Handle priority change
+  const handlePriorityChange = (newPriority: SelectOption) => {
+    setPriority(newPriority.value as TicketPriority);
+    updateTicket({ priority: newPriority.value as TicketPriority });
+  };
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     if (!selectedTicket || !session?.user?.accessToken) return;
 
     setIsSubmitting(true);
     try {
-      await setTickets({
+      await dispatch({
         type: "update",
-        id: selectedTicket._id!,
-        data: {
+        token: session.user.accessToken,
+        payload: {
+          id: selectedTicket._id,
           message: data.message,
           attachments: files,
+          priority,
+          status,
         },
-        accessToken: session?.user?.accessToken,
       });
-
+      toast.success("Reply sent successfully");
       setFiles([]);
+      setIncludeAttachments(false);
+      scrollToBottom();
     } catch (error) {
-      console.error("Failed to send reply:", error);
+      toast.error("Failed to send reply");
+      console.error("Error:", error);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Callback to update files state when selected in FileInput
   const handleFilesSelected = (selectedFiles: File[]) => {
     setFiles(selectedFiles);
   };
 
-  // if (isLoading) {
-  //   return (
-  //     <div
-  //       className={cn(
-  //         "!grid h-full min-h-[128px] flex-grow place-content-center items-center justify-center",
-  //         className
-  //       )}
-  //     >
-  //       <Loader variant="spinner" size="xl" />
-  //     </div>
-  //   );
-  // }
-
   const getBadgeColor = (status: TicketStatus) => {
     switch (status) {
-      case TicketStatus.OPEN:
-        return "primary";
-      case TicketStatus.IN_PROGRESS:
+      case "Open":
+        return "success";
+      case "In Progress":
         return "warning";
-      case TicketStatus.RESOLVED:
+      case "Resolved":
         return "success";
-      case TicketStatus.CLOSED:
-        return "success";
-      case TicketStatus.REOPENED:
+      case "Closed":
         return "danger";
+      case "Reopened":
+        return "secondary";
       default:
         return "primary";
     }
   };
 
-  // const getPriorityColor = (priority: TicketPriority) => {
-  //   switch (priority) {
-  //     case TicketPriority.LOW:
-  //       return "success";
-  //     case TicketPriority.MEDIUM:
-  //       return "warning";
-  //     case TicketPriority.HIGH:
-  //       return "danger";
-  //     case TicketPriority.URGENT:
-  //       return "danger";
-  //     default:
-  //       return "primary";
-  //   }
-  // };
-
-  if (!selectedTicket || !session?.user?.accessToken) {
+  if (!selectedTicket) {
     return (
-      <div
-        className={cn(
-          "!grid h-full min-h-[128px] flex-grow place-content-center items-center justify-center",
-          className
-        )}
-      >
-        <Empty
-          text="No ticket selected"
-          textClassName="mt-4 text-base text-gray-500"
-        />
+      <div className={cn("flex h-full items-center justify-center", className)}>
+        <Empty text="No ticket selected" />
       </div>
     );
   }
@@ -237,66 +198,49 @@ export default function MessageDetails({
   return (
     <div
       className={cn(
-        "relative pt-6 lg:rounded-lg lg:border lg:border-muted lg:px-4 lg:py-7 xl:px-5 xl:py-5 2xl:pb-7 2xl:pt-6",
+        "relative pt-6 rounded-lg border border-muted px-4 py-7 xl:px-5 xl:py-5 2xl:pb-7 2xl:pt-6",
         className
       )}
     >
       <div>
-        <header className="flex flex-col justify-between gap-4 border-b border-muted pb-5 3xl:flex-row 3xl:items-center">
-          <div className="flex flex-col items-start justify-between gap-3 xs:flex-row xs:items-center xs:gap-6 lg:justify-normal">
+        <header className="flex justify-between gap-4 border-b border-muted pb-5 3xl:flex-row 3xl:items-center">
+          <div className="flex flex-col items-start gap-3 xs:flex-row xs:items-center xs:gap-6 lg:justify-normal">
             <Title as="h4" className="font-semibold">
-              {selectedTicket?.subject}
+              {selectedTicket.subject}
             </Title>
-
             <Badge
               variant="outline"
-              color={getBadgeColor(selectedTicket?.status)}
+              color={getBadgeColor(selectedTicket.status)}
               size="sm"
             >
-              {selectedTicket?.status}
+              {selectedTicket.status}
             </Badge>
           </div>
 
           <div className="flex flex-wrap items-center gap-2.5 sm:justify-end">
             <Select
-              value={agent}
               variant="text"
-              options={agentsOptions}
-              onChange={setAgent}
-              placeholder="Select Agent"
-              placement="bottom-end"
-              displayValue={(value: AvatarOptionTypes) =>
-                renderAvatarOptionDisplayValue(value)
-              }
-              getOptionDisplayValue={(option) =>
-                renderAvatarOptionDisplayValue(option)
-              }
-              dropdownClassName="!w-60 p-2 gap-1 grid !z-0"
-              suffix={<PiCaretDownBold className="h-3 w-3" />}
-              className={"w-auto"}
-            />
-            <Select
-              variant="text"
-              value={contactStatus}
-              options={contactStatuses}
-              onChange={setContactStatus}
+              value={status}
+              options={statusOptions}
+              onChange={handleStatusChange}
               placeholder="Select Status"
-              placement="bottom-end"
-              selectClassName="text-xs sm:text-sm"
-              optionClassName="text-xs sm:text-sm"
-              dropdownClassName="!w-48 p-2 gap-1 grid !z-0"
+              dropdownClassName="!w-48 p-2 gap-1 grid"
+              getOptionDisplayValue={(option) =>
+                renderStatusOptionDisplayValue(option.value as string)
+              }
+              displayValue={(selected: string) =>
+                renderStatusOptionDisplayValue(selected)
+              }
               suffix={<PiCaretDownBold className="h-3 w-3" />}
               className={"w-auto"}
             />
             <Select
               variant="text"
               value={priority}
-              onChange={setPriority}
+              onChange={handlePriorityChange}
               options={priorityOptions}
               placeholder="Set Priority"
-              placement="bottom-end"
-              dropdownClassName="!w-32 p-2 gap-1 grid !z-0"
-              getOptionValue={(option) => option.value}
+              dropdownClassName="!w-32 p-2 gap-1 grid"
               getOptionDisplayValue={(option) =>
                 renderPriorityOptionDisplayValue(option.value as string)
               }
@@ -306,25 +250,23 @@ export default function MessageDetails({
               suffix={<PiCaretDownBold className="h-3 w-3" />}
               className={"w-auto"}
             />
-            <ActionDropdown className="ml-auto sm:ml-[unset]" />
           </div>
         </header>
 
         <div className="[&_.simplebar-content]:grid [&_.simplebar-content]:gap-8 [&_.simplebar-content]:py-5">
           <SimpleBar className="@3xl:max-h-[calc(100dvh-34rem)] @4xl:max-h-[calc(100dvh-32rem)] @7xl:max-h-[calc(100dvh-31rem)]">
-            {/* Original ticket message */}
             <MessageBody
               message={{
-                ...selectedTicket?.messages[0],
-                sender: selectedTicket.createdBy!,
-                message: selectedTicket.description!,
+                ...selectedTicket.messages[0],
+                sender: selectedTicket.createdBy,
+                message: selectedTicket.description,
               }}
             />
 
-            {/* Replies */}
             {selectedTicket.messages.slice(1).map((message) => (
-              <MessageBody key={message?._id.toString()} message={message} />
+              <MessageBody key={message._id.toString()} message={message} />
             ))}
+            <div ref={messagesEndRef} />
           </SimpleBar>
         </div>
 
@@ -333,136 +275,56 @@ export default function MessageDetails({
           className="grid grid-cols-[32px_1fr] items-start gap-3 rounded-b-lg bg-white @3xl:pt-4 dark:bg-transparent lg:gap-4 lg:pl-0 dark:lg:pt-0 xl:grid-cols-[48px_1fr]"
         >
           <Avatar
-            name={session?.user?.name || "You"}
-            src={session?.user?.image || ""}
+            name={session.user.name || "You"}
+            src={session.user.image || ""}
             className="!h-8 !w-8 bg-[#70C5E0] font-medium text-white xl:!h-12 xl:!w-12"
           />
           <div
             className="relative rounded-lg border border-muted bg-gray-50 p-4 2xl:p-5"
-            style={{
-              maxWidth: formWidth(),
-            }}
+            style={{ maxWidth: formWidth() }}
           >
-            <Form<FormValues> onSubmit={onSubmit} validationSchema={FormSchema}>
-              {({ control, formState: { errors } }) => (
-                <>
-                  <div className="relative mb-2.5 flex items-center justify-between">
-                    <Select
-                      size="sm"
-                      variant="outline"
-                      value={supportTypes.Chat}
-                      options={supportOptionTypes}
-                      // onChange={}
-                      getOptionValue={(option) => option.value}
-                      displayValue={(selected: string) => selected}
-                      suffix={<PiCaretDownBold className="ml-1 h-3 w-3" />}
-                      placement="bottom-start"
-                      dropdownClassName="p-2 gap-1 grid !w-20 !z-0"
-                      selectClassName="bg-gray-0 dark:bg-gray-50"
-                      className={"w-auto"}
-                    />
-                    <Button
-                      type="submit"
-                      className="dark:bg-gray-200 dark:text-white"
-                      isLoading={isSubmitting}
-                    >
-                      Send Reply
-                    </Button>
-                  </div>
-                  {supportTypes.Email && (
-                    <div className="mb-2.5 flex items-center gap-2">
-                      <LuReply />
-                      <span className="rounded border border-muted px-1.5 py-1 lowercase">
-                        User@mail.com
-                      </span>
-                    </div>
-                  )}
-                  <Controller
-                    control={control}
-                    name="message"
-                    render={({ field: { onChange, value } }) => (
-                      <QuillEditor
-                        value={value}
-                        onChange={onChange}
-                        className="rounded-md bg-gray-0 dark:bg-gray-50 [&>.ql-container_.ql-editor]:min-h-[100px]"
-                        placeholder="Type your reply here..."
-                      />
-                    )}
-                  />
-                  {errors.message && (
-                    <Text className="text-red-500">Message is required</Text>
-                  )}
-                  <div className="mt-2">
-                    <Text as="strong">Attachments :</Text>
-                    <FileInput
-                      className="mt-1 w-1/2"
-                      containerClassName="min-h-28"
-                      wrapperClassName=""
-                      label={""}
-                      showBtns={false}
-                      onFilesSelected={handleFilesSelected}
-                      iconClassName="!h-14 !w-14"
-                    />
-                  </div>
-                </>
-              )}
-            </Form>
-          </div>
-        </div>
-
-        {/* <div
-          ref={ref}
-          className="grid grid-cols-[32px_1fr] items-start gap-3 rounded-b-lg bg-white @3xl:pt-4 dark:bg-transparent lg:gap-4 lg:pl-0 dark:lg:pt-0 xl:grid-cols-[48px_1fr]"
-        >
-          <figure className="dark:mt-4">
-            <Avatar
-              name="John Doe"
-              initials={initials}
-              src="https://isomorphic-furyroad.s3.amazonaws.com/public/avatars-blur/avatar-14.png"
-              className="!h-8 !w-8 bg-[#70C5E0] font-medium text-white xl:!h-12 xl:!w-12"
-            />
-          </figure>
-          <div
-            className="relative rounded-lg border border-muted bg-gray-50 p-4 2xl:p-5"
-            style={{
-              maxWidth: formWidth(),
-            }}
-          >
-            <Form<FormValues> onSubmit={onSubmit} validationSchema={FormSchema}>
-              {({ control, watch, formState: { errors } }) => {
+            <Form<FormValues>
+              onSubmit={onSubmit}
+              validationSchema={FormSchema}
+              useFormProps={{
+                defaultValues: defaultValues,
+              }}
+            >
+              {({ control, formState: { errors } }) => {
                 return (
                   <>
                     <div className="relative mb-2.5 flex items-center justify-between">
                       <Select
                         size="sm"
                         variant="outline"
-                        value={supportType}
+                        value={supportTypes.Chat}
                         options={supportOptionTypes}
-                        onChange={setSupportType}
+                        // onChange={}
                         getOptionValue={(option) => option.value}
                         displayValue={(selected: string) => selected}
                         suffix={<PiCaretDownBold className="ml-1 h-3 w-3" />}
                         placement="bottom-start"
                         dropdownClassName="p-2 gap-1 grid !w-20 !z-0"
                         selectClassName="bg-gray-0 dark:bg-gray-50"
-                        className={'w-auto'}
+                        disabled
+                        className={"w-auto"}
                       />
                       <Button
                         type="submit"
                         className="dark:bg-gray-200 dark:text-white"
+                        isLoading={isSubmitting}
                       >
                         Send
                       </Button>
                     </div>
-                    {supportType === supportTypes.Email && (
+                    {!supportTypes.Email && (
                       <div className="mb-2.5 flex items-center gap-2">
                         <LuReply />
                         <span className="rounded border border-muted px-1.5 py-1 lowercase">
-                          {message?.email}
+                          User@mail.com
                         </span>
                       </div>
                     )}
-
                     <Controller
                       control={control}
                       name="message"
@@ -471,15 +333,49 @@ export default function MessageDetails({
                           value={value}
                           onChange={onChange}
                           className="rounded-md bg-gray-0 dark:bg-gray-50 [&>.ql-container_.ql-editor]:min-h-[100px]"
+                          placeholder="Type your reply here..."
                         />
                       )}
                     />
+
+                    {errors.message && (
+                      <Text className="text-red-500">Message is required</Text>
+                    )}
+
+                    <Switch
+                      label="Include Attachments"
+                      checked={includeAttachments}
+                      className="mt-2"
+                      labelClassName="text-sm font-medium text-gray-700 dark:text-gray-200"
+                      size="sm"
+                      color="primary"
+                      variant="flat"
+                      labelPlacement="right"
+                      onChange={() =>
+                        setIncludeAttachments(!includeAttachments)
+                      }
+                    />
+
+                    {includeAttachments && (
+                      <div className="mt-2">
+                        <Text as="strong">Attachments :</Text>
+                        <FileInput
+                          className="mt-1 w-1/2"
+                          containerClassName="min-h-28"
+                          wrapperClassName=""
+                          label={""}
+                          showBtns={false}
+                          onFilesSelected={handleFilesSelected}
+                          iconClassName="!h-14 !w-14"
+                        />
+                      </div>
+                    )}
                   </>
                 );
               }}
             </Form>
           </div>
-        </div> */}
+        </div>
       </div>
     </div>
   );
@@ -500,25 +396,63 @@ export function DotSeparator({ ...props }) {
   );
 }
 
-type AvatarOptionTypes = {
-  avatar: string;
-  label: string;
-  [key: string]: any;
-};
-
-function renderAvatarOptionDisplayValue(option: AvatarOptionTypes) {
-  return (
-    <div className="flex items-center gap-2">
-      <Avatar
-        src={option.avatar}
-        name={option.label}
-        className="!h-6 !w-6 rounded-full"
-      />
-      <span className="whitespace-nowrap text-xs sm:text-sm">
-        {option.label}
-      </span>
-    </div>
-  );
+function renderStatusOptionDisplayValue(value: string) {
+  switch (value) {
+    case "Open":
+      return (
+        <div className="flex items-center">
+          <Badge color="info" renderAsDot />
+          <Text className="ms-2 font-medium capitalize text-indigo-400">
+            {value}
+          </Text>
+        </div>
+      );
+    case "In Progress":
+      return (
+        <div className="flex items-center">
+          <Badge color="warning" renderAsDot />
+          <Text className="ms-2 font-medium capitalize text-orange-dark ">
+            {value}
+          </Text>
+        </div>
+      );
+    case "Resolved":
+      return (
+        <div className="flex items-center">
+          <Badge color="success" renderAsDot />
+          <Text className="ms-2 font-medium capitalize text-green-dark ">
+            {value}
+          </Text>
+        </div>
+      );
+    case "Closed":
+      return (
+        <div className="flex items-center">
+          <Badge color="danger" renderAsDot />
+          <Text className="ms-2 font-medium capitalize text-red-dark">
+            {value}
+          </Text>
+        </div>
+      );
+    case "Reopened":
+      return (
+        <div className="flex items-center">
+          <Badge color="secondary" renderAsDot />
+          <Text className="ms-2 font-medium capitalize text-secondary">
+            {value}
+          </Text>
+        </div>
+      );
+    default:
+      return (
+        <div className="flex items-center">
+          <Badge renderAsDot className="bg-gray-400" />
+          <Text className="ms-2 font-medium capitalize text-gray-600">
+            {value}
+          </Text>
+        </div>
+      );
+  }
 }
 
 function renderPriorityOptionDisplayValue(value: string) {
@@ -550,6 +484,15 @@ function renderPriorityOptionDisplayValue(value: string) {
           </Text>
         </div>
       );
+    case "Urgent":
+      return (
+        <div className="flex items-center">
+          <Badge color="danger" renderAsDot />
+          <Text className="ms-2 font-medium capitalize text-red-dark">
+            {value}
+          </Text>
+        </div>
+      );
     default:
       return (
         <div className="flex items-center">
@@ -561,3 +504,18 @@ function renderPriorityOptionDisplayValue(value: string) {
       );
   }
 }
+
+// function renderAvatarOptionDisplayValue(option: AvatarOptionTypes) {
+//   return (
+//     <div className="flex items-center gap-2">
+//       <Avatar
+//         src={option.avatar}
+//         name={option.label}
+//         className="!h-6 !w-6 rounded-full"
+//       />
+//       <span className="whitespace-nowrap text-xs sm:text-sm">
+//         {option.label}
+//       </span>
+//     </div>
+//   );
+// }

@@ -12,13 +12,13 @@ import { avatarIds } from "@/core/utils/get-avatar";
 import { getRandomArrayElement } from "@/core/utils/get-random-array-element";
 import { PermissionModule, RoleTypes } from "@/data/roles-permissions";
 import CreateRole from "./create-role";
-import { rolesWithActionsAtom } from "@/store/atoms/roles.atom";
-import { useAtom } from "jotai";
+import { roleActionsAtom } from "@/store/atoms/roles.atom";
+import { useSetAtom } from "jotai";
 import toast from "react-hot-toast";
 import { Session } from "next-auth";
 
 interface RoleCardProps {
-  session:Session;
+  session: Session;
   role: RoleTypes;
   modules: PermissionModule[];
   color: string;
@@ -32,14 +32,17 @@ export default function RoleCard({
   color,
   role,
 }: RoleCardProps) {
-
   const { openModal } = useModal();
-  const [, setRoles] = useAtom(rolesWithActionsAtom);
+  const setRoles = useSetAtom(roleActionsAtom);
 
   const handleDelete = async () => {
     try {
       const accessToken = session?.user?.accessToken || "";
-      await setRoles({ type: "delete", id: role._id!, accessToken });
+      await setRoles({
+        type: "delete",
+        payload: { id: role._id! },
+        token: accessToken,
+      });
       toast.success("Role deleted successfully");
     } catch (error) {
       toast.error("Failed to delete role");
@@ -82,7 +85,7 @@ export default function RoleCard({
               />
             </svg>
           </span>
-          <Title as="h4" className="font-medium">
+          <Title as="h4" className="font-medium capitalize">
             {role.name}
           </Title>
         </div>
@@ -102,7 +105,7 @@ export default function RoleCard({
               className="gap-2 text-xs sm:text-sm"
               onClick={() =>
                 openModal({
-                  view: <CreateRole role={role} session={session}/>,
+                  view: <CreateRole role={role} session={session} />,
                 })
               }
             >
@@ -144,7 +147,7 @@ export default function RoleCard({
           Total {role.users?.length} {role.users?.length > 1 ? "users" : "user"}
         </span>
       </div>
-      
+
       <ModalButton
         customSize="700px"
         variant="outline"

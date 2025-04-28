@@ -8,7 +8,10 @@ import { Form } from "@core/ui/form";
 import { routes } from "@/config/routes";
 import { loginSchema, LoginSchema } from "@/validators/login.schema";
 import { signIn } from "next-auth/react";
-import { useState } from "react";
+import { useRouter } from "nextjs-toploader/app";
+import toast from "react-hot-toast";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 
 const initialValues: LoginSchema = {
   email: "",
@@ -17,25 +20,30 @@ const initialValues: LoginSchema = {
 };
 
 export default function SignInForm() {
+  const router = useRouter();
   const isMedium = useMedia("(max-width: 1200px)", false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const onSubmit: SubmitHandler<LoginSchema> = async (data) => {
-    setLoading(true);
-    const result = await signIn("credentials", {
-      ...data,
-      redirect: false,
-      callbackUrl: routes.root.dashboard,
-    });
-    setLoading(false);
+  const searchParams = useSearchParams();
+  const [error, setError] = useState<string | null>(null);
 
-    if (result?.error) {
-      // Display error message if authentication fails
-      setErrorMessage("Invalid email or password. Please try again.");
-    } else if (result?.ok) {
-      // Optionally handle success (e.g., manual redirect)
-      window.location.href = routes.root.dashboard;
+  useEffect(() => {
+    const errorParam = searchParams.get("error");
+    if (errorParam) {
+      setError(errorParam);
     }
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (error === "CredentialsSignin") {
+      router.replace(routes.auth.signIn);
+      setError(null);
+      toast.error("Invalid credentials!");
+    }
+  }, [error, router]);
+
+  const onSubmit: SubmitHandler<LoginSchema> = (data) => {
+    signIn("credentials", {
+      ...data,
+    });
   };
 
   return (
@@ -45,15 +53,20 @@ export default function SignInForm() {
         resetValues={initialValues}
         onSubmit={onSubmit}
         useFormProps={{
-          mode: "onChange",
           defaultValues: initialValues,
         }}
       >
-        {({ register, formState: { errors } }) => (
+        {({
+          register,
+          formState: {
+            errors,
+            isSubmitting,
+            isLoading,
+            isSubmitted,
+            isSubmitSuccessful,
+          },
+        }) => (
           <div className="space-y-5 lg:space-y-6">
-            {errorMessage && (
-              <Text className="text-red-500 text-center">{errorMessage}</Text>
-            )}
             <Input
               type="email"
               size={isMedium ? "lg" : "xl"}
@@ -89,7 +102,9 @@ export default function SignInForm() {
               className="w-full"
               type="submit"
               size={isMedium ? "lg" : "xl"}
-              isLoading={loading}
+              isLoading={
+                isSubmitting || isLoading || isSubmitted || isSubmitSuccessful
+              }
             >
               Sign In
             </Button>

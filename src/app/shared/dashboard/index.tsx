@@ -1,5 +1,5 @@
 "use client";
-import { useAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { routes } from "@/config/routes";
 import WelcomeBanner from "@/core/components/banners/welcome";
 import HandWaveIcon from "@core/components/icons/hand-wave";
@@ -11,68 +11,78 @@ import { PiPlusBold } from "react-icons/pi";
 import { Button } from "rizzui";
 import StatCards from "./stat-cards";
 import SalesReport from "./sales-report";
-import {
-  orderStatsWithActionsAtom,
-  ordersWithActionsAtom,
-  salesReportWithActionsAtom,
-} from "@/store/atoms/orders.atom";
-import { cloudinaryFilesWithActionsAtom } from "@/store/atoms/files.atom";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import RecentOrder from "./recent-order";
 import TicketsWidget from "./tickets-report";
 import OrdersWidget from "./orders-report";
-import { productsWithActionsAtom } from "@/store/atoms/products.atom";
+
+// Atoms
+import { cloudinaryActionsAtom } from "@/store/atoms/files.atom";
+import { productActionsAtom } from "@/store/atoms/products.atom";
+import { userActionsAtom } from "@/store/atoms/users.atom";
+import {
+  orderActionsAtom,
+  ordersAtom,
+  orderStatsAtom,
+} from "@/store/atoms/orders.atom";
 
 const Index = ({ session }: { session: Session }) => {
-  const [orders, setOrders] = useAtom(ordersWithActionsAtom);
-  const [, setProducts] = useAtom(productsWithActionsAtom);
-  const [orderStats, setOrderStats] = useAtom(orderStatsWithActionsAtom);
-  const [salesReport, setSalesReport] = useAtom(salesReportWithActionsAtom);
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const [, setFiles] = useAtom(cloudinaryFilesWithActionsAtom);
+  const [orders] = useAtom(ordersAtom);
+  const [orderStats] = useAtom(orderStatsAtom);
 
-  // Fetch orders when component mounts
+  const setOrders = useSetAtom(orderActionsAtom);
+  const setUsers = useSetAtom(userActionsAtom);
+  const setProducts = useSetAtom(productActionsAtom);
+  const setFiles = useSetAtom(cloudinaryActionsAtom);
+
+  // Fetch all data when component mounts
   useEffect(() => {
-    if (session?.user?.accessToken) {
-      setOrders({
-        type: "fetch",
-        accessToken: session.user.accessToken,
-      });
-      setProducts({
-        type: "fetch",
-        accessToken: session.user.accessToken,
-      });
-      setOrderStats({
-        type: "fetch",
-        accessToken: session.user.accessToken,
-      });
-      setSalesReport({
-        type: "fetch",
-        accessToken: session.user.accessToken,
-        year: selectedYear,
-      });
-      setFiles({ type: "fetch" });
-    }
-  }, [
-    session?.user?.accessToken,
-    setOrders,
-    setProducts,
-    setOrderStats,
-    setSalesReport,
-    selectedYear,
-    setFiles,
-  ]);
+    if (!session?.user?.accessToken) return;
+
+    const fetchData = async () => {
+      try {
+        await Promise.all([
+          setOrders({
+            type: "fetchAll",
+            token: session?.user?.accessToken ?? "",
+          }),
+          setUsers({
+            type: "fetchAll",
+            token: session?.user?.accessToken ?? "",
+          }),
+          setProducts({
+            type: "fetchProducts",
+            token: session?.user?.accessToken ?? "",
+          }),
+          setOrders({
+            type: "fetchStats",
+            token: session?.user?.accessToken ?? "",
+          }),
+          setOrders({
+            type: "fetchSalesReport",
+            token: session?.user?.accessToken ?? "",
+            payload: { year: new Date().getFullYear() },
+          }),
+          setFiles({
+            type: "fetch",
+            token: session?.user?.accessToken ?? "",
+          }),
+        ]);
+      } catch (error) {
+        console.error("Failed to fetch dashboard data:", error);
+      }
+    };
+
+    fetchData();
+  }, [session?.user?.accessToken, setOrders, setUsers, setProducts, setFiles]);
 
   const getGreeting = () => {
     const currentHour = new Date().getHours();
-    if (currentHour < 12) {
-      return "Good Morning";
-    } else if (currentHour < 18) {
-      return "Good Afternoon";
-    } else {
-      return "Good Evening";
-    }
+    if (currentHour < 12) return "Good Morning";
+    if (currentHour < 18) return "Good Afternoon";
+    return "Good Evening";
   };
+
   return (
     <div className="@container">
       <div className="grid grid-cols-1 gap-6 @4xl:grid-cols-2 @7xl:grid-cols-12 3xl:gap-8">
@@ -84,7 +94,7 @@ const Index = ({ session }: { session: Session }) => {
             </>
           }
           description={
-            "Here’s What happening on your store today. See the statistics at once."
+            "Here's what's happening on your store today. See the statistics at once."
           }
           media={
             <div className="absolute -bottom-6 end-4 hidden w-[300px] @2xl:block lg:w-[320px] 2xl:-bottom-7 2xl:w-[330px]">
@@ -100,7 +110,7 @@ const Index = ({ session }: { session: Session }) => {
           contentClassName="@2xl:max-w-[calc(100%-340px)]"
           className="border border-muted bg-gray-0 pb-8 @4xl:col-span-2 @7xl:col-span-8 dark:bg-gray-100/30 lg:pb-9"
         >
-          <Link href={routes?.products?.createProduct} className="inline-flex">
+          <Link href={routes.products.createProduct} className="inline-flex">
             <Button as="span" className="h-[38px] shadow md:h-10">
               <PiPlusBold className="me-1 h-4 w-4" /> Add Product
             </Button>
@@ -111,15 +121,12 @@ const Index = ({ session }: { session: Session }) => {
           className="@2xl:grid-cols-3 @3xl:gap-6 @4xl:col-span-2 @7xl:col-span-8"
           orderStats={orderStats}
         />
+
         <TicketsWidget className="h-[464px] @sm:h-[520px] @7xl:col-span-4 @7xl:col-start-9 @7xl:row-start-1 @7xl:row-end-3 @7xl:h-full" />
 
         <SalesReport
           className="@4xl:col-span-2 @7xl:col-span-8"
-          salesReport={salesReport}
-          selectedYear={selectedYear}
-          setSelectedYear={setSelectedYear}
-          accessToken={session.user.accessToken!}
-          setSalesReport={setSalesReport}
+          token={session.user.accessToken!}
         />
 
         <OrdersWidget

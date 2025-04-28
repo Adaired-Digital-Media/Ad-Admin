@@ -11,6 +11,7 @@ import imageIcon from "@public/image-icon.svg";
 import { TicketMessage } from "@/data/tickets.types";
 import { DotSeparator } from "@/app/shared/support/inbox/message-details";
 import { FiExternalLink } from "react-icons/fi";
+import parse from "html-react-parser";
 
 export default function MessageBody({ message }: { message: TicketMessage }) {
   const [isCopied, setIsCopied] = useState(false);
@@ -47,13 +48,13 @@ export default function MessageBody({ message }: { message: TicketMessage }) {
               {message.sender.name}
             </Title>
           </div>
-          <div className="mt-1.5 items-center gap-2 text-xs text-gray-500 lg:flex">
+          <div className="mt-1.5 items-center gap-2 text-xs text-gray-500 md:flex">
             <span className="flex items-center lowercase">
-              {message?.sender?.email}{" "}
+              {message?.sender?.email}
               <FiExternalLink className="ml-1 h-2.5 w-2.5" />
             </span>
-            <DotSeparator className="hidden lg:block" />
-            <span className="mt-1.5 flex items-center lg:mt-0">
+            <DotSeparator className="hidden md:block" />
+            <span className="mt-1.5 flex items-center md:mt-0">
               #{message._id!.toString().slice(-6)}
               <Tooltip
                 size="sm"
@@ -70,17 +71,17 @@ export default function MessageBody({ message }: { message: TicketMessage }) {
                 </button>
               </Tooltip>
             </span>
-            <DotSeparator className="hidden lg:block" />
+            <DotSeparator className="hidden md:block" />
             <span>{getRelativeTime(new Date(message.createdAt))}</span>
           </div>
         </div>
       </div>
 
       <div className="ml-10 mt-3 grid gap-2 leading-relaxed xl:ml-16 2xl:mt-4">
-        <Text>{message.message}</Text>
+        <Text>{parse(message.message)}</Text>
 
         {message.attachments.length > 0 && (
-          <div className="mt-2 grid gap-2 md:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-3">
+          <div className="mt-2 grid gap-5 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5">
             {message.attachments.map((attachment) => (
               <div
                 key={attachment.publicId}
@@ -93,6 +94,7 @@ export default function MessageBody({ message }: { message: TicketMessage }) {
                       alt={attachment.fileName}
                       src={attachment.url}
                       className="object-contain"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
                   ) : (
                     <Image
@@ -101,6 +103,7 @@ export default function MessageBody({ message }: { message: TicketMessage }) {
                       alt="imageIcon"
                       className="h-full w-full"
                       quality={100}
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
                   )}
                 </figure>

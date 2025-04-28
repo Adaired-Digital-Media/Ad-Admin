@@ -48,8 +48,8 @@ export const usersColumns = [
     cell: ({ row }) => (
       <AvatarCard
         src={row.original.image || ""}
-        name={row.original.name || ""}
-        description={row.original.email}
+        name={row.original.name || "-"}
+        description={row.original.email|| "-"}
       />
     ),
   }),
@@ -59,7 +59,7 @@ export const usersColumns = [
     header: "Phone Number",
     enableSorting: false,
     cell: ({ row }) => (
-      <Text className="truncate !text-sm">{row.original?.contact}</Text>
+      <Text className="truncate !text-sm">{row.original?.contact|| "-"}</Text>
     ),
   }),
   columnHelper.accessor("role", {

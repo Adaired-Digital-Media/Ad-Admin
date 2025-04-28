@@ -14,10 +14,10 @@ import UploadZone from "@/core/ui/file-upload/upload-zone";
 import { UserTypes } from "@/data/users-data";
 import toast from "react-hot-toast";
 import { Form } from "@/core/ui/form";
-import { useAtom } from "jotai";
-import { usersWithActionsAtom } from "@/store/atoms/users.atom";
+import { useAtom, useSetAtom } from "jotai";
+import { userActionsAtom } from "@/store/atoms/users.atom";
 import { Session } from "next-auth";
-import { rolesWithActionsAtom } from "@/store/atoms/roles.atom";
+import { rolesAtom } from "@/store/atoms/roles.atom";
 
 const statuses = [
   { value: "Active", label: "Active" },
@@ -34,9 +34,8 @@ export default function CreateUser({
   className?: string;
 }) {
   const { closeModal } = useModal();
-  const [, setUsers] = useAtom(usersWithActionsAtom);
-  const [roles] = useAtom(rolesWithActionsAtom);
-
+  const setUsers = useSetAtom(userActionsAtom);
+  const [roles] = useAtom(rolesAtom);
   const [isLoading, setLoading] = useState(false);
 
   const defaultValues = {
@@ -63,8 +62,8 @@ export default function CreateUser({
         if (user) {
           await setUsers({
             type: "update",
-            id: user._id || "",
-            data: {
+            payload: {
+              id: user._id || "",
               image: data.image,
               name: data.name,
               email: data.email,
@@ -72,13 +71,14 @@ export default function CreateUser({
               status: data.status,
               contact: data.contact,
             },
-            accessToken,
+            token: accessToken,
           });
           toast.success("User updated successfully");
         } else {
           await setUsers({
             type: "create",
-            data: {
+            payload: {
+              
               image: data.image,
               name: data.name,
               email: data.email,
@@ -87,7 +87,7 @@ export default function CreateUser({
               contact: data.contact,
               password: data.password,
             },
-            accessToken,
+            token: accessToken,
           });
           toast.success("User created successfully");
         }

@@ -1,9 +1,8 @@
 "use client";
 
 import cn from "@/core/utils/class-names";
-// import { CouponTypes } from "@/data/coupons.types";
-import { couponsWithActionAtom } from "@/store/atoms/coupons.atom";
-import { useAtom } from "jotai";
+import { couponActionsAtom, couponsAtom } from "@/store/atoms/coupons.atom";
+import { useAtom, useSetAtom } from "jotai";
 import React, { useState, useEffect } from "react";
 import { Loader } from "rizzui";
 import { Element } from "react-scroll";
@@ -37,7 +36,8 @@ type Props = {
 };
 
 const CreateEditCoupon = ({ className, couponId, accessToken }: Props) => {
-  const [coupons, setCoupons] = useAtom(couponsWithActionAtom);
+  const [coupons] = useAtom(couponsAtom);
+  const setCoupons = useSetAtom(couponActionsAtom);
   const [isLoading, setLoading] = useState(false);
 
   const coupon = coupons.find((c) => c._id === couponId);
@@ -57,9 +57,9 @@ const CreateEditCoupon = ({ className, couponId, accessToken }: Props) => {
     if (!selectedCoupon) {
       setLoading(true);
       setCoupons({
-        type: "fetch",
-        accessToken,
-        couponId,
+        type: "fetchSingle",
+        token: accessToken,
+        payload: { couponId },
       }).finally(() => setLoading(false));
     } else {
       // Fully reset the form with fetched coupon data, clearing dirty state and errors
@@ -81,21 +81,23 @@ const CreateEditCoupon = ({ className, couponId, accessToken }: Props) => {
   }
 
   const onSubmit: SubmitHandler<CouponFormValues> = async (data) => {
+    if (!accessToken) return;
+    
     setLoading(true);
     try {
       if (couponId) {
         await setCoupons({
           type: "update",
-          id: couponId,
-          accessToken: accessToken as string,
-          payload: data,
+          token: accessToken,
+          payload: { id: couponId, ...data },
         });
       } else {
-        await setCoupons({
+        const response = await setCoupons({
           type: "create",
-          accessToken: accessToken as string,
+          token: accessToken,
           payload: data,
         });
+        console.log("Response : ", response);
         reset(couponDefaultValues(undefined));
       }
     } catch (error) {

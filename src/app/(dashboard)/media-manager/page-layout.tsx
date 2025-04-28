@@ -12,6 +12,6 @@ export default function PageLayout({ files }: { files: CloudinaryFile[] }) {
   return isGridLayout ? (
     <FileGrid files={files} />
   ) : (
-    <FileListTable files={files} />
+    <FileListTable initialFiles={files} />
   );
 }

@@ -8,7 +8,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { UserType } from "@/core/types";
+import { UserTypes } from "@/core/types";
 import { routes } from "@/config/routes";
 
 export default function ProfileMenu({
@@ -52,7 +52,7 @@ export default function ProfileMenu({
       </Popover.Trigger>
 
       <Popover.Content className="z-[9999] p-0 dark:bg-gray-100 [&>svg]:dark:fill-gray-100">
-        <DropdownMenu user={session?.user as UserType | undefined} />
+        <DropdownMenu user={session?.user as UserTypes | undefined} />
       </Popover.Content>
     </ProfileMenuPopover>
   );
@@ -85,7 +85,7 @@ const menuItems = [
   },
 ];
 
-function DropdownMenu({ user }: { user?: UserType }) {
+function DropdownMenu({ user }: { user?: UserTypes }) {
   return (
     <div className="w-64 text-left rtl:text-right">
       <div className="flex items-center border-b border-gray-300 px-6 pb-5 pt-6">

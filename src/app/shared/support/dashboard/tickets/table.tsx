@@ -9,7 +9,7 @@ import { CustomTableMeta } from "@/app/shared/dashboard/recent-order";
 import { Ticket } from "@/data/tickets.types";
 import { Session } from "next-auth";
 import { useAtom } from "jotai";
-import { ticketsWithActionsAtom } from "@/store/atoms/tickets.atom";
+import { ticketActionsAtom, ticketsAtom } from "@/store/atoms/tickets.atom";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 
@@ -26,11 +26,12 @@ export default function TicketsTable({
   tickets: Ticket[];
   session: Session;
 }) {
-  const [tickets, setTickets] = useAtom(ticketsWithActionsAtom);
+  const [tickets] = useAtom(ticketsAtom);
+  const [, dispatch] = useAtom(ticketActionsAtom);
 
   // Initialize table with tickets from atom or initialTickets
   const { table, setData } = useTanStackTable<Ticket>({
-    tableData: tickets.tickets.length ? tickets.tickets : initialTickets,
+    tableData: tickets.length ? tickets : initialTickets,
     columnConfig: ticketsColumns,
     options: {
       initialState: {
@@ -40,22 +41,27 @@ export default function TicketsTable({
         },
       },
       meta: {
-        handleDeleteRow: (row) => {
-          setTickets({
+        handleDeleteRow: async (row) => {
+          await dispatch({
             type: "delete",
-            id: row._id!,
-            accessToken: session.user.accessToken!,
+            token: session.user.accessToken!,
+            payload: { id: row._id },
           });
           toast.success("Ticket deleted successfully");
+          await fetch("/api/revalidateTags?tags=tickets", {
+            method: "GET",
+          });
           table.resetRowSelection();
         },
-        handleMultipleDelete: (rows) => {
-          rows.forEach((row) =>
-            setTickets({
-              type: "delete",
-              id: row._id!,
-              accessToken: session.user.accessToken!,
-            })
+        handleMultipleDelete: async (rows) => {
+          await Promise.all(
+            rows.map((row) =>
+              dispatch({
+                type: "delete",
+                token: session.user.accessToken!,
+                payload: { id: row._id },
+              })
+            )
           );
           toast.success("Tickets deleted successfully");
           table.resetRowSelection();
@@ -65,16 +71,29 @@ export default function TicketsTable({
     },
   });
 
-  // Sync table data with users atom or initialUsers when they change
-  useEffect(() => {
-    setData(tickets.tickets.length ? tickets.tickets : initialTickets);
-  }, [tickets.tickets, initialTickets, setData]);
-
+  // Fetch tickets on mount and when access token changes
   useEffect(() => {
     if (session?.user?.accessToken) {
-      setTickets({ type: "fetch", accessToken: session.user.accessToken });
+      const fetchTickets = async () => {
+        try {
+          await dispatch({
+            type: "fetchAll",
+            token: session.user.accessToken!,
+          });
+        } catch (error) {
+          toast.error("Failed to fetch tickets");
+          console.log("Failed to fetch tickets : ", error);
+        }
+      };
+      fetchTickets();
     }
-  }, [session?.user?.accessToken, setTickets, tickets.tickets]);
+  }, [session?.user?.accessToken, dispatch]);
+
+  // Sync table data with tickets atom
+  useEffect(() => {
+    setData(tickets.length > 0 ? tickets : initialTickets);
+  }, [tickets, initialTickets, setData]);
+
   return (
     <>
       <Filters table={table} />

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
 import { routes } from "@/config/routes";
 import { NextAuthConfig, Session, User } from "next-auth";
@@ -31,13 +32,18 @@ export default {
             }
           );
 
-          const { accessToken, user } = res.data;
-          console.log("User : ", user);
+          const { accessToken, user, expiresAt } = res.data;
 
           if (!accessToken || !user) {
             throw new Error("Invalid credentials.");
           }
-          return { accessToken, ...user };
+
+          // Calculate expiration time if not provided by backend
+          const tokenExpiresAt =
+            expiresAt ||
+            new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+
+          return { accessToken, expiresAt: tokenExpiresAt, ...user };
         } catch (err) {
           console.error("Authorize error:", err);
           return null;
@@ -47,10 +53,8 @@ export default {
   ],
   callbacks: {
     async signIn({ user, account }) {
-      // This callback runs after the user successfully signs in
       if (account?.provider === "google") {
         try {
-          // Make a request to your backend to create the user without logging them in
           const response = await axios.post(
             `${process.env.NEXT_PUBLIC_BACKEND_API_URI}/auth/register`,
             {
@@ -64,10 +68,8 @@ export default {
         } catch (error) {
           console.error("Failed to register Google user: ", error);
         }
-
         return true;
       }
-
       return true;
     },
     async authorized({ request: { nextUrl }, auth }) {
@@ -104,6 +106,22 @@ export default {
         token.isVerifiedUser = user.isVerifiedUser || false;
         token.role = user.role;
         token.accessToken = user.accessToken;
+        token.expiresAt = user.expiresAt;
+      }
+
+      // Simple expiration check - no refresh logic
+      if (token.expiresAt && typeof token.expiresAt === "string") {
+        try {
+          const expiresAtDate = new Date(token.expiresAt);
+          if (isNaN(expiresAtDate.getTime()) || expiresAtDate < new Date()) {
+            return null;
+          }
+        } catch (err) {
+          console.error("Invalid expiresAt format:", err);
+          return null;
+        }
+      } else {
+        return null;
       }
 
       if (trigger === "update" && session?.user) {
@@ -119,12 +137,40 @@ export default {
           isVerifiedUser: session.user.isVerifiedUser ?? token.isVerifiedUser,
           role: session.user.role || token.role,
           accessToken: token.accessToken,
+          expiresAt: token.expiresAt,
         };
       }
       return token;
     },
     async session({ session, token }) {
-      if (!token) return session;
+      if (!token || !token.expiresAt || typeof token.expiresAt !== "string") {
+        // Invalidate session
+        session.expires = new Date(0).toISOString() as any;
+        return session;
+      }
+      try {
+        const expiresAtDate = new Date(token.expiresAt);
+        if (isNaN(expiresAtDate.getTime()) || expiresAtDate < new Date()) {
+          // Invalidate session
+          session.expires = new Date(0).toISOString() as any;
+          return session;
+        }
+
+        // Add 5 minute buffer to expiration check
+        const now = new Date();
+        if (expiresAtDate < new Date(now.getTime() + 5 * 60 * 1000)) {
+          session.expires = new Date(0).toISOString() as any;
+          return session;
+        }
+
+        // Valid token
+        session.expires = token.expiresAt as any;
+      } catch (err) {
+        console.error("Invalid token.expiresAt format:", err);
+        session.expires = new Date(0).toISOString() as any;
+        return session;
+      }
+
       session.user = {
         ...session.user,
         _id: token._id as string,
@@ -143,7 +189,6 @@ export default {
     },
     async redirect({ url, baseUrl }) {
       const parsedUrl = new URL(url, baseUrl);
-
       if (parsedUrl.searchParams.has("callbackUrl")) {
         const callbackUrl = parsedUrl.searchParams.get("callbackUrl")!;
         return callbackUrl.startsWith(baseUrl)
@@ -158,7 +203,8 @@ export default {
     signOut: routes.auth.signIn,
   },
   session: {
-    maxAge: 30 * 24 * 60 * 60, // 30 days
-    updateAge: 24 * 60 * 60, // 24 hours
+    strategy: 'jwt',
+    maxAge: 24 * 60 * 60,
+    updateAge: 1 * 60 * 1000,
   },
 } satisfies NextAuthConfig;
