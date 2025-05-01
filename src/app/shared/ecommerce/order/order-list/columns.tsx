@@ -44,12 +44,12 @@ export const ordersColumns = (expanded: boolean = true) => {
         <TableAvatar
           src={row.original.userId?.image || ""}
           name={row.original.userId?.name || ""}
-          description={row.original.userId?.email.toLowerCase()}
+          description={row.original.userId?.email?.toLowerCase()}
         />
       ),
       filterFn: (row, id, filterValue: string) => {
         const user = row.getValue<UserTypes>(id);
-        return user?.name.toLowerCase().includes(filterValue.toLowerCase());
+        return user?.name?.toLowerCase().includes(filterValue?.toLowerCase());
       },
     }),
     columnHelper.accessor('totalQuantity',{

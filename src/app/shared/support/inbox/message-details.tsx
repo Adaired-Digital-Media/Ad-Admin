@@ -29,6 +29,7 @@ import { FileInput } from "../../file-upload";
 import { Session } from "next-auth";
 import toast from "react-hot-toast";
 import { LuReply } from "react-icons/lu";
+import { AxiosError } from "axios";
 
 const QuillEditor = dynamic(() => import("@core/ui/quill-editor"), {
   ssr: false,
@@ -150,8 +151,6 @@ export default function MessageDetails({
           id: selectedTicket._id,
           message: data.message,
           attachments: files,
-          priority,
-          status,
         },
       });
       toast.success("Reply sent successfully");
@@ -159,7 +158,8 @@ export default function MessageDetails({
       setIncludeAttachments(false);
       scrollToBottom();
     } catch (error) {
-      toast.error("Failed to send reply");
+      const axiosError = error as AxiosError<{ message?: string }>;
+      toast.error(axiosError.response?.data?.message || axiosError.message);
       console.error("Error:", error);
     } finally {
       setIsSubmitting(false);

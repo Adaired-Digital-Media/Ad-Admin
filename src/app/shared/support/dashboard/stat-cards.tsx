@@ -6,68 +6,105 @@ import TagIcon from "@core/components/icons/tag";
 import MetricCard from "@core/components/cards/metric-card";
 import TagIcon2 from "@core/components/icons/tag-2";
 import TagIcon3 from "@core/components/icons/tag-3";
-import { AdminStats, SupportStats } from "@/data/tickets.types";
+import { TicketStatsResponse } from "@/data/tickets.types";
 
-// import { useAtom } from "jotai";
-// import { useState } from "react";
+// Helper function to get appropriate icon based on metric title
+const getIconForMetric = (title: string) => {
+  switch (title) {
+    case "Total Tickets":
+      return <TicketIcon className="h-full w-full" />;
+    case "Open Tickets":
+    case "Reopened Tickets":
+      return <TagIcon className="h-full w-full" />;
+    case "Closed Tickets":
+      return <TagIcon2 className="h-full w-full" />;
+    case "Resolved Tickets":
+      return <TagIcon className="h-full w-full" />;
+    case "Assigned To Me":
+      return <TagIcon3 className="h-full w-full" />;
+    case "Efficiency":
+      return <TagIcon3 className="h-full w-full" />;
+    default:
+      return <TicketIcon className="h-full w-full" />;
+  }
+};
+
+// Helper function to format metric values
+const formatMetric = (title: string, value: number) => {
+  if (title.includes("Efficiency")) {
+    return `${value}%`;
+  }
+  return value;
+};
 
 export default function StatCards({
   className,
-  initialStats,
+  statsData,
 }: {
   className?: string;
-  initialStats: AdminStats | SupportStats;
+  statsData: TicketStatsResponse;
 }) {
-  const ticketStats = [
+  const { role, stats } = statsData;
+
+  // Common metrics for all roles
+  const commonCards = [
     {
       id: 1,
-      icon: <TicketIcon className="h-full w-full" />,
-      title: "Total Number of Tickets",
-      metric:
-        "totalTickets" in initialStats ? initialStats.totalTickets : "N/A",
+      title: "Total Tickets",
+      metric: stats.total,
     },
     {
       id: 2,
-      icon: <TagIcon className="h-full w-full" />,
       title: "Open Tickets",
-      metric: "openTickets" in initialStats ? initialStats.openTickets : "N/A",
+      metric: stats.open,
     },
     {
       id: 3,
-      icon: <TagIcon className="h-full w-full" />,
-      title: "Resolved Tickets",
-      metric:
-        "resolvedTickets" in initialStats
-          ? initialStats.resolvedTickets
-          : "N/A",
-    },
-    {
-      id: 4,
-      icon: <TagIcon2 className="h-full w-full" />,
       title: "Closed Tickets",
-      metric:
-        "closedTickets" in initialStats ? initialStats.closedTickets : "N/A",
-    },
-    {
-      id: 5,
-      icon: <TagIcon3 className="h-full w-full" />,
-      title: "Assigned To Me",
-      metric:
-        "ticketsAssignedToMe" in initialStats
-          ? initialStats.ticketsAssignedToMe
-          : "N/A",
+      metric: stats.closed,
     },
   ];
 
-  // const [stats, setStats] = useAtom(ticketsWithActionsAtom);
-  // const [loading, setLoading] = useState(true);
-  // const [error, setError] = useState<string | null>(null);
+  // Role-specific metrics
+  const roleSpecificCards = [];
+  
+  if (role === "admin") {
+    roleSpecificCards.push(
+      {
+        id: 4,
+        title: "Resolved Tickets",
+        metric: stats.resolved || 0,
+      },
+      {
+        id: 5,
+        title: "Assigned To Me",
+        metric: stats.assignedToMe || 0,
+      }
+    );
+  } else if (role === "support") {
+    roleSpecificCards.push({
+      id: 4,
+      title: "Efficiency",
+      metric: stats.efficiency || 0,
+    });
+  } else if (role === "customer") {
+    roleSpecificCards.push({
+      id: 4,
+      title: "Reopened Tickets",
+      metric: stats.reopened || 0,
+    });
+  }
+
+  // Combine all cards and add icons/formatted metrics
+  const allCards = [...commonCards, ...roleSpecificCards].map((card) => ({
+    ...card,
+    icon: getIconForMetric(card.title),
+    metric: formatMetric(card.title, card.metric),
+  }));
 
   return (
-    <div
-      className={cn("grid grid-cols-1 gap-5 3xl:gap-8 4xl:gap-9", className)}
-    >
-      {ticketStats.map((stat) => (
+    <div className={cn("grid grid-cols-1 gap-5 3xl:gap-8 4xl:gap-9", className)}>
+      {allCards.map((stat) => (
         <MetricCard
           key={stat.title + stat.id}
           title={stat.title}

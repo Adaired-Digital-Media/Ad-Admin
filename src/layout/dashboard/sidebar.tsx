@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import cn from '@core/utils/class-names';
-import SimpleBar from '@core/ui/simplebar';
-import Logo from '@core/components/logo';
-import { SidebarMenu } from './sidebar-menu';
-import { routes } from '@/config/routes';
+import Link from "next/link";
+import cn from "@core/utils/class-names";
+import SimpleBar from "@core/ui/simplebar";
+import Logo from "@core/components/logo";
+import { SidebarMenu } from "./sidebar-menu";
+import { routes } from "@/config/routes";
 
 export default function Sidebar({ className }: { className?: string }) {
   return (
     <aside
       className={cn(
-        'fixed bottom-0 start-0 z-50 h-full w-[270px] border-e-2 border-gray-100 bg-white dark:bg-gray-100/50 2xl:w-72',
+        "fixed bottom-0 start-0 z-50 h-full w-[270px] border-e-2 border-gray-100 bg-white dark:bg-gray-100/50 2xl:w-72",
         className
       )}
     >
@@ -35,7 +35,7 @@ export default function Sidebar({ className }: { className?: string }) {
       </div>
 
       <SimpleBar className="h-[calc(100%-80px)]">
-        <SidebarMenu />
+        <SidebarMenu/>
       </SimpleBar>
     </aside>
   );

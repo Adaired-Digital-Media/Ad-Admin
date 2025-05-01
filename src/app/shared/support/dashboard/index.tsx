@@ -1,6 +1,5 @@
-import { Ticket } from "@/data/tickets.types";
+import { Ticket, TicketStatsResponse } from "@/data/tickets.types";
 import StatCards from "./stat-cards";
-import { AdminStats, SupportStats } from "@/data/tickets.types";
 import TicketsTable from "./tickets";
 import { Session } from "next-auth";
 
@@ -10,7 +9,7 @@ export default function SupportDashboard({
   session,
 }: {
   tickets: Ticket[];
-  stats: AdminStats | SupportStats;
+  stats: TicketStatsResponse
   session: Session;
 }) {
   return (
@@ -18,7 +17,7 @@ export default function SupportDashboard({
       <div className="grid grid-cols-12 gap-6 3xl:gap-8">
         <StatCards
           className="col-span-full @xl:grid-cols-2 @2xl:grid-cols-2 @4xl:grid-cols-3 @6xl:grid-cols-5"
-          initialStats={stats}
+          statsData={stats}
         />
 
         <TicketsTable

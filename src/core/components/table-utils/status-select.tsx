@@ -40,6 +40,7 @@ export function StatusSelect({
       method: method ?? "PATCH",
       data: { [toUpdate]: selectedOption.value },
     });
+    console.log(response)
 
     if (response.status === 200) {
       toast.success(response.data.message);

@@ -1,91 +1,495 @@
-// import { DUMMY_ID } from '@/config/constants';
-// import { auth } from "@/auth";
+// // import { auth } from "@/auth";
+// import { routes } from "@/config/routes";
+// // import AffiliateIcon from "@core/components/icons/affiliate";
+// // import CrmDashIcon from "@core/components/icons/crm-icon";
+// // import ProjectWriteIcon from "@core/components/icons/project-write";
+// import {
+//   PiCurrencyCircleDollarDuotone,
+//   PiFolderLockDuotone,
+//   PiImageDuotone,
+//   PiHeadsetDuotone,
+//   PiPackageDuotone,
+//   PiTicketDuotone,
+// } from "react-icons/pi";
+// import { MdOutlineDashboard } from "react-icons/md";
+// import ProjectWriteIcon from "@/core/components/icons/project-write";
+// // Note: do not add href in the label object, it is rendering as label
+
+// export const menuItems = [
+//   // label start
+//   {
+//     name: "Home",
+//   },
+//   // label end
+//   {
+//     name: "Dashboard",
+//     href: "/",
+//     icon: <MdOutlineDashboard />,
+//   },
+//   // label start
+//   {
+//     name: "Users & Roles",
+//   },
+//   // label end
+//   {
+//     name: "Roles & Permissions",
+//     href: routes.rolesNpermissions.roles,
+//     icon: <PiFolderLockDuotone />,
+//   },
+
+//   // label start
+//   {
+//     name: "E-Commerce",
+//   },
+//   // label end
+//   {
+//     name: "Products",
+//     href: "#",
+//     icon: <PiPackageDuotone />,
+//     dropdownItems: [
+//       {
+//         name: "Products",
+//         href: routes?.products?.products,
+//       },
+//       {
+//         name: "Create Product",
+//         href: routes?.products?.createProduct,
+//       },
+//       {
+//         name: "Categories",
+//         href: routes?.products?.categories,
+//       },
+//       {
+//         name: "Create Categories",
+//         href: routes?.products?.createCategory,
+//       },
+//     ],
+//   },
+//   {
+//     name: "Custom Forms",
+//     href: "#",
+//     icon: <ProjectWriteIcon />,
+//     dropdownItems: [
+//       {
+//         name: "All Forms",
+//         href: routes?.customForms?.all,
+//       },
+//       {
+//         name: "Form Fields",
+//         href: routes?.customForms?.fields,
+//       },
+//       // {
+//       //   name: "Create Form",
+//       //   href: routes?.customForms?.create,
+//       // },
+//     ],
+//   },
+
+//   {
+//     name: "Orders",
+//     href: "#",
+//     icon: <PiCurrencyCircleDollarDuotone />,
+//     dropdownItems: [
+//       {
+//         name: "All Orders",
+//         href: routes?.orders?.orders,
+//       },
+//     ],
+//   },
+//   {
+//     name: "Coupons",
+//     href: "#",
+//     icon: <PiTicketDuotone />,
+//     dropdownItems: [
+//       {
+//         name: "All Coupons",
+//         href: routes?.coupons?.allCoupons,
+//       },
+//       {
+//         name: "Create Coupon",
+//         href: routes?.coupons?.createCoupon,
+//       },
+//     ],
+//   },
+
+//   // label start
+//   {
+//     name: "Help Center",
+//   },
+//   // label end
+//   {
+//     name: "Support",
+//     href: routes?.support?.support,
+//     icon: <PiHeadsetDuotone />,
+//     badge: "",
+//   },
+
+//   // label start
+//   {
+//     name: "Application",
+//   },
+//   // label end
+//   {
+//     name: "Media Manager",
+//     href: routes?.file?.manager,
+//     icon: <PiImageDuotone />,
+//   },
+// ];
+
+
+
+
+// import { routes } from "@/config/routes";
+// import {
+//   PiCurrencyCircleDollarDuotone,
+//   PiFolderLockDuotone,
+//   PiImageDuotone,
+//   PiHeadsetDuotone,
+//   PiPackageDuotone,
+//   PiTicketDuotone,
+// } from "react-icons/pi";
+// import { MdOutlineDashboard } from "react-icons/md";
+// import ProjectWriteIcon from "@/core/components/icons/project-write";
+
+// // Note: do not add href in the label object, it is rendering as label
+// export const menuItems = [
+//   // Label start
+//   {
+//     name: "Home",
+//   },
+//   // Label end
+//   {
+//     name: "Dashboard",
+//     href: "/",
+//     icon: <MdOutlineDashboard />,
+//     // No entity or action to skip permission check
+//   },
+//   // Label start
+//   {
+//     name: "Users & Roles",
+//   },
+//   // Label end
+//   {
+//     name: "Roles & Permissions",
+//     href: routes.rolesNpermissions.roles,
+//     icon: <PiFolderLockDuotone />,
+//     entity: "roles",
+//     action: "READ",
+//   },
+//   // Label start
+//   {
+//     name: "E-Commerce",
+//   },
+//   // Label end
+//   {
+//     name: "Products",
+//     href: "#",
+//     icon: <PiPackageDuotone />,
+//     dropdownItems: [
+//       {
+//         name: "Products",
+//         href: routes?.products?.products,
+//         entity: "products",
+//         action: "READ",
+//       },
+//       {
+//         name: "Create Product",
+//         href: routes?.products?.createProduct,
+//         entity: "products",
+//         action: "CREATE",
+//       },
+//       {
+//         name: "Categories",
+//         href: routes?.products?.categories,
+//         entity: "products",
+//         action: "READ",
+//       },
+//       {
+//         name: "Create Categories",
+//         href: routes?.products?.createCategory,
+//         entity: "products",
+//         action: "CREATE",
+//       },
+//     ],
+//   },
+//   {
+//     name: "Custom Forms",
+//     href: "#",
+//     icon: <ProjectWriteIcon />,
+//     dropdownItems: [
+//       {
+//         name: "All Forms",
+//         href: routes?.customForms?.all,
+//         entity: "customForms",
+//         action: "READ",
+//       },
+//       {
+//         name: "Form Fields",
+//         href: routes?.customForms?.fields,
+//         entity: "customForms",
+//         action: "READ",
+//       },
+//     ],
+//   },
+//   {
+//     name: "Orders",
+//     href: "#",
+//     icon: <PiCurrencyCircleDollarDuotone />,
+//     dropdownItems: [
+//       {
+//         name: "All Orders",
+//         href: routes?.orders?.orders,
+//         entity: "orders",
+//         action: "READ",
+//       },
+//     ],
+//   },
+//   {
+//     name: "Coupons",
+//     href: "#",
+//     icon: <PiTicketDuotone />,
+//     dropdownItems: [
+//       {
+//         name: "All Coupons",
+//         href: routes?.coupons?.allCoupons,
+//         entity: "coupons",
+//         action: "READ",
+//       },
+//       {
+//         name: "Create Coupon",
+//         href: routes?.coupons?.createCoupon,
+//         entity: "coupons",
+//         action: "CREATE",
+//       },
+//     ],
+//   },
+//   // Label start
+//   {
+//     name: "Help Center",
+//   },
+//   // Label end
+//   {
+//     name: "Support",
+//     href: routes?.support?.support,
+//     icon: <PiHeadsetDuotone />,
+//     badge: "",
+//     entity: "tickets",
+//     action: "READ",
+//   },
+//   // Label start
+//   {
+//     name: "Application",
+//   },
+//   // Label end
+//   {
+//     name: "Media Manager",
+//     href: routes?.file?.manager,
+//     icon: <PiImageDuotone />,
+//     entity: "file",
+//     action: "READ",
+//   },
+// ];
+
+
+
+
+
+// import { routes } from "@/config/routes";
+// import {
+//   PiCurrencyCircleDollarDuotone,
+//   PiFolderLockDuotone,
+//   PiImageDuotone,
+//   PiHeadsetDuotone,
+//   PiPackageDuotone,
+//   PiTicketDuotone,
+// } from "react-icons/pi";
+// import { MdOutlineDashboard } from "react-icons/md";
+// import ProjectWriteIcon from "@/core/components/icons/project-write";
+
+// // Note: do not add href in the label object, it is rendering as label
+// export const menuItems = [
+//   // Label start
+//   {
+//     name: "Home",
+//   },
+//   // Label end
+//   {
+//     name: "Dashboard",
+//     href: "/",
+//     icon: <MdOutlineDashboard />,
+//     // No entity or action to skip permission check
+//   },
+//   // Label start
+//   {
+//     name: "Users & Roles",
+//   },
+//   // Label end
+//   {
+//     name: "Roles & Permissions",
+//     href: routes.rolesNpermissions.roles,
+//     icon: <PiFolderLockDuotone />,
+//     entity: "roles",
+//     action: "READ",
+//   },
+//   // Label start
+//   {
+//     name: "E-Commerce",
+//   },
+//   // Label end
+//   {
+//     name: "Products",
+//     href: "#",
+//     icon: <PiPackageDuotone />,
+//     dropdownItems: [
+//       {
+//         name: "Products",
+//         href: routes?.products?.products,
+//         entity: "products",
+//         action: "READ",
+//       },
+//       {
+//         name: "Create Product",
+//         href: routes?.products?.createProduct,
+//         entity: "products",
+//         action: "CREATE",
+//       },
+//       {
+//         name: "Categories",
+//         href: routes?.products?.categories,
+//         entity: "products",
+//         action: "READ",
+//       },
+//       {
+//         name: "Create Categories",
+//         href: routes?.products?.createCategory,
+//         entity: "products",
+//         action: "CREATE",
+//       },
+//     ],
+//   },
+//   {
+//     name: "Custom Forms",
+//     href: "#",
+//     icon: <ProjectWriteIcon />,
+//     dropdownItems: [
+//       {
+//         name: "All Forms",
+//         href: routes?.customForms?.all,
+//         entity: "customForms",
+//         action: "READ",
+//       },
+//       {
+//         name: "Form Fields",
+//         href: routes?.customForms?.fields,
+//         entity: "customForms",
+//         action: "READ",
+//       },
+//     ],
+//   },
+//   {
+//     name: "Orders",
+//     href: "#",
+//     icon: <PiCurrencyCircleDollarDuotone />,
+//     dropdownItems: [
+//       {
+//         name: "All Orders",
+//         href: routes?.orders?.orders,
+//         entity: "orders",
+//         action: "READ",
+//       },
+//     ],
+//   },
+//   {
+//     name: "Coupons",
+//     href: "#",
+//     icon: <PiTicketDuotone />,
+//     dropdownItems: [
+//       {
+//         name: "All Coupons",
+//         href: routes?.coupons?.allCoupons,
+//         entity: "coupons",
+//         action: "READ",
+//       },
+//       {
+//         name: "Create Coupon",
+//         href: routes?.coupons?.createCoupon,
+//         entity: "coupons",
+//         action: "CREATE",
+//       },
+//     ],
+//   },
+//   // Label start
+//   {
+//     name: "Help Center",
+//   },
+//   // Label end
+//   {
+//     name: "Support",
+//     href: routes?.support?.support,
+//     icon: <PiHeadsetDuotone />,
+//     badge: "",
+//     entity: "tickets",
+//     action: "READ",
+//   },
+//   // Label start
+//   {
+//     name: "Application",
+//   },
+//   // Label end
+//   {
+//     name: "Media Manager",
+//     href: routes?.file?.manager,
+//     icon: <PiImageDuotone />,
+
+//   },
+// ];
+
+
+
+
+
 import { routes } from "@/config/routes";
-// import AffiliateIcon from "@core/components/icons/affiliate";
-// import CrmDashIcon from "@core/components/icons/crm-icon";
-// import ProjectWriteIcon from "@core/components/icons/project-write";
 import {
-  // PiAirplaneTiltDuotone,
-  // PiArrowsOut,
-  // PiArrowsOutLineHorizontalBold,
-  // PiBellSimpleRingingDuotone,
-  // PiBinocularsDuotone,
-  // PiBriefcaseDuotone,
-  // PiBrowserDuotone,
-  // PiCalendarDuotone,
-  // PiCalendarPlusDuotone,
-  // PiCaretCircleUpDownDuotone,
-  // PiChartBarDuotone,
-  // PiChartLineUpDuotone,
-  // PiChatCenteredDotsDuotone,
-  // PiCodesandboxLogoDuotone,
-  // PiCoinDuotone,
-  // PiCreditCardDuotone,
   PiCurrencyCircleDollarDuotone,
-  // PiCurrencyDollarDuotone,
-  // PiEnvelopeDuotone,
-  // PiEnvelopeSimpleOpenDuotone,
-  // PiFeatherDuotone,
-  // PiFolder,
   PiFolderLockDuotone,
   PiImageDuotone,
-  // PiGridFourDuotone,
-  // PiHammerDuotone,
   PiHeadsetDuotone,
-  // PiHourglassSimpleDuotone,
-  // PiHouseLineDuotone,
-  // PiListNumbersDuotone,
-  // PiLockKeyDuotone,
-  // PiMapPinLineDuotone,
-  // PiNewspaperClippingDuotone,
-  // PiNoteBlankDuotone,
   PiPackageDuotone,
-  // PiPushPinDuotone,
-  // PiRocketLaunchDuotone,
-  // PiShapesDuotone,
-  // PiShieldCheckDuotone,
-  // PiShootingStarDuotone,
-  // PiShoppingCartDuotone,
-  // PiSparkleDuotone,
-  // PiSquaresFourDuotone,
-  // PiStepsDuotone,
-  // PiTableDuotone,
-  // PiUserCircleDuotone,
-  // PiUserDuotone,
-  // PiUserGearDuotone,
-  // PiUserPlusDuotone,
-  // PiFilesDuotone,
   PiTicketDuotone,
 } from "react-icons/pi";
 import { MdOutlineDashboard } from "react-icons/md";
+import ProjectWriteIcon from "@/core/components/icons/project-write";
+
 // Note: do not add href in the label object, it is rendering as label
 export const menuItems = [
-  // label start
+  // Label start
   {
     name: "Home",
   },
-  // label end
+  // Label end
   {
     name: "Dashboard",
     href: "/",
     icon: <MdOutlineDashboard />,
+    // No entity or action to skip permission check
   },
-  // label start
+  // Label start
   {
     name: "Users & Roles",
   },
-  // label end
+  // Label end
   {
     name: "Roles & Permissions",
     href: routes.rolesNpermissions.roles,
     icon: <PiFolderLockDuotone />,
+    entity: "roles",
+    action: "READ",
   },
-
-  // label start
+  // Label start
   {
     name: "E-Commerce",
   },
-  // label end
+  // Label end
   {
     name: "Products",
     href: "#",
@@ -94,22 +498,48 @@ export const menuItems = [
       {
         name: "Products",
         href: routes?.products?.products,
+        entity: "products",
+        action: "READ",
       },
       {
         name: "Create Product",
         href: routes?.products?.createProduct,
+        entity: "products",
+        action: "CREATE",
       },
       {
         name: "Categories",
         href: routes?.products?.categories,
+        entity: "products",
+        action: "READ",
       },
       {
         name: "Create Categories",
         href: routes?.products?.createCategory,
+        entity: "products",
+        action: "CREATE",
       },
     ],
   },
-
+  {
+    name: "Custom Forms",
+    href: "#",
+    icon: <ProjectWriteIcon />,
+    dropdownItems: [
+      {
+        name: "All Forms",
+        href: routes?.customForms?.all,
+        entity: "customForms",
+        action: "READ",
+      },
+      {
+        name: "Form Fields",
+        href: routes?.customForms?.fields,
+        entity: "customForms",
+        action: "READ",
+      },
+    ],
+  },
   {
     name: "Orders",
     href: "#",
@@ -118,11 +548,9 @@ export const menuItems = [
       {
         name: "All Orders",
         href: routes?.orders?.orders,
+        entity: "orders",
+        action: "READ",
       },
-      // {
-      //   name: "Deleted Orders",
-      //   href: routes?.orders?.deletedOrders,
-      // },
     ],
   },
   {
@@ -133,597 +561,40 @@ export const menuItems = [
       {
         name: "All Coupons",
         href: routes?.coupons?.allCoupons,
+        entity: "coupons",
+        action: "READ",
       },
       {
         name: "Create Coupon",
         href: routes?.coupons?.createCoupon,
+        entity: "coupons",
+        action: "CREATE",
       },
     ],
   },
-
-  // label start
+  // Label start
   {
     name: "Help Center",
   },
-  // label end
+  // Label end
   {
     name: "Support",
     href: routes?.support?.support,
     icon: <PiHeadsetDuotone />,
+    badge: "",
+    // entity: "tickets",
+    // action: "READ",
   },
-
-  // label start
+  // Label start
   {
     name: "Application",
   },
-  // label end
+  // Label end
   {
     name: "Media Manager",
     href: routes?.file?.manager,
     icon: <PiImageDuotone />,
+    entity: "file",
+    action: "READ",
   },
-
-  // // label start
-  // {
-  //   name: "Static Pages",
-  // },
-  // // label end
-  // {
-  //   name: "Pages",
-  //   href: "#",
-  //   icon: <PiFilesDuotone />,
-  //   dropdownItems: [
-  //     {
-  //       name: "Terms and Conditions",
-  //       href: routes?.staticPages?.termsPage,
-  //     },
-  //   ],
-  // },
-  // {
-  //   name: "Pages",
-  //   href: routes?.staticPages?.pages,
-  //   icon: <PiFilesDuotone />,
-  // },
-  // {
-  //   name: 'Appointment',
-  //   href: routes.appointment.dashboard,
-  //   icon: <PiCalendarDuotone />,
-  // },
-  // {
-  //   name: 'Executive',
-  //   href: routes.executive.dashboard,
-  //   icon: <PiBriefcaseDuotone />,
-  // },
-  // {
-  //   name: 'Project',
-  //   href: routes.project.dashboard,
-  //   icon: <ProjectWriteIcon />,
-  // },
-  // {
-  //   name: 'CRM',
-  //   href: routes.crm.dashboard,
-  //   icon: <CrmDashIcon />,
-  // },
-  // {
-  //   name: 'Affiliate',
-  //   href: routes.affiliate.dashboard,
-  //   icon: <AffiliateIcon />,
-  //   badge: 'NEW',
-  // },
-  // {
-  //   name: 'Social Media',
-  //   href: routes.socialMedia.dashboard,
-  //   icon: <PiSparkleDuotone />,
-  // },
-  // {
-  //   name: 'Job Board',
-  //   href: routes.jobBoard.dashboard,
-  //   icon: <PiShapesDuotone />,
-  // },
-  // {
-  //   name: 'Financial',
-  //   href: routes.financial.dashboard,
-  //   icon: <PiCurrencyCircleDollarDuotone />,
-  // },
-  // {
-  //   name: 'Logistics',
-  //   href: routes.logistics.dashboard,
-  //   icon: <PiPackageDuotone />,
-  // },
-  // {
-  //   name: 'E-Commerce',
-  //   href: routes.eCommerce.dashboard,
-  //   icon: <PiShoppingCartDuotone />,
-  // },
-  // {
-  //   name: 'Analytics',
-  //   href: routes.analytics,
-  //   icon: <PiChartBarDuotone />,
-  // },
-  // {
-  //   name: 'Support',
-  //   href: routes.support.dashboard,
-  //   icon: <PiHeadsetDuotone />,
-  // },
-
-  // // label start
-  // {
-  //   name: 'Apps Kit',
-  // },
-  // // label end
-  // {
-  //   name: 'E-Commerce',
-  //   href: '#',
-  //   icon: <PiShoppingCartDuotone />,
-  //   dropdownItems: [
-  //     {
-  //       name: 'Products',
-  //       href: routes.eCommerce.products,
-  //       badge: '',
-  //     },
-  //     {
-  //       name: 'Product Details',
-  //       href: routes.eCommerce.productDetails(DUMMY_ID),
-  //     },
-  //     {
-  //       name: 'Create Product',
-  //       href: routes.eCommerce.createProduct,
-  //     },
-  //     {
-  //       name: 'Edit Product',
-  //       href: routes.eCommerce.ediProduct(DUMMY_ID),
-  //     },
-  //     {
-  //       name: 'Categories',
-  //       href: routes.eCommerce.categories,
-  //     },
-  //     {
-  //       name: 'Create Category',
-  //       href: routes.eCommerce.createCategory,
-  //     },
-  //     {
-  //       name: 'Edit Category',
-  //       href: routes.eCommerce.editCategory(DUMMY_ID),
-  //     },
-  //     {
-  //       name: 'Orders',
-  //       href: routes.eCommerce.orders,
-  //     },
-  //     {
-  //       name: 'Order Details',
-  //       href: routes.eCommerce.orderDetails(DUMMY_ID),
-  //     },
-  //     {
-  //       name: 'Create Order',
-  //       href: routes.eCommerce.createOrder,
-  //     },
-  //     {
-  //       name: 'Edit Order',
-  //       href: routes.eCommerce.editOrder(DUMMY_ID),
-  //     },
-  //     {
-  //       name: 'Reviews',
-  //       href: routes.eCommerce.reviews,
-  //     },
-  //     {
-  //       name: 'Shop',
-  //       href: routes.eCommerce.shop,
-  //     },
-  //     {
-  //       name: 'Cart',
-  //       href: routes.eCommerce.cart,
-  //     },
-  //     {
-  //       name: 'Checkout & Payment',
-  //       href: routes.eCommerce.checkout,
-  //     },
-  //   ],
-  // },
-  // {
-  //   name: 'Support',
-  //   href: '#',
-  //   icon: <PiHeadsetDuotone />,
-  //   dropdownItems: [
-  //     {
-  //       name: 'Inbox',
-  //       href: routes.support.inbox,
-  //     },
-  //     {
-  //       name: 'Snippets',
-  //       href: routes.support.snippets,
-  //     },
-  //     {
-  //       name: 'Templates',
-  //       href: routes.support.templates,
-  //     },
-  //   ],
-  // },
-  // {
-  //   name: 'Invoice',
-  //   href: '#',
-  //   icon: <PiCurrencyDollarDuotone />,
-  //   dropdownItems: [
-  //     {
-  //       name: 'List',
-  //       href: routes.invoice.home,
-  //     },
-  //     {
-  //       name: 'Details',
-  //       href: routes.invoice.details(DUMMY_ID),
-  //     },
-  //     {
-  //       name: 'Create',
-  //       href: routes.invoice.create,
-  //     },
-  //     {
-  //       name: 'Edit',
-  //       href: routes.invoice.edit(DUMMY_ID),
-  //     },
-  //   ],
-  // },
-  // {
-  //   name: 'Logistics',
-  //   href: '#',
-  //   icon: <PiPackageDuotone />,
-  //   dropdownItems: [
-  //     {
-  //       name: 'Shipment List',
-  //       href: routes.logistics.shipmentList,
-  //     },
-  //     {
-  //       name: 'Shipment Details',
-  //       href: routes.logistics.shipmentDetails(DUMMY_ID),
-  //     },
-  //     {
-  //       name: 'Create Shipment',
-  //       href: routes.logistics.createShipment,
-  //     },
-  //     {
-  //       name: 'Edit Shipment',
-  //       href: routes.logistics.editShipment(DUMMY_ID),
-  //     },
-  //     {
-  //       name: 'Customer Profile',
-  //       href: routes.logistics.customerProfile,
-  //     },
-  //     {
-  //       name: 'Tracking',
-  //       href: routes.logistics.tracking(DUMMY_ID),
-  //     },
-  //   ],
-  // },
-  // {
-  //   name: 'Job Feeds',
-  //   href: routes.jobBoard.jobFeed,
-  //   icon: <PiShapesDuotone />,
-  // },
-  // {
-  //   name: 'Appointment',
-  //   href: routes.appointment.appointmentList,
-  //   icon: <PiCalendarDuotone />,
-  // },
-  // {
-  //   name: 'File Manager',
-  //   href: routes.file.manager,
-  //   icon: <PiFolder />,
-  // },
-  // {
-  //   name: 'Event Calendar',
-  //   href: routes.eventCalendar,
-  //   icon: <PiCalendarPlusDuotone />,
-  // },
-  // {
-  //   name: 'Roles & Permissions',
-  //   href: routes.rolesPermissions,
-  //   icon: <PiFolderLockDuotone />,
-  // },
-  // {
-  //   name: 'Point of Sale',
-  //   href: routes.pos.index,
-  //   icon: <PiCreditCardDuotone />,
-  // },
-  // {
-  //   name: 'Invoice Builder',
-  //   href: routes.invoice.builder,
-  //   icon: <PiNewspaperClippingDuotone />,
-  // },
-  // {
-  //   name: 'Image Viewer',
-  //   href: routes.imageViewer,
-  //   icon: <PiCodesandboxLogoDuotone />,
-  //   badge: 'NEW',
-  // },
-  // // label start
-  // {
-  //   name: 'Search & Filters',
-  // },
-  // {
-  //   name: 'Real Estate',
-  //   href: routes.searchAndFilter.realEstate,
-  //   icon: <PiHouseLineDuotone />,
-  // },
-  // {
-  //   name: 'Flight Booking',
-  //   href: routes.searchAndFilter.flight,
-  //   icon: <PiAirplaneTiltDuotone />,
-  // },
-  // {
-  //   name: 'NFT',
-  //   href: routes.searchAndFilter.nft,
-  //   icon: <PiCoinDuotone />,
-  // },
-  // // label end
-  // // label start
-  // {
-  //   name: 'Widgets',
-  // },
-  // // label end
-  // {
-  //   name: 'Cards',
-  //   href: routes.widgets.cards,
-  //   icon: <PiSquaresFourDuotone />,
-  // },
-  // {
-  //   name: 'Icons',
-  //   href: routes.widgets.icons,
-  //   icon: <PiFeatherDuotone />,
-  // },
-  // {
-  //   name: 'Charts',
-  //   href: routes.widgets.charts,
-  //   icon: <PiChartLineUpDuotone />,
-  // },
-  // // {
-  // //   name: 'Banners',
-  // //   href: routes.widgets.banners,
-  // //   icon: <PiImageDuotone />,
-  // // },
-  // {
-  //   name: 'Maps',
-  //   href: routes.widgets.maps,
-  //   icon: <PiMapPinLineDuotone />,
-  // },
-  // {
-  //   name: 'Email Templates',
-  //   href: routes.emailTemplates,
-  //   icon: <PiEnvelopeDuotone />,
-  // },
-  // // label start
-  // {
-  //   name: 'Forms',
-  // },
-  // // label end
-  // {
-  //   name: 'Account Settings',
-  //   href: routes.forms.profileSettings,
-  //   icon: <PiUserGearDuotone />,
-  // },
-  // {
-  //   name: 'Notification Preference',
-  //   href: routes.forms.notificationPreference,
-  //   icon: <PiBellSimpleRingingDuotone />,
-  // },
-  // {
-  //   name: 'Personal Information',
-  //   href: routes.forms.personalInformation,
-  //   icon: <PiUserDuotone />,
-  // },
-  // {
-  //   name: 'Newsletter',
-  //   href: routes.forms.newsletter,
-  //   icon: <PiEnvelopeSimpleOpenDuotone />,
-  // },
-  // {
-  //   name: 'Multi Step',
-  //   href: routes.multiStep,
-  //   icon: <PiStepsDuotone />,
-  // },
-  // {
-  //   name: 'Payment Checkout',
-  //   href: routes.eCommerce.checkout,
-  //   icon: <PiCreditCardDuotone />,
-  // },
-  // // label start
-  // {
-  //   name: 'Tables',
-  // },
-  // // label end
-  // {
-  //   name: 'Basic',
-  //   href: routes.tables.basic,
-  //   icon: <PiGridFourDuotone />,
-  // },
-  // {
-  //   name: 'Collapsible',
-  //   href: routes.tables.collapsible,
-  //   icon: <PiCaretCircleUpDownDuotone />,
-  // },
-  // {
-  //   name: 'Enhanced',
-  //   href: routes.tables.enhanced,
-  //   icon: <PiTableDuotone />,
-  // },
-  // {
-  //   name: 'Sticky Header',
-  //   href: routes.tables.stickyHeader,
-  //   icon: <PiBrowserDuotone />,
-  // },
-  // {
-  //   name: 'Pagination',
-  //   href: routes.tables.pagination,
-  //   icon: <PiListNumbersDuotone />,
-  // },
-  // {
-  //   name: 'Search',
-  //   href: routes.tables.search,
-  //   icon: <PiHourglassSimpleDuotone />,
-  // },
-  // {
-  //   name: 'Resizable',
-  //   href: routes.tables.resizable,
-  //   icon: <PiArrowsOutLineHorizontalBold />,
-  // },
-  // {
-  //   name: 'Pinning',
-  //   href: routes.tables.pinning,
-  //   icon: <PiPushPinDuotone />,
-  // },
-  // {
-  //   name: 'Drag & Drop',
-  //   href: routes.tables.dnd,
-  //   icon: <PiArrowsOut />,
-  // },
-  // // label start
-  // {
-  //   name: 'Pages',
-  // },
-  // {
-  //   name: 'Profile',
-  //   href: routes.profile,
-  //   icon: <PiUserCircleDuotone />,
-  // },
-  // {
-  //   name: 'Welcome',
-  //   href: routes.welcome,
-  //   icon: <PiShootingStarDuotone />,
-  // },
-  // {
-  //   name: 'Coming soon',
-  //   href: routes.comingSoon,
-  //   icon: <PiRocketLaunchDuotone />,
-  // },
-  // {
-  //   name: 'Access Denied',
-  //   href: routes.accessDenied,
-  //   icon: <PiFolderLockDuotone />,
-  // },
-  // {
-  //   name: 'Not Found',
-  //   href: routes.notFound,
-  //   icon: <PiBinocularsDuotone />,
-  // },
-  // {
-  //   name: 'Maintenance',
-  //   href: routes.maintenance,
-  //   icon: <PiHammerDuotone />,
-  // },
-  // {
-  //   name: 'Blank',
-  //   href: routes.blank,
-  //   icon: <PiNoteBlankDuotone />,
-  // },
-
-  // // label start
-  // {
-  //   name: 'Authentication',
-  // },
-  // // label end
-  // {
-  //   name: 'Sign Up',
-  //   href: '#',
-  //   icon: <PiUserPlusDuotone />,
-  //   dropdownItems: [
-  //     {
-  //       name: 'Modern Sign up',
-  //       href: routes.auth.signUp1,
-  //     },
-  //     {
-  //       name: 'Vintage Sign up',
-  //       href: routes.auth.signUp2,
-  //     },
-  //     {
-  //       name: 'Trendy Sign up',
-  //       href: routes.auth.signUp3,
-  //     },
-  //     {
-  //       name: 'Elegant Sign up',
-  //       href: routes.auth.signUp4,
-  //     },
-  //     {
-  //       name: 'Classic Sign up',
-  //       href: routes.auth.signUp5,
-  //     },
-  //   ],
-  // },
-  // {
-  //   name: 'Sign In',
-  //   href: '#',
-  //   icon: <PiShieldCheckDuotone />,
-  //   dropdownItems: [
-  //     {
-  //       name: 'Modern Sign in',
-  //       href: routes.auth.signIn1,
-  //     },
-  //     {
-  //       name: 'Vintage Sign in',
-  //       href: routes.auth.signIn2,
-  //     },
-  //     {
-  //       name: 'Trendy Sign in',
-  //       href: routes.auth.signIn3,
-  //     },
-  //     {
-  //       name: 'Elegant Sign in',
-  //       href: routes.auth.signIn4,
-  //     },
-  //     {
-  //       name: 'Classic Sign in',
-  //       href: routes.auth.signIn5,
-  //     },
-  //   ],
-  // },
-  // {
-  //   name: 'Forgot Password',
-  //   href: '#',
-  //   icon: <PiLockKeyDuotone />,
-  //   dropdownItems: [
-  //     {
-  //       name: 'Modern Forgot password',
-  //       href: routes.auth.forgotPassword1,
-  //     },
-  //     {
-  //       name: 'Vintage Forgot password',
-  //       href: routes.auth.forgotPassword2,
-  //     },
-  //     {
-  //       name: 'Trendy Forgot password',
-  //       href: routes.auth.forgotPassword3,
-  //     },
-  //     {
-  //       name: 'Elegant Forgot password',
-  //       href: routes.auth.forgotPassword4,
-  //     },
-  //     {
-  //       name: 'Classic Forgot password',
-  //       href: routes.auth.forgotPassword5,
-  //     },
-  //   ],
-  // },
-  // {
-  //   name: 'OTP Pages',
-  //   href: '#',
-  //   icon: <PiChatCenteredDotsDuotone />,
-  //   dropdownItems: [
-  //     {
-  //       name: 'Modern OTP page',
-  //       href: routes.auth.otp1,
-  //     },
-  //     {
-  //       name: 'Vintage OTP page',
-  //       href: routes.auth.otp2,
-  //     },
-  //     {
-  //       name: 'Trendy OTP page',
-  //       href: routes.auth.otp3,
-  //     },
-  //     {
-  //       name: 'Elegant OTP page',
-  //       href: routes.auth.otp4,
-  //     },
-  //     {
-  //       name: 'Classic OTP page',
-  //       href: routes.auth.otp5,
-  //     },
-  //   ],
-  // },
 ];

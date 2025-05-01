@@ -33,7 +33,7 @@ const allStatus = {
 export type StatusTypes = keyof typeof allStatus;
 
 export function getStatusBadge(status: string) {
-  const statusLower = status.toLowerCase() as StatusTypes;
+  const statusLower = status?.toLowerCase() as StatusTypes;
   if (statusLower in allStatus) {
     return (
       <Flex align="center" gap="2" className="w-auto">

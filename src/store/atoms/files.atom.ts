@@ -56,7 +56,6 @@ const fetchFiles = async (fileType = "all"): Promise<CloudinaryFile[]> => {
     const res = await response.json();
     return res?.data || [];
   } catch (error) {
-    console.error("Fetch files error:", error);
     throw error;
   }
 };

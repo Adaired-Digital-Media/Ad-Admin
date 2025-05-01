@@ -88,11 +88,10 @@ export default function UsersTable({
     if (session?.user?.accessToken) {
       const fetchUsers = async () => {
         try {
-          const res = await setUsers({
+          await setUsers({
             type: "fetchAll",
             token: session.user.accessToken!,
           });
-          console.log("Fetched users: ", res);
         } catch (error) {
           toast.error("Failed to fetch users");
           console.log("Failed to fetch users : ", error);
