@@ -29,8 +29,8 @@ export default function SearchList({ onClose }: { onClose?: () => void }) {
     menuItemsFiltered = pageLinks.filter((item: any) => {
       const label = item.name;
       return (
-        label.match(searchText.toLowerCase()) ||
-        (label.toLowerCase().match(searchText.toLowerCase()) && label)
+        label.match(searchText?.toLowerCase()) ||
+        (label?.toLowerCase().match(searchText?.toLowerCase()) && label)
       );
     });
   }

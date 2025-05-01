@@ -84,7 +84,7 @@ export default function EditRole({
 
   const defaultValues: FormData = {
     permissions: modules.reduce((acc, module) => {
-      const moduleKey = module.value.toLowerCase();
+      const moduleKey = module.value?.toLowerCase();
       const rolePermission = rolePermissions?.find(
         (p) => p.module.toLowerCase() === moduleKey
       );

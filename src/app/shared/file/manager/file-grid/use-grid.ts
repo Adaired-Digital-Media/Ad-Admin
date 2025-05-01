@@ -76,13 +76,13 @@ export function useGrid<T extends AnyObject>(
                     (nestedItem) =>
                       nestedItem &&
                       String(nestedItem)
-                        .toLowerCase()
-                        .includes(searchTerm.toLowerCase())
+                        ?.toLowerCase()
+                        .includes(searchTerm?.toLowerCase())
                   )
               : value &&
                   String(value)
-                    .toLowerCase()
-                    .includes(searchTerm.toLowerCase());
+                    ?.toLowerCase()
+                    .includes(searchTerm?.toLowerCase());
           })
         )
       : paginatedData();

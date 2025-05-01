@@ -7,6 +7,7 @@ export const routes = {
   root: {
     website: "",
     dashboard: "/",
+    unauthorized: "/unauthorized",
   },
   rolesNpermissions: {
     roles: "/roles-permissions",
@@ -23,6 +24,12 @@ export const routes = {
     createCategory: "/products/categories/create",
     editCategory: (id: string) => `/products/categories/${id}/edit`,
   },
+  customForms: {
+    all: "/custom-forms",
+    create: "/custom-forms/create",
+    edit: (id: string) => `/custom-forms/edit?id=${id}`,
+    fields: "/custom-forms/fields",
+  },
   orders: {
     orders: "/orders",
     orderDetails: (id: string) => `/orders/order-details?orderNumber=${id}`,
@@ -31,7 +38,7 @@ export const routes = {
   coupons: {
     allCoupons: "/coupons",
     createCoupon: "/coupons/create",
-    editCoupon:(id:string)=>`/coupons/edit?couponId=${id}`
+    editCoupon: (id: string) => `/coupons/edit?couponId=${id}`,
   },
   support: {
     support: "/support",

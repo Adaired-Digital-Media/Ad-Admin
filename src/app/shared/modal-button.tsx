@@ -2,13 +2,14 @@
 
 import { PiPlusBold } from 'react-icons/pi';
 import { useModal } from '@/app/shared/modal-views/use-modal';
-import { Button, type ButtonProps } from 'rizzui';
+import { Button, ModalSize, type ButtonProps } from 'rizzui';
 import cn from '@core/utils/class-names';
 
 interface ModalButtonProps extends ButtonProps {
   label?: string;
   className?: string;
   customSize?: string;
+  modalSize?: ModalSize;
   icon?: React.ReactNode;
   view: React.ReactNode;
 }
@@ -17,6 +18,7 @@ export default function ModalButton({
   label = 'Add New',
   className,
   customSize = '500px',
+  modalSize = 'sm' as ModalSize,
   view,
   icon = <PiPlusBold className="me-1.5 h-[17px] w-[17px]" />,
   ...rest
@@ -32,6 +34,7 @@ export default function ModalButton({
         openModal({
           view,
           customSize,
+          size: modalSize,
         })
       }
       {...rest}

@@ -67,9 +67,9 @@ const pageHeader = {
 
 export default async function CouponsPage() {
   const session = await auth();
-  if (!session) {
-    throw new Error("User session is not available.");
-  }
+  // if (!session) {
+  //   throw new Error("User session is not available.");
+  // }
   const accessToken = session?.user?.accessToken || "";
   // Parallel data fetching
   const [coupons, couponStats] = await Promise.all([
@@ -93,7 +93,7 @@ export default async function CouponsPage() {
         </div>
       </PageHeader>
 
-      <CouponsTable pageSize={10} initialCoupons={coupons} couponStats={couponStats} session={session}/>
+      <CouponsTable pageSize={10} initialCoupons={coupons} couponStats={couponStats} session={session!}/>
     </>
   );
 }

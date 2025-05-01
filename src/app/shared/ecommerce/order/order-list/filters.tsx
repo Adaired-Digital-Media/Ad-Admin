@@ -224,7 +224,7 @@ function FilterElements<T extends Record<string, any>>({
 }
 
 function renderOptionDisplayValue(value: string) {
-  switch (value.toLowerCase()) {
+  switch (value?.toLowerCase()) {
     case "pending":
       return (
         <div className="flex items-center">

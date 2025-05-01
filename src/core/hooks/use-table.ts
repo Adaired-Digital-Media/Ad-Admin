@@ -132,7 +132,7 @@ export function useTable<T extends AnyObject>(
   }
 
   function applyFilters() {
-    const searchTermLower = searchTerm.toLowerCase();
+    const searchTermLower = searchTerm?.toLowerCase();
 
     return (
       sortedData
@@ -160,8 +160,8 @@ export function useTable<T extends AnyObject>(
                 );
               }
               if (isString(filterValue) && !Array.isArray(filterValue)) {
-                const itemValue = item[columnId]?.toString().toLowerCase();
-                if (itemValue !== filterValue.toString().toLowerCase()) {
+                const itemValue = item[columnId]?.toString()?.toLowerCase();
+                if (itemValue !== filterValue.toString()?.toLowerCase()) {
                   return false;
                 }
                 return true;
@@ -178,9 +178,9 @@ export function useTable<T extends AnyObject>(
                 Object.values(value).some(
                   (nestedItem) =>
                     nestedItem &&
-                    String(nestedItem).toLowerCase().includes(searchTermLower)
+                    String(nestedItem)?.toLowerCase().includes(searchTermLower)
                 )
-              : value && String(value).toLowerCase().includes(searchTermLower)
+              : value && String(value)?.toLowerCase().includes(searchTermLower)
           )
         )
     );

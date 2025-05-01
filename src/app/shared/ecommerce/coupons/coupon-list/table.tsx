@@ -60,7 +60,6 @@ export default function CouponsTable({
       },
       meta: {
         handleMultipleDelete: async (rows: any) => {
-          setData((prev) => prev.filter((r) => !rows.includes(r)));
           rows.forEach(async (r: CouponTypes) => {
             const _response = await apiCall<{ message: string }>({
               url: `/coupons/delete?id=${r._id}`,
@@ -82,13 +81,12 @@ export default function CouponsTable({
           });
           console.log("Response : ", response);
           if (response.success) {
-            setData((prev) => prev.filter((r) => r._id !== row._id));
             toast.success(response.message);
           }
-          table.resetRowSelection();
           await fetch("/api/revalidateTags?tags=coupons", {
             method: "GET",
           });
+          table.resetRowSelection();
         },
       } as CustomTableMeta<CouponTypes>,
       enableColumnResizing: false,

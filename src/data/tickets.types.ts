@@ -69,12 +69,17 @@ export const chatType = {
   Email: "Email",
 } as const;
 
-export interface AdminStats {
-  totalTickets: number;
-  openTickets: number;
-  resolvedTickets: number;
-  closedTickets: number;
-  ticketsAssignedToMe: number;
+export interface TicketStatsResponse {
+  role: "admin" | "support" | "customer";
+  stats: {
+    total: number;
+    open: number;
+    closed: number;
+    resolved?: number;
+    assignedToMe?: number;
+    efficiency?: number;
+    reopened?: number;
+  };
 }
 
 export interface SupportStats {
@@ -82,9 +87,4 @@ export interface SupportStats {
   pendingTickets: number;
   deliveredTickets: number;
   myEfficiency: number;
-}
-
-export interface StatsResponse {
-  success: boolean;
-  stats: AdminStats | SupportStats;
 }

@@ -74,18 +74,27 @@ export default function TicketsTable({
   // Fetch tickets on mount and when access token changes
   useEffect(() => {
     if (session?.user?.accessToken) {
-      const fetchTickets = async () => {
+      const fetchData = async () => {
         try {
-          await dispatch({
-            type: "fetchAll",
-            token: session.user.accessToken!,
-          });
+          // Execute both requests in parallel
+          await Promise.all([
+            dispatch({
+              type: "fetchAll",
+              token: session.user.accessToken!,
+            }),
+            dispatch({
+              type: "fetchStats",
+              token: session.user.accessToken!,
+            })
+          ]);
         } catch (error) {
-          toast.error("Failed to fetch tickets");
-          console.log("Failed to fetch tickets : ", error);
+          // Handle errors from either request
+          toast.error("Failed to fetch ticket data");
+          console.error("Failed to fetch ticket data:", error);
         }
       };
-      fetchTickets();
+  
+      fetchData();
     }
   }, [session?.user?.accessToken, dispatch]);
 
