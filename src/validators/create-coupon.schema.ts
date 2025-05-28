@@ -151,6 +151,19 @@ export const couponFormSchema = z
         path: ["expiresAt"],
       });
     }
+
+    // New validation: Ensure discountValue does not exceed minOrderAmount for flat discounts
+    if (
+      data.discountType === "flat" &&
+      data.minOrderAmount &&
+      data.discountValue > data.minOrderAmount
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `Discount value ($${data.discountValue}) cannot exceed the minimum order amount ($${data.minOrderAmount}) for a flat discount coupon`,
+        path: ["discountValue"],
+      });
+    }
   });
 
 export type CouponFormValues = z.infer<typeof couponFormSchema>;

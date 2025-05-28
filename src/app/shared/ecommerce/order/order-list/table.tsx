@@ -10,8 +10,11 @@ import Filters from "./filters";
 import { TableVariantProps } from "rizzui";
 import { OrderType } from "@/core/types";
 import { TableMeta } from "@tanstack/react-table";
-import { useApiCall } from "@/core/utils/api-config";
 import toast from "react-hot-toast";
+import { useAtom, useSetAtom } from "jotai";
+import { orderActionsAtom, ordersAtom } from "@/store/atoms/orders.atom";
+import { Session } from "next-auth";
+import { useEffect } from "react";
 
 // Define custom meta interface
 export interface CustomTableMeta<T> extends TableMeta<T> {
@@ -25,16 +28,19 @@ export default function OrderTable({
   hideFilters = false,
   hidePagination = false,
   orderData,
+  session,
 }: {
   className?: string;
   hideFilters?: boolean;
   hidePagination?: boolean;
   variant?: TableVariantProps;
   orderData: any;
+  session: Session;
 }) {
-  const { apiCall } = useApiCall();
+  const [orders] = useAtom(ordersAtom);
+  const setOrders = useSetAtom(orderActionsAtom);
   const { table, setData } = useTanStackTable<OrderType>({
-    tableData: orderData,
+    tableData: orders.length ? orders : orderData,
     columnConfig: ordersColumns(),
     options: {
       initialState: {
@@ -45,19 +51,24 @@ export default function OrderTable({
       },
       meta: {
         handleDeleteRow: async (row: { _id: string }) => {
-          setData((prev) => prev.filter((r) => r._id !== row._id));
-          const response = await apiCall<{ message: string }>({
-            url: `/order/delete?query=${row._id}`,
-            method: "DELETE",
+          const response = await setOrders({
+            type: "delete",
+            payload: {
+              id: row._id,
+            },
+            token: session.user.accessToken!,
           });
-          if (response.status === 200) {
-            toast.success(response.data.message);
-          }
+          toast.success(response.message);
         },
       } as CustomTableMeta<OrderType>,
       enableColumnResizing: false,
     },
   });
+
+  // Sync table data with orders atom
+  useEffect(() => {
+    setData(orders.length > 0 ? orders : orderData);
+  }, [orders, orderData, setData]);
 
   return (
     <div className={className}>

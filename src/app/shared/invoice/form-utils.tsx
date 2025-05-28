@@ -56,26 +56,26 @@ export type InvoiceFormTypes = z.infer<typeof invoiceFormSchema>;
 // invoice status options
 export const statusOptions = [
   {
+    value: 'Unpaid',
+    label: 'Unpaid',
+  },
+  {
     value: 'Paid',
     label: 'Paid',
   },
   {
-    value: 'pending',
-    label: 'Pending',
-  },
-  {
-    value: 'overdue',
+    value: 'Overdue',
     label: 'Overdue',
   },
   {
-    value: 'draft',
-    label: 'Draft',
+    value: 'Cancelled',
+    label: 'Cancelled',
   },
 ];
 
 export function renderOptionDisplayValue(value: string) {
   switch (value?.toLowerCase()) {
-    case 'pending':
+    case 'Unpaid':
       return (
         <div className="flex items-center">
           <Badge color="warning" renderAsDot />
@@ -84,7 +84,7 @@ export function renderOptionDisplayValue(value: string) {
           </Text>
         </div>
       );
-    case 'paid':
+    case 'Paid':
       return (
         <div className="flex items-center">
           <Badge color="success" renderAsDot />
@@ -93,7 +93,7 @@ export function renderOptionDisplayValue(value: string) {
           </Text>
         </div>
       );
-    case 'overdue':
+    case 'Cancelled':
       return (
         <div className="flex items-center">
           <Badge color="danger" renderAsDot />

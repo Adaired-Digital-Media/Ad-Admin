@@ -26,7 +26,7 @@ export const metaObject = (
     title: title ? `${title} - Adaired Digital` : siteConfig.title,
     description,
     openGraph: openGraph ?? {
-      title: title ? `${title} - AdaireDigital` : title,
+      title: title ? `${title} - Adaired Digital` : title,
       description,
       url: "",
       siteName: "Adaired Digital Media", // https://developers.google.com/search/docs/appearance/site-names

@@ -83,6 +83,7 @@ export default function OrderView({
   order: any;
   session: Session;
 }) {
+
   // Find the matching payment method image
   const matchedPayment = Images.find(
     (image) => image.paymentMethod.name === order.paymentMethod
@@ -175,7 +176,7 @@ export default function OrderView({
                     </div>
                   </div>
                     <div className="w-1/3 text-end">
-                      {toCurrency(order.discountedPrice)}
+                      {toCurrency(order.finalPrice)}
                     </div>
                 </div>
                 {/* {transitions.map((item) => (

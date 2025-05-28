@@ -3,6 +3,7 @@ export const routes = {
     signIn: "/auth/sign-in",
     signUp: "/auth/sign-up",
     forgotPassword: "/auth/forgot-password",
+    "access-denied": "/access-denied",
   },
   root: {
     website: "",
@@ -35,6 +36,11 @@ export const routes = {
     orderDetails: (id: string) => `/orders/order-details?orderNumber=${id}`,
     deletedOrders: "/orders/deleted",
   },
+  invoice : {
+    list: "/invoices",
+    details: (id: string) => `/invoices/details?invoiceNumber=${id}`,
+    edit: (id: string) => `/invoices/edit?invoiceNumber=${id}`,
+  },
   coupons: {
     allCoupons: "/coupons",
     createCoupon: "/coupons/create",
@@ -48,6 +54,11 @@ export const routes = {
     manager: "/media-manager",
     upload: "/media-manager/upload",
     create: "/media-manager/create",
+  },
+  blog: {
+    list: "/blog/list",
+    create: "/blog/create",
+    edit: (id: string) => `/blog/edit?id=${id}`,
   },
   staticPages: {
     termsPage: "/static-pages/terms",

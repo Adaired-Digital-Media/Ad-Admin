@@ -57,7 +57,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { routes } from "@/config/routes";
-import { routePermissions,publicRoutes } from "@/config/route-permissions";
+import { routePermissions, publicRoutes } from "@/config/route-permissions";
 import { checkPermission, PermissionActions } from "@core/utils/permissions";
 
 export async function middleware(req: NextRequest) {
@@ -68,9 +68,6 @@ export async function middleware(req: NextRequest) {
     publicRoutes.includes(pathname) ||
     pathname.match(/(_next\/static|_next\/image|\.png$)/);
 
-  console.log(
-    `Middleware: Checking if ${pathname} is public: ${isPublicRoute}`
-  );
   if (isPublicRoute) {
     console.log(`Middleware: Allowing public route: ${pathname}`);
     return NextResponse.next();
@@ -85,9 +82,6 @@ export async function middleware(req: NextRequest) {
 
   // Check if token exists and is not expired
   if (!token || !token.expiresAt || typeof token.expiresAt !== "string") {
-    console.log(
-      `Middleware: No valid token for ${pathname}, redirecting to sign-in`
-    );
     const signInUrl = new URL(routes.auth.signIn, req.url);
     signInUrl.searchParams.set("callbackUrl", req.url);
     return NextResponse.redirect(signInUrl);
@@ -96,9 +90,9 @@ export async function middleware(req: NextRequest) {
   try {
     const expiresAtDate = new Date(token.expiresAt);
     if (isNaN(expiresAtDate.getTime()) || expiresAtDate < new Date()) {
-      console.log(
-        `Middleware: Token expired for ${pathname}, redirecting to sign-in`
-      );
+      // console.log(
+      //   `Middleware: Token expired for ${pathname}, redirecting to sign-in`
+      // );
       const signInUrl = new URL(routes.auth.signIn, req.url);
       signInUrl.searchParams.set("callbackUrl", req.url);
       return NextResponse.redirect(signInUrl);
@@ -110,13 +104,17 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(signInUrl);
   }
 
+  // Check if user is a customer
+  const isCustomer = token.role?.name === "customer";
+  if (isCustomer) {
+    return NextResponse.redirect(
+      new URL(routes.auth["access-denied"], req.url)
+    );
+  }
+
   // Check route permissions
   const permission = routePermissions[pathname];
   if (!permission) {
-    // Allow access if no permission is defined (adjust based on your policy)
-    console.warn(
-      `Middleware: No permission defined for ${pathname}, allowing access`
-    );
     return NextResponse.next();
   }
 
