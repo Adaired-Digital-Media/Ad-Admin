@@ -1068,27 +1068,9 @@ export function SidebarMenu() {
               <>
                 {item.dropdownItems ? (
                   <>
-                    {console.log(`Rendering Collapse for ${item.name}`, {
-                      href: item.href,
-                      badge: item.badge,
-                      dropdownItems: item.dropdownItems.map((di) => ({
-                        name: di.name,
-                        href: di.href,
-                      })),
-                    })}
                     <Collapse
                       defaultOpen={isDropdownOpen}
                       header={({ open, toggle }) => {
-                        console.log(`Collapse header for ${item.name}`, {
-                          open,
-                          name: item.name,
-                          href: item.href,
-                          badge: item.badge,
-                          dropdownItems: item.dropdownItems?.map((di) => ({
-                            name: di.name,
-                            href: di.href,
-                          })),
-                        });
                         return (
                           <div
                             onClick={toggle}

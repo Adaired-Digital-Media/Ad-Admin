@@ -67,7 +67,7 @@ export default function CustomFields({ className }: ProductIdentifiersProps) {
               options={
                 forms?.map((form: any) => ({
                   value: form._id,
-                  label: form.productType,
+                  label: form.productType || form.title,
                 })) || []
               }
               value={value}
@@ -80,7 +80,7 @@ export default function CustomFields({ className }: ProductIdentifiersProps) {
               displayValue={(selectedValue: string) =>
                 forms.length > 0
                   ? forms.find((f:any) => f._id === selectedValue)?.productType ||
-                    ""
+                    forms.find((f:any) => f._id === selectedValue)?.title
                   : ""
               }
               selectClassName="capitalize"

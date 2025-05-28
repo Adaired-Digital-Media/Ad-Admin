@@ -136,9 +136,6 @@
 //   },
 // ];
 
-
-
-
 // import { routes } from "@/config/routes";
 // import {
 //   PiCurrencyCircleDollarDuotone,
@@ -290,10 +287,6 @@
 //   },
 // ];
 
-
-
-
-
 // import { routes } from "@/config/routes";
 // import {
 //   PiCurrencyCircleDollarDuotone,
@@ -444,10 +437,6 @@
 //   },
 // ];
 
-
-
-
-
 import { routes } from "@/config/routes";
 import {
   PiCurrencyCircleDollarDuotone,
@@ -456,6 +445,7 @@ import {
   PiHeadsetDuotone,
   PiPackageDuotone,
   PiTicketDuotone,
+  PiCurrencyDollarDuotone,
 } from "react-icons/pi";
 import { MdOutlineDashboard } from "react-icons/md";
 import ProjectWriteIcon from "@/core/components/icons/project-write";
@@ -572,6 +562,51 @@ export const menuItems = [
       },
     ],
   },
+  {
+    name: "Invoices",
+    href: routes.invoice.list,
+    icon: <PiCurrencyDollarDuotone />,
+    badge: "",
+    entity: "invoices",
+    action: "READ",
+  },
+
+  // // Label start
+  // {
+  //   name: "Pages",
+  // },
+  // // Label end
+  // {
+  //   name: "Blogs",
+  //   href: "#",
+  //   icon: <PiPackageDuotone />,
+  //   dropdownItems: [
+  //     {
+  //       name: "Products",
+  //       href: routes?.products?.products,
+  //       entity: "products",
+  //       action: "READ",
+  //     },
+  //     {
+  //       name: "Create Product",
+  //       href: routes?.products?.createProduct,
+  //       entity: "products",
+  //       action: "CREATE",
+  //     },
+  //     {
+  //       name: "Categories",
+  //       href: routes?.products?.categories,
+  //       entity: "products",
+  //       action: "READ",
+  //     },
+  //     {
+  //       name: "Create Categories",
+  //       href: routes?.products?.createCategory,
+  //       entity: "products",
+  //       action: "CREATE",
+  //     },
+  //   ],
+  // },
   // Label start
   {
     name: "Help Center",

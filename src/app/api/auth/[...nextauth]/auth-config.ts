@@ -75,6 +75,14 @@ export default {
     async authorized({ request: { nextUrl }, auth }) {
       const isLoggedIn = !!auth?.user;
       const { pathname } = nextUrl;
+      // Restrict customers from accessing protected routes
+      const isCustomer = auth?.user?.role?.name === "customer";
+      if (isCustomer) {
+        console.log("Customer detected, redirecting to access-denied");
+        return Response.redirect(
+          new URL(routes.auth["access-denied"], nextUrl)
+        );
+      }
       if (isAuthRoute(pathname)) {
         if (isLoggedIn) {
           return Response.redirect(new URL(routes.root.dashboard, nextUrl));
@@ -203,7 +211,7 @@ export default {
     signOut: routes.auth.signIn,
   },
   session: {
-    strategy: 'jwt',
+    strategy: "jwt",
     maxAge: 24 * 60 * 60,
     updateAge: 1 * 60 * 1000,
   },

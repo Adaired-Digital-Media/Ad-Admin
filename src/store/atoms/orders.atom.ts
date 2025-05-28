@@ -40,18 +40,18 @@ export const orderActionsAtom = atom(
     get,
     set,
     action: {
-      type:
-        | "fetchAll"
-        | "delete"
-        | "fetchStats"
-        | "fetchSalesReport";
+      type: "fetchAll" | "delete" | "fetchStats" | "fetchSalesReport";
       token: string;
       payload?: any;
     }
   ) => {
     switch (action.type) {
       case "fetchAll": {
-        const data = await orderApiRequest("get", "/orders/getOrders", action.token);
+        const data = await orderApiRequest(
+          "get",
+          "/orders/getOrders",
+          action.token
+        );
         set(ordersAtom, data.data);
         return data;
       }
@@ -60,16 +60,21 @@ export const orderActionsAtom = atom(
         const { id } = action.payload;
         await orderApiRequest(
           "delete",
-          `/order/delete?query=${id}`,
+          `/orders/deleteOrder?orderId=${id}`,
           action.token
         );
         set(ordersAtom, (prev) => prev.filter((order) => order._id !== id));
-        return { success: true };
+        await fetch("/api/revalidateTags?tags=orders", { method: "GET" });
+        return { success: true, message: "Order deleted successfully" };
       }
 
       case "fetchStats": {
-        const data = await orderApiRequest("get", "/orders/stats", action.token);
-        set(orderStatsAtom, data.data);
+        const data = await orderApiRequest(
+          "get",
+          "/orders/stats",
+          action.token
+        );
+        set(orderStatsAtom, data);
         return data;
       }
 

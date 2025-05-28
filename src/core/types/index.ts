@@ -157,3 +157,49 @@ export interface SalesReportProps {
   accessToken: string;
   setSalesReport: any;
 }
+
+
+export interface InvoiceTypes {
+  _id: string;
+  invoiceNumber: string;
+  orderId: OrderType;
+  userId?: UserTypes;
+  totalAmount: number;
+  discountAmount: number;
+  finalAmount: number;
+  status: "Unpaid" | "Paid" | "Overdue" | "Cancelled";
+  dueDate: Date;
+  issuedDate: Date;
+  paymentMethod: "Razorpay" | "Stripe" | "Manual";
+  paymentId: string | null;
+  zohoInvoiceId: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface InvoiceStats {
+  newInvoices: {
+    count: number;
+    percentageChange: number;
+    trend: "increased" | "decreased" | "unchanged";
+  };
+  totalAmount: {
+    total: number;
+    percentageChange: number;
+    trend: "increased" | "decreased" | "unchanged";
+  };
+  finalAmount: {
+    total: number;
+    percentageChange: number;
+    trend: "increased" | "decreased" | "unchanged";
+  };
+  allInvoices: number;
+  paidInvoices: number;
+  overdueInvoices: number;
+  dailyInvoices: number;
+  chartData: {
+    newInvoices: { day: string; invoices: number; date: string }[];
+    totalAmount: { day: string; total: number; date: string }[];
+    finalAmount: { day: string; final: number; date: string }[];
+  };
+}
