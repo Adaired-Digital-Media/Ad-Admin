@@ -5,6 +5,7 @@ import ExportButton from "@/app/shared/export-button";
 import { auth } from "@/auth";
 import OrderTable from "@/app/shared/ecommerce/order/order-list/table";
 
+
 export const metadata = {
   ...metaObject("Orders"),
 };
@@ -46,6 +47,7 @@ async function fetchOrders() {
 }
 
 const Orders = async () => {
+  const session = await auth();
   const orders = await fetchOrders();
   return (
     <>
@@ -55,7 +57,7 @@ const Orders = async () => {
         </div>
       </PageHeader>
 
-      <OrderTable orderData={orders} />
+      <OrderTable orderData={orders} session={session!}/>
     </>
   );
 };
