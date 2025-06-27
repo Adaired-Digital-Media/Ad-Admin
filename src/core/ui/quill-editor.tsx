@@ -14,7 +14,6 @@ interface QuillEditorProps extends ReactQuillProps {
 }
 
 export default function QuillEditor({
-  // id,
   label,
   error,
   className,
@@ -26,54 +25,53 @@ export default function QuillEditor({
   const quillModules = useMemo(
     () => ({
       toolbar: [
-        [{ font: [] }],
+        [{ font: [] }, { size: ["small", false, "large", "huge"] }], // Font family and size
         [{ header: [1, 2, 3, 4, 5, 6, false] }],
-        ["bold", "italic", "underline", "strike"],
-        [{ color: [] }, { background: [] }],
-        [{ script: "sub" }, { script: "super" }], 
-        ["blockquote", "code-block"],
-        [{ list: "ordered" }, { list: "bullet" }],
-
-        [{ indent: "-1" }, { indent: "+1" }, { align: [] }],
-
-        [{ direction: "rtl" }],
-        ["link", "image", "video"],
-
-        ["clean"],
+        ["bold", "italic", "underline", "strike"], // Basic text formatting
+        [{ color: [] }, { background: [] }], // Text and background color
+        [{ script: "sub" }, { script: "super" }], // Subscript and superscript
+        ["blockquote", "code-block"], // Block elements
+        [{ list: "ordered" }, { list: "bullet" }], // Lists
+        [{ indent: "-1" }, { indent: "+1" }], // Indentation
+        [{ align: [] }, { direction: "rtl" }], // Alignment and text direction
+        ["link", "image", "video"], // Media and links
+        ["clean"], // Clear formatting
+        ["undo", "redo"], // Undo and redo (custom buttons, requires registration)
       ],
-
       history: {
         delay: 500,
         maxStack: 100,
         userOnly: true,
       },
       clipboard: {
-        // Toggle to add extra line breaks when pasting HTML
         matchVisual: false,
       },
     }),
     []
   );
 
-
-
-  // const quillFormats = [
-  //   'header',
-  //   'bold',
-  //   'italic',
-  //   'underline',
-  //   'strike',
-  //   'list',
-  //   'bullet',
-  //   'blockquote',
-  //   'code-block',
-  //   'script',
-  //   'indent',
-  //   'color',
-  //   'background',
-  //   'font',
-  //   'align',
-  // ];
+  const quillFormats = [
+    "font",
+    "size",
+    "header",
+    "bold",
+    "italic",
+    "underline",
+    "strike",
+    "color",
+    "background",
+    "script",
+    "blockquote",
+    "code-block",
+    "list",
+    "bullet",
+    "indent",
+    "align",
+    "direction",
+    "link",
+    "image",
+    "video",
+  ];
 
   return (
     <div className={cn(className)}>
@@ -82,7 +80,7 @@ export default function QuillEditor({
       )}
       <ReactQuill
         modules={quillModules}
-        // formats={quillFormats}
+        formats={quillFormats}
         className={cn(
           "react-quill",
           toolbarPosition === "bottom" && "react-quill-toolbar-bottom relative",

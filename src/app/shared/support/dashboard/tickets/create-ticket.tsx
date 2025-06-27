@@ -44,8 +44,6 @@ export default function CreateTicket({
   const [files, setFiles] = useState<File[]>([]);
   const [includeAttachments, setIncludeAttachments] = useState(false);
 
-  console.log("users : ", users);
-
   const {
     register,
     handleSubmit,

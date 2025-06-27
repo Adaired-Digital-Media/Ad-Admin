@@ -139,7 +139,7 @@ export default function FormsTable({
 
   // Sync table data with tickets atom
   useEffect(() => {
-    setData(forms.length > 0 ? forms : initialForms);
+    setData(forms.length >= 0 ? forms : initialForms);
   }, [forms, initialForms, setData]);
 
   return (

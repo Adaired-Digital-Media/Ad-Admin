@@ -47,7 +47,6 @@ export default function CreateRole({
         const accessToken = session?.user?.accessToken || "";
 
         if (role) {
-          console.log("data : ", data);
           await setRoles({
             type: "update",
             payload: {

@@ -94,7 +94,7 @@ export default function UsersTable({
           });
         } catch (error) {
           toast.error("Failed to fetch users");
-          console.log("Failed to fetch users : ", error);
+          console.error("Failed to fetch users : ", error);
         }
       };
       fetchUsers();

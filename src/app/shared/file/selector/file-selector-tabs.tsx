@@ -2,7 +2,7 @@
 import { Tab } from "rizzui";
 import FileUpload from "../../file-upload";
 import FileGrid from "./file-grid";
-import { CloudinaryFile } from "@/data/cloudinary-files";
+import { CloudinaryFile } from "@/core/types";
 
 interface FileSelectorTabProps {
   onImageSelect: (image: CloudinaryFile) => void;

@@ -129,7 +129,6 @@ export default function MessageDetails({
   // Handle status change
   const handleStatusChange = (newStatus: SelectOption) => {
     setStatus(newStatus.value as TicketStatus);
-    console.log(newStatus);
     updateTicket({ status: newStatus.value as TicketStatus });
   };
 

@@ -53,7 +53,7 @@ export default function PasswordSettingsView() {
 
       setLoading(false);
     } catch (error) {
-      console.log("Password Update Error : ", error);
+      console.error("Password Update Error : ", error);
       toast.error("Failed to update password");
     }
   };

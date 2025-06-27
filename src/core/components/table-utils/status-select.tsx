@@ -30,7 +30,10 @@ export function StatusSelect({
   endpoint: string;
   revalidatePath?: string[];
 }) {
-  const initialValue = options.find((option) => option.label === selectItem);
+  const initialValue = options.find(
+    (option) =>
+      option.value.toString().toLowerCase() === selectItem?.toLowerCase()
+  );
   const [value, setValue] = useState<SelectOption | undefined>(initialValue);
   const { apiCall } = useApiCall();
 
@@ -40,7 +43,6 @@ export function StatusSelect({
       method: method ?? "PATCH",
       data: { [toUpdate]: selectedOption.value },
     });
-    console.log(response)
 
     if (response.status === 200) {
       toast.success(response.data.message);
@@ -57,7 +59,7 @@ export function StatusSelect({
   return (
     <Select
       dropdownClassName="!z-10"
-      className="min-w-[140px]"
+      className="min-w-[70px]"
       placeholder={placeholder}
       options={options}
       value={value}
@@ -154,6 +156,26 @@ export function renderOptionDisplayValue(value: string) {
       return (
         <div className="flex items-center">
           <PiCheckCircleBold className="shrink-0 fill-orange text-base" />
+          <Text className="ms-1.5 text-sm font-medium capitalize text-gray-700">
+            {value}
+          </Text>
+        </div>
+      );
+
+    // Blog Statuses
+    case "publish":
+      return (
+        <div className="flex items-center">
+          <PiCheckCircleBold className="shrink-0 fill-green-dark text-base" />
+          <Text className="ms-1.5 text-sm font-medium capitalize text-gray-700">
+            {value}
+          </Text>
+        </div>
+      );
+    case "draft":
+      return (
+        <div className="flex items-center">
+          <PiClockBold className="shrink-0 fill-orange text-base" />
           <Text className="ms-1.5 text-sm font-medium capitalize text-gray-700">
             {value}
           </Text>

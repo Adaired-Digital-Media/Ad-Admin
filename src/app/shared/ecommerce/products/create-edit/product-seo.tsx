@@ -115,6 +115,7 @@ function ItemCrud({ name, items, setItems }: ItemCrudProps): JSX.Element {
             >
               {text}
               <button
+                type="button"
                 onClick={() => handleItemRemove(text)}
                 className="ps-2 text-gray-500 hover:text-gray-900"
               >

@@ -4,7 +4,7 @@ import { Button, Loader } from "rizzui";
 import { useGrid } from "@/app/shared/file/manager/file-grid/use-grid";
 import Grid from "@/app/shared/file/manager/file-grid/grid";
 import FileGridFilters from "../file-grid-filter";
-import { CloudinaryFile } from "@/data/cloudinary-files";
+import { CloudinaryFile } from "@/core/types";
 
 const tableDataPerPage = 30;
 

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { atom } from "jotai";
-import axios, { AxiosError } from "axios";
-import { CloudinaryFile } from "@/data/cloudinary-files";
+import axios from "axios";
+import { CloudinaryFile } from "@/core/types";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URI;
 
@@ -31,13 +31,8 @@ const apiRequest = async (
     });
 
     return response.data;
-  } catch (error) {
-    const axiosError = error as AxiosError;
-    console.error(
-      "API request error:",
-      axiosError.response?.data || axiosError.message
-    );
-    throw error;
+  } catch (error: any) {
+    return error.response;
   }
 };
 
@@ -50,6 +45,7 @@ const fetchFiles = async (fileType = "all"): Promise<CloudinaryFile[]> => {
     );
 
     if (!response.ok) {
+      console.log(response);
       throw new Error(`Failed to fetch files: ${response.statusText}`);
     }
 

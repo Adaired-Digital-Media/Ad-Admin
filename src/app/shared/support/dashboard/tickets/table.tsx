@@ -100,7 +100,7 @@ export default function TicketsTable({
 
   // Sync table data with tickets atom
   useEffect(() => {
-    setData(tickets.length > 0 ? tickets : initialTickets);
+    setData(tickets.length >= 0 ? tickets : initialTickets);
   }, [tickets, initialTickets, setData]);
 
   return (

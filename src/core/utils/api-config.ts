@@ -56,7 +56,7 @@ export const useApiCall = () => {
         const response = await axiosInstance(config);
         return response;
       } catch (error) {
-        console.log("API Error:", error);
+        console.error("API Error:", error);
         if (axios.isAxiosError(error)) {
           throw new Error(error.response?.data?.message || error.message);
         }

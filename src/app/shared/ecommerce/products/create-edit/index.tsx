@@ -91,7 +91,6 @@ export default function CreateEditProduct({
 
   const onSubmit: SubmitHandler<ProductFormValues> = async (data) => {
     setLoading(true);
-    console.log("Product Data : ", data);
     if (product) {
       await handleUpdateProduct(data);
     } else {

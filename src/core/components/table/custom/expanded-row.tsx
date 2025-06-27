@@ -17,7 +17,6 @@ export function CustomExpandedComponent<TData extends Record<string, any>>(
       </Flex>
     );
   }
-  console.log(products);
 
   return (
     <div className="grid grid-cols-1 divide-y bg-gray-0 px-[26px] py-4 dark:bg-gray-50">

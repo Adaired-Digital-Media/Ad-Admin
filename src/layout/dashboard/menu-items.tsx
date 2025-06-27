@@ -1,442 +1,3 @@
-// // import { auth } from "@/auth";
-// import { routes } from "@/config/routes";
-// // import AffiliateIcon from "@core/components/icons/affiliate";
-// // import CrmDashIcon from "@core/components/icons/crm-icon";
-// // import ProjectWriteIcon from "@core/components/icons/project-write";
-// import {
-//   PiCurrencyCircleDollarDuotone,
-//   PiFolderLockDuotone,
-//   PiImageDuotone,
-//   PiHeadsetDuotone,
-//   PiPackageDuotone,
-//   PiTicketDuotone,
-// } from "react-icons/pi";
-// import { MdOutlineDashboard } from "react-icons/md";
-// import ProjectWriteIcon from "@/core/components/icons/project-write";
-// // Note: do not add href in the label object, it is rendering as label
-
-// export const menuItems = [
-//   // label start
-//   {
-//     name: "Home",
-//   },
-//   // label end
-//   {
-//     name: "Dashboard",
-//     href: "/",
-//     icon: <MdOutlineDashboard />,
-//   },
-//   // label start
-//   {
-//     name: "Users & Roles",
-//   },
-//   // label end
-//   {
-//     name: "Roles & Permissions",
-//     href: routes.rolesNpermissions.roles,
-//     icon: <PiFolderLockDuotone />,
-//   },
-
-//   // label start
-//   {
-//     name: "E-Commerce",
-//   },
-//   // label end
-//   {
-//     name: "Products",
-//     href: "#",
-//     icon: <PiPackageDuotone />,
-//     dropdownItems: [
-//       {
-//         name: "Products",
-//         href: routes?.products?.products,
-//       },
-//       {
-//         name: "Create Product",
-//         href: routes?.products?.createProduct,
-//       },
-//       {
-//         name: "Categories",
-//         href: routes?.products?.categories,
-//       },
-//       {
-//         name: "Create Categories",
-//         href: routes?.products?.createCategory,
-//       },
-//     ],
-//   },
-//   {
-//     name: "Custom Forms",
-//     href: "#",
-//     icon: <ProjectWriteIcon />,
-//     dropdownItems: [
-//       {
-//         name: "All Forms",
-//         href: routes?.customForms?.all,
-//       },
-//       {
-//         name: "Form Fields",
-//         href: routes?.customForms?.fields,
-//       },
-//       // {
-//       //   name: "Create Form",
-//       //   href: routes?.customForms?.create,
-//       // },
-//     ],
-//   },
-
-//   {
-//     name: "Orders",
-//     href: "#",
-//     icon: <PiCurrencyCircleDollarDuotone />,
-//     dropdownItems: [
-//       {
-//         name: "All Orders",
-//         href: routes?.orders?.orders,
-//       },
-//     ],
-//   },
-//   {
-//     name: "Coupons",
-//     href: "#",
-//     icon: <PiTicketDuotone />,
-//     dropdownItems: [
-//       {
-//         name: "All Coupons",
-//         href: routes?.coupons?.allCoupons,
-//       },
-//       {
-//         name: "Create Coupon",
-//         href: routes?.coupons?.createCoupon,
-//       },
-//     ],
-//   },
-
-//   // label start
-//   {
-//     name: "Help Center",
-//   },
-//   // label end
-//   {
-//     name: "Support",
-//     href: routes?.support?.support,
-//     icon: <PiHeadsetDuotone />,
-//     badge: "",
-//   },
-
-//   // label start
-//   {
-//     name: "Application",
-//   },
-//   // label end
-//   {
-//     name: "Media Manager",
-//     href: routes?.file?.manager,
-//     icon: <PiImageDuotone />,
-//   },
-// ];
-
-// import { routes } from "@/config/routes";
-// import {
-//   PiCurrencyCircleDollarDuotone,
-//   PiFolderLockDuotone,
-//   PiImageDuotone,
-//   PiHeadsetDuotone,
-//   PiPackageDuotone,
-//   PiTicketDuotone,
-// } from "react-icons/pi";
-// import { MdOutlineDashboard } from "react-icons/md";
-// import ProjectWriteIcon from "@/core/components/icons/project-write";
-
-// // Note: do not add href in the label object, it is rendering as label
-// export const menuItems = [
-//   // Label start
-//   {
-//     name: "Home",
-//   },
-//   // Label end
-//   {
-//     name: "Dashboard",
-//     href: "/",
-//     icon: <MdOutlineDashboard />,
-//     // No entity or action to skip permission check
-//   },
-//   // Label start
-//   {
-//     name: "Users & Roles",
-//   },
-//   // Label end
-//   {
-//     name: "Roles & Permissions",
-//     href: routes.rolesNpermissions.roles,
-//     icon: <PiFolderLockDuotone />,
-//     entity: "roles",
-//     action: "READ",
-//   },
-//   // Label start
-//   {
-//     name: "E-Commerce",
-//   },
-//   // Label end
-//   {
-//     name: "Products",
-//     href: "#",
-//     icon: <PiPackageDuotone />,
-//     dropdownItems: [
-//       {
-//         name: "Products",
-//         href: routes?.products?.products,
-//         entity: "products",
-//         action: "READ",
-//       },
-//       {
-//         name: "Create Product",
-//         href: routes?.products?.createProduct,
-//         entity: "products",
-//         action: "CREATE",
-//       },
-//       {
-//         name: "Categories",
-//         href: routes?.products?.categories,
-//         entity: "products",
-//         action: "READ",
-//       },
-//       {
-//         name: "Create Categories",
-//         href: routes?.products?.createCategory,
-//         entity: "products",
-//         action: "CREATE",
-//       },
-//     ],
-//   },
-//   {
-//     name: "Custom Forms",
-//     href: "#",
-//     icon: <ProjectWriteIcon />,
-//     dropdownItems: [
-//       {
-//         name: "All Forms",
-//         href: routes?.customForms?.all,
-//         entity: "customForms",
-//         action: "READ",
-//       },
-//       {
-//         name: "Form Fields",
-//         href: routes?.customForms?.fields,
-//         entity: "customForms",
-//         action: "READ",
-//       },
-//     ],
-//   },
-//   {
-//     name: "Orders",
-//     href: "#",
-//     icon: <PiCurrencyCircleDollarDuotone />,
-//     dropdownItems: [
-//       {
-//         name: "All Orders",
-//         href: routes?.orders?.orders,
-//         entity: "orders",
-//         action: "READ",
-//       },
-//     ],
-//   },
-//   {
-//     name: "Coupons",
-//     href: "#",
-//     icon: <PiTicketDuotone />,
-//     dropdownItems: [
-//       {
-//         name: "All Coupons",
-//         href: routes?.coupons?.allCoupons,
-//         entity: "coupons",
-//         action: "READ",
-//       },
-//       {
-//         name: "Create Coupon",
-//         href: routes?.coupons?.createCoupon,
-//         entity: "coupons",
-//         action: "CREATE",
-//       },
-//     ],
-//   },
-//   // Label start
-//   {
-//     name: "Help Center",
-//   },
-//   // Label end
-//   {
-//     name: "Support",
-//     href: routes?.support?.support,
-//     icon: <PiHeadsetDuotone />,
-//     badge: "",
-//     entity: "tickets",
-//     action: "READ",
-//   },
-//   // Label start
-//   {
-//     name: "Application",
-//   },
-//   // Label end
-//   {
-//     name: "Media Manager",
-//     href: routes?.file?.manager,
-//     icon: <PiImageDuotone />,
-//     entity: "file",
-//     action: "READ",
-//   },
-// ];
-
-// import { routes } from "@/config/routes";
-// import {
-//   PiCurrencyCircleDollarDuotone,
-//   PiFolderLockDuotone,
-//   PiImageDuotone,
-//   PiHeadsetDuotone,
-//   PiPackageDuotone,
-//   PiTicketDuotone,
-// } from "react-icons/pi";
-// import { MdOutlineDashboard } from "react-icons/md";
-// import ProjectWriteIcon from "@/core/components/icons/project-write";
-
-// // Note: do not add href in the label object, it is rendering as label
-// export const menuItems = [
-//   // Label start
-//   {
-//     name: "Home",
-//   },
-//   // Label end
-//   {
-//     name: "Dashboard",
-//     href: "/",
-//     icon: <MdOutlineDashboard />,
-//     // No entity or action to skip permission check
-//   },
-//   // Label start
-//   {
-//     name: "Users & Roles",
-//   },
-//   // Label end
-//   {
-//     name: "Roles & Permissions",
-//     href: routes.rolesNpermissions.roles,
-//     icon: <PiFolderLockDuotone />,
-//     entity: "roles",
-//     action: "READ",
-//   },
-//   // Label start
-//   {
-//     name: "E-Commerce",
-//   },
-//   // Label end
-//   {
-//     name: "Products",
-//     href: "#",
-//     icon: <PiPackageDuotone />,
-//     dropdownItems: [
-//       {
-//         name: "Products",
-//         href: routes?.products?.products,
-//         entity: "products",
-//         action: "READ",
-//       },
-//       {
-//         name: "Create Product",
-//         href: routes?.products?.createProduct,
-//         entity: "products",
-//         action: "CREATE",
-//       },
-//       {
-//         name: "Categories",
-//         href: routes?.products?.categories,
-//         entity: "products",
-//         action: "READ",
-//       },
-//       {
-//         name: "Create Categories",
-//         href: routes?.products?.createCategory,
-//         entity: "products",
-//         action: "CREATE",
-//       },
-//     ],
-//   },
-//   {
-//     name: "Custom Forms",
-//     href: "#",
-//     icon: <ProjectWriteIcon />,
-//     dropdownItems: [
-//       {
-//         name: "All Forms",
-//         href: routes?.customForms?.all,
-//         entity: "customForms",
-//         action: "READ",
-//       },
-//       {
-//         name: "Form Fields",
-//         href: routes?.customForms?.fields,
-//         entity: "customForms",
-//         action: "READ",
-//       },
-//     ],
-//   },
-//   {
-//     name: "Orders",
-//     href: "#",
-//     icon: <PiCurrencyCircleDollarDuotone />,
-//     dropdownItems: [
-//       {
-//         name: "All Orders",
-//         href: routes?.orders?.orders,
-//         entity: "orders",
-//         action: "READ",
-//       },
-//     ],
-//   },
-//   {
-//     name: "Coupons",
-//     href: "#",
-//     icon: <PiTicketDuotone />,
-//     dropdownItems: [
-//       {
-//         name: "All Coupons",
-//         href: routes?.coupons?.allCoupons,
-//         entity: "coupons",
-//         action: "READ",
-//       },
-//       {
-//         name: "Create Coupon",
-//         href: routes?.coupons?.createCoupon,
-//         entity: "coupons",
-//         action: "CREATE",
-//       },
-//     ],
-//   },
-//   // Label start
-//   {
-//     name: "Help Center",
-//   },
-//   // Label end
-//   {
-//     name: "Support",
-//     href: routes?.support?.support,
-//     icon: <PiHeadsetDuotone />,
-//     badge: "",
-//     entity: "tickets",
-//     action: "READ",
-//   },
-//   // Label start
-//   {
-//     name: "Application",
-//   },
-//   // Label end
-//   {
-//     name: "Media Manager",
-//     href: routes?.file?.manager,
-//     icon: <PiImageDuotone />,
-
-//   },
-// ];
-
 import { routes } from "@/config/routes";
 import {
   PiCurrencyCircleDollarDuotone,
@@ -449,37 +10,43 @@ import {
 } from "react-icons/pi";
 import { MdOutlineDashboard } from "react-icons/md";
 import ProjectWriteIcon from "@/core/components/icons/project-write";
+import { TbBrandBlogger } from "react-icons/tb";
+import { FiFileText } from "react-icons/fi";
+import { PermissionEntities, PermissionActions } from "@/config/permissions.config";
 
-// Note: do not add href in the label object, it is rendering as label
-export const menuItems = [
-  // Label start
-  {
-    name: "Home",
-  },
-  // Label end
+export interface DropdownItem {
+  name: string;
+  href: string;
+  entity?: PermissionEntities;
+  action?: PermissionActions;
+}
+
+export interface MenuItem {
+  name: string;
+  href?: string;
+  icon?: JSX.Element;
+  badge?: string;
+  entity?: PermissionEntities;
+  action?: PermissionActions;
+  dropdownItems?: DropdownItem[];
+}
+
+export const menuItems: MenuItem[] = [
+  { name: "Home" },
   {
     name: "Dashboard",
     href: "/",
     icon: <MdOutlineDashboard />,
-    // No entity or action to skip permission check
   },
-  // Label start
-  {
-    name: "Users & Roles",
-  },
-  // Label end
+  { name: "Users & Roles" },
   {
     name: "Roles & Permissions",
     href: routes.rolesNpermissions.roles,
     icon: <PiFolderLockDuotone />,
-    entity: "roles",
-    action: "READ",
+    entity: PermissionEntities.ROLES,
+    action: PermissionActions.READ,
   },
-  // Label start
-  {
-    name: "E-Commerce",
-  },
-  // Label end
+  { name: "E-Commerce" },
   {
     name: "Products",
     href: "#",
@@ -487,27 +54,27 @@ export const menuItems = [
     dropdownItems: [
       {
         name: "Products",
-        href: routes?.products?.products,
-        entity: "products",
-        action: "READ",
+        href: routes.products.products,
+        entity: PermissionEntities.PRODUCTS,
+        action: PermissionActions.READ,
       },
       {
         name: "Create Product",
-        href: routes?.products?.createProduct,
-        entity: "products",
-        action: "CREATE",
+        href: routes.products.createProduct,
+        entity: PermissionEntities.PRODUCTS,
+        action: PermissionActions.CREATE,
       },
       {
         name: "Categories",
-        href: routes?.products?.categories,
-        entity: "products",
-        action: "READ",
+        href: routes.products.categories,
+        entity: PermissionEntities.PRODUCTS,
+        action: PermissionActions.READ,
       },
       {
         name: "Create Categories",
-        href: routes?.products?.createCategory,
-        entity: "products",
-        action: "CREATE",
+        href: routes.products.createCategory,
+        entity: PermissionEntities.PRODUCTS,
+        action: PermissionActions.CREATE,
       },
     ],
   },
@@ -518,15 +85,15 @@ export const menuItems = [
     dropdownItems: [
       {
         name: "All Forms",
-        href: routes?.customForms?.all,
-        entity: "customForms",
-        action: "READ",
+        href: routes.customForms.all,
+        entity: PermissionEntities.CUSTOM_FORMS,
+        action: PermissionActions.READ,
       },
       {
         name: "Form Fields",
-        href: routes?.customForms?.fields,
-        entity: "customForms",
-        action: "READ",
+        href: routes.customForms.fields,
+        entity: PermissionEntities.CUSTOM_FORMS,
+        action: PermissionActions.READ,
       },
     ],
   },
@@ -537,9 +104,9 @@ export const menuItems = [
     dropdownItems: [
       {
         name: "All Orders",
-        href: routes?.orders?.orders,
-        entity: "orders",
-        action: "READ",
+        href: routes.orders.orders,
+        entity: PermissionEntities.ORDERS,
+        action: PermissionActions.READ,
       },
     ],
   },
@@ -550,15 +117,15 @@ export const menuItems = [
     dropdownItems: [
       {
         name: "All Coupons",
-        href: routes?.coupons?.allCoupons,
-        entity: "coupons",
-        action: "READ",
+        href: routes.coupons.allCoupons,
+        entity: PermissionEntities.COUPONS,
+        action: PermissionActions.READ,
       },
       {
         name: "Create Coupon",
-        href: routes?.coupons?.createCoupon,
-        entity: "coupons",
-        action: "CREATE",
+        href: routes.coupons.createCoupon,
+        entity: PermissionEntities.COUPONS,
+        action: PermissionActions.CREATE,
       },
     ],
   },
@@ -567,69 +134,75 @@ export const menuItems = [
     href: routes.invoice.list,
     icon: <PiCurrencyDollarDuotone />,
     badge: "",
-    entity: "invoices",
-    action: "READ",
+    entity: PermissionEntities.INVOICES,
+    action: PermissionActions.READ,
   },
-
-  // // Label start
-  // {
-  //   name: "Pages",
-  // },
-  // // Label end
-  // {
-  //   name: "Blogs",
-  //   href: "#",
-  //   icon: <PiPackageDuotone />,
-  //   dropdownItems: [
-  //     {
-  //       name: "Products",
-  //       href: routes?.products?.products,
-  //       entity: "products",
-  //       action: "READ",
-  //     },
-  //     {
-  //       name: "Create Product",
-  //       href: routes?.products?.createProduct,
-  //       entity: "products",
-  //       action: "CREATE",
-  //     },
-  //     {
-  //       name: "Categories",
-  //       href: routes?.products?.categories,
-  //       entity: "products",
-  //       action: "READ",
-  //     },
-  //     {
-  //       name: "Create Categories",
-  //       href: routes?.products?.createCategory,
-  //       entity: "products",
-  //       action: "CREATE",
-  //     },
-  //   ],
-  // },
-  // Label start
+  { name: "Pages" },
   {
-    name: "Help Center",
+    name: "Blog",
+    href: "#",
+    icon: <TbBrandBlogger />,
+    dropdownItems: [
+      {
+        name: "Blog List",
+        href: routes.blog.list,
+        entity: PermissionEntities.BLOGS,
+        action: PermissionActions.READ,
+      },
+      {
+        name: "Add Blog",
+        href: routes.blog.create,
+        entity: PermissionEntities.BLOGS,
+        action: PermissionActions.CREATE,
+      },
+      {
+        name: "Categories",
+        href: routes.blog.categoryList,
+        entity: PermissionEntities.BLOGS,
+        action: PermissionActions.READ,
+      },
+    ],
   },
-  // Label end
+  {
+    name: "Case Studies",
+    href: "#",
+    icon: <FiFileText />,
+    dropdownItems: [
+      {
+        name: "Case Studies",
+        href: routes.caseStudies.list,
+        entity: PermissionEntities.CASE_STUDIES,
+        action: PermissionActions.READ,
+      },
+      {
+        name: "Add Case Study",
+        href: routes.caseStudies.create,
+        entity: PermissionEntities.CASE_STUDIES,
+        action: PermissionActions.CREATE,
+      },
+      {
+        name: "Categories",
+        href: routes.caseStudies.categoryList,
+        entity: PermissionEntities.CASE_STUDIES,
+        action: PermissionActions.READ,
+      },
+    ],
+  },
+  { name: "Help Center" },
   {
     name: "Support",
-    href: routes?.support?.support,
+    href: routes.support.support,
     icon: <PiHeadsetDuotone />,
     badge: "",
-    // entity: "tickets",
-    // action: "READ",
+    entity: PermissionEntities.TICKETS,
+    action: PermissionActions.READ,
   },
-  // Label start
-  {
-    name: "Application",
-  },
-  // Label end
+  { name: "Application" },
   {
     name: "Media Manager",
-    href: routes?.file?.manager,
+    href: routes.file.manager,
     icon: <PiImageDuotone />,
-    entity: "file",
-    action: "READ",
+    entity: PermissionEntities.FILES,
+    action: PermissionActions.READ,
   },
 ];

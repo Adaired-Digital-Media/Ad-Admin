@@ -4,7 +4,7 @@ import { PiXBold } from "react-icons/pi";
 import { ActionIcon, Title } from "rizzui";
 import { useModal } from "@/app/shared/modal-views/use-modal";
 import FileSelectorTab from "./file-selector-tabs";
-import { CloudinaryFile } from "@/data/cloudinary-files";
+import { CloudinaryFile } from "@/core/types";
 
 interface FileSelectorModalViewProps {
   onImageSelect: (image: CloudinaryFile) => void;

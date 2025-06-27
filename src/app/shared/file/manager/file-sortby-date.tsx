@@ -1,41 +1,41 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { PiCaretDownBold, PiCaretRightBold } from 'react-icons/pi';
-import { Popover, Button, Text } from 'rizzui';
-import cn from '@core/utils/class-names';
-import { useMedia } from '@core/hooks/use-media';
-import { DatePicker } from '@core/ui/datepicker';
+import { useState } from "react";
+import { PiCaretDownBold, PiCaretRightBold } from "react-icons/pi";
+import { Popover, Button, Text } from "rizzui";
+import cn from "@core/utils/class-names";
+import { useMedia } from "@core/hooks/use-media";
+import { DatePicker } from "@core/ui/datepicker";
 
 const modifiedOptions = [
   {
-    value: 'today',
-    name: 'Today',
+    value: "today",
+    name: "Today",
     id: 1,
   },
   {
-    value: 'yesterday',
-    name: 'Yesterday',
+    value: "yesterday",
+    name: "Yesterday",
     id: 2,
   },
   {
-    value: 'lastweek',
-    name: 'Last Week',
+    value: "lastweek",
+    name: "Last Week",
     id: 3,
   },
   {
-    value: 'thisYear',
-    name: 'This year (2023)',
+    value: "thisYear",
+    name: "This year (2023)",
     id: 4,
   },
   {
-    value: 'lastYear',
-    name: 'Last year (2022)',
+    value: "lastYear",
+    name: "Last year (2022)",
     id: 5,
   },
   {
-    value: 'customDateRange',
-    name: 'Custom date ranger',
+    value: "customDateRange",
+    name: "Custom date ranger",
     icon: <PiCaretRightBold className="h-4 w-4 text-gray-500 rtl:rotate-180" />,
     id: 6,
   },
@@ -45,14 +45,7 @@ export default function FileSortbyDate() {
   const [startDate, setStartDate] = useState<Date | null>();
   const [endDate, setEndDate] = useState<Date | null>();
   const [customDateRange, setCustomDateRange] = useState(false);
-  const isMobile = useMedia('(max-width: 639px)', false);
-  const [selected, setSelected] = useState('');
-
-  useEffect(() => {
-    if (startDate && endDate) {
-      setSelected(`${startDate} to ${endDate}`);
-    }
-  }, [startDate, endDate]);
+  const isMobile = useMedia("(max-width: 639px)", false);
 
   return (
     <Popover placement="bottom-start">
@@ -81,14 +74,12 @@ export default function FileSortbyDate() {
                         type="button"
                         variant="text"
                         className={cn(
-                          'flex w-full justify-between rounded-md px-2 text-sm font-normal leading-5 text-gray-900 hover:bg-gray-100 focus:bg-gray-100 dark:hover:bg-gray-50 dark:focus:bg-gray-50',
-                          item.id === modifiedOptions.length && 'hidden sm:flex'
+                          "flex w-full justify-between rounded-md px-2 text-sm font-normal leading-5 text-gray-900 hover:bg-gray-100 focus:bg-gray-100 dark:hover:bg-gray-50 dark:focus:bg-gray-50",
+                          item.id === modifiedOptions.length && "hidden sm:flex"
                         )}
                         onClick={() => {
                           if (item.id === modifiedOptions.length) {
                             setCustomDateRange((prev) => !prev);
-                          } else {
-                            setSelected(item.value);
                           }
                         }}
                       >
@@ -101,9 +92,9 @@ export default function FileSortbyDate() {
               </ul>
               <div
                 className={cn(
-                  customDateRange ? 'block' : 'hidden',
-                  isMobile && 'hidden',
-                  'flex-grow pl-4'
+                  customDateRange ? "block" : "hidden",
+                  isMobile && "hidden",
+                  "flex-grow pl-4"
                 )}
               >
                 <div className="mb-5">
@@ -138,8 +129,8 @@ export default function FileSortbyDate() {
             </div>
             <div
               className={cn(
-                'mt-2 justify-end border-t border-dashed border-gray-300 pt-2',
-                customDateRange ? 'flex' : 'hidden'
+                "mt-2 justify-end border-t border-dashed border-gray-300 pt-2",
+                customDateRange ? "flex" : "hidden"
               )}
             >
               <Button
@@ -155,7 +146,6 @@ export default function FileSortbyDate() {
                 type="button"
                 variant="text"
                 onClick={() => {
-                  console.log('Last modified =>', selected);
                   setOpen(false);
                 }}
               >

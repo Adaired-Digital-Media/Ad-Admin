@@ -35,7 +35,7 @@ export default function RecentOrder({
   const setOrders = useSetAtom(orderActionsAtom);
   const { table, setData } = useTanStackTable<OrderType>({
     tableData: orders.length ? orders : orderData,
-    columnConfig: ordersColumns(),
+    columnConfig: ordersColumns(false),
     options: {
       initialState: {
         pagination: {
@@ -73,7 +73,7 @@ export default function RecentOrder({
           type="search"
           clearable={true}
           inputClassName="h-[36px]"
-          placeholder="Search by patient name..."
+          placeholder="Search by order number..."
           onClear={() => table.setGlobalFilter("")}
           value={table.getState().globalFilter ?? ""}
           prefix={<PiMagnifyingGlassBold className="size-4" />}

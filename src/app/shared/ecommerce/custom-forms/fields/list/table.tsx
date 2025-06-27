@@ -82,7 +82,6 @@ export default function FieldsTable({
             },
             token: session?.user?.accessToken ?? "",
           });
-          console.log(_response)
           toast.success(_response.message);
           await fetch("/api/revalidateTags?tags=fields", {
             method: "GET",
@@ -136,7 +135,7 @@ export default function FieldsTable({
 
   // Sync table data with tickets atom
   useEffect(() => {
-    setData(fields.length > 0 ? fields : initialFields);
+    setData(fields.length >= 0 ? fields : initialFields);
   }, [fields, initialFields, setData]);
 
   return (

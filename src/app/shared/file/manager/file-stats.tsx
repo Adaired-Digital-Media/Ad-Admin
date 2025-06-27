@@ -32,40 +32,40 @@ export default function FileStats({ className, usage }: FileStatsType) {
     {
       id: 1,
       title: "Plan",
-      metric: `${usage.plan}`,
+      metric: `${usage?.plan}`,
       icon: <ExpenseIcon className="h-12 w-10" />,
       fill: "#4c5c75",
-      percentage: `${usage.credits.used_percent}`,
+      percentage: `${usage?.credits?.used_percent}`,
     },
     {
       id: 2,
       title: "Total Storage",
-      metric: `${(usage.storage.usage / (1024 * 1024 * 1024)).toFixed(
+      metric: `${(usage?.storage?.usage / (1024 * 1024 * 1024)).toFixed(
         2
       )} GB`,
       icon: <DriveIcon className="h-12 w-10" />,
       fill: "#f3962d",
       percentage: `${
         (parseFloat(
-          (usage.storage.usage / (1024 * 1024 * 1024)).toFixed(2)
+          (usage?.storage?.usage / (1024 * 1024 * 1024)).toFixed(2)
         ) /
-          usage.credits.limit) *
+          usage?.credits?.limit) *
         100
       }`,
     },
     {
       id: 3,
       title: "Bandwidth",
-      metric: `${(usage.bandwidth.usage / (1024 * 1024 * 1024)).toFixed(
+      metric: `${(usage?.bandwidth?.usage / (1024 * 1024 * 1024)).toFixed(
         2
       )} GB`,
       icon: <ExchangeIcon className="h-12 w-10" />,
       fill: "#6d98ff",
       percentage: `${
         (parseFloat(
-          (usage.bandwidth.usage / (1024 * 1024 * 1024)).toFixed(2)
+          (usage?.bandwidth?.usage / (1024 * 1024 * 1024)).toFixed(2)
         ) /
-          usage.credits.limit) *
+          usage?.credits?.limit) *
         100
       }`,
     },
@@ -140,7 +140,7 @@ export default function FileStats({ className, usage }: FileStatsType) {
                       {stat.metric}
                       {stat.title !== "Plan" && (
                         <span className="inline-block text-sm font-normal text-gray-500">
-                          &nbsp; of {usage.credits.limit} GB
+                          &nbsp; of {usage?.credits?.limit} GB
                         </span>
                       )}
                     </Title>

@@ -16,7 +16,9 @@ import RecentOrder from "./recent-order";
 import TicketsWidget from "./tickets-report";
 import OrdersWidget from "./orders-report";
 import { useEffect, useState, useCallback } from "react";
-import { usePermissions, PermissionActions } from "@core/utils/permissions";
+import { usePermissions } from "@core/utils/permissions.utils";
+import { PermissionEntities, PermissionActions } from "@/config/permissions.config"
+
 
 // Atoms
 import { cloudinaryActionsAtom } from "@/store/atoms/files.atom";
@@ -130,27 +132,27 @@ const Index = ({ session }: { session: Session }) => {
         const permissions = {
           orders: await hasPermission({
             session,
-            entity: "orders",
+            entity: PermissionEntities.ORDERS,
             action: PermissionActions.READ,
           }),
           products: await hasPermission({
             session,
-            entity: "products",
+            entity: PermissionEntities.PRODUCTS,
             action: PermissionActions.READ,
           }),
           users: await hasPermission({
             session,
-            entity: "users",
+            entity: PermissionEntities.USERS,
             action: PermissionActions.READ,
           }),
-          // tickets: await hasPermission({
-          //   session,
-          //   entity: "tickets",
-          //   action: PermissionActions.READ,
-          // }),
+          tickets: await hasPermission({
+            session,
+            entity: PermissionEntities.TICKETS,
+            action: PermissionActions.READ,
+          }),
           productsCreate: await hasPermission({
             session,
-            entity: "products",
+            entity: PermissionEntities.PRODUCTS,
             action: PermissionActions.CREATE,
           }),
         };
@@ -228,10 +230,12 @@ const Index = ({ session }: { session: Session }) => {
             orderStats={orderStats}
           />
         )}
-        <TicketsWidget
-          ticketStats={ticketStats ? ticketStats?.stats : {}}
-          className=" @7xl:col-span-4 @7xl:col-start-9 @7xl:row-start-1 @7xl:row-end-3 @7xl:h-full"
-        />
+        {hasPermissions.tickets && (
+          <TicketsWidget
+            ticketStats={ticketStats ? ticketStats?.stats : {}}
+            className=" @7xl:col-span-4 @7xl:col-start-9 @7xl:row-start-1 @7xl:row-end-3 @7xl:h-full"
+          />
+        )}
 
         {hasPermissions.orders && (
           <>

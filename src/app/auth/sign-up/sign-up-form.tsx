@@ -27,7 +27,6 @@ export default function SignUpForm() {
   const { push } = useRouter();
   const [reset, setReset] = useState({});
   const onSubmit: SubmitHandler<SignUpSchema> = async (data) => {
-    console.log(data);
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BACKEND_API_URI}/auth/register`,

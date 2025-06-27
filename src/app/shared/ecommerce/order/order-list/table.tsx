@@ -67,7 +67,7 @@ export default function OrderTable({
 
   // Sync table data with orders atom
   useEffect(() => {
-    setData(orders.length > 0 ? orders : orderData);
+    setData(orders.length >= 0 ? orders : orderData);
   }, [orders, orderData, setData]);
 
   return (
