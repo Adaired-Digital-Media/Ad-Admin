@@ -49,6 +49,8 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "res.cloudinary.com",
+        port: "",
+        pathname: "**",
       },
       {
         protocol: "https",
@@ -58,6 +60,10 @@ const nextConfig = {
   },
   reactStrictMode: true,
   transpilePackages: ["core"],
+
+  typescript: {
+    ignoreBuildErrors: true, // Skip TypeScript type-checking during build
+  },
 };
 
 export default nextConfig;

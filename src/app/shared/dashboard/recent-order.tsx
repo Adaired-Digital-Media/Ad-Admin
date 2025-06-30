@@ -8,19 +8,13 @@ import TablePagination from "@core/components/table/pagination";
 import cn from "@core/utils/class-names";
 import { Input } from "rizzui";
 import { PiMagnifyingGlassBold } from "react-icons/pi";
-import { TableMeta } from "@tanstack/react-table";
+import { CustomTableMeta } from "@core/types/index";
 import { OrderType } from "@/core/types";
 import toast from "react-hot-toast";
 import { useEffect } from "react";
 import { useAtom, useSetAtom } from "jotai";
 import { orderActionsAtom, ordersAtom } from "@/store/atoms/orders.atom";
 import { Session } from "next-auth";
-
-// Define custom meta interface
-export interface CustomTableMeta<T> extends TableMeta<T> {
-  handleDeleteRow?: (row: T) => void;
-  handleMultipleDelete?: (rows: T[]) => void;
-}
 
 export default function RecentOrder({
   className,
@@ -35,7 +29,7 @@ export default function RecentOrder({
   const setOrders = useSetAtom(orderActionsAtom);
   const { table, setData } = useTanStackTable<OrderType>({
     tableData: orders.length ? orders : orderData,
-    columnConfig: ordersColumns(),
+    columnConfig: ordersColumns(false),
     options: {
       initialState: {
         pagination: {
@@ -73,7 +67,7 @@ export default function RecentOrder({
           type="search"
           clearable={true}
           inputClassName="h-[36px]"
-          placeholder="Search by patient name..."
+          placeholder="Search by order number..."
           onClear={() => table.setGlobalFilter("")}
           value={table.getState().globalFilter ?? ""}
           prefix={<PiMagnifyingGlassBold className="size-4" />}

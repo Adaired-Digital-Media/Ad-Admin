@@ -1,7 +1,7 @@
 "use client";
 
 import cn from "@/core/utils/class-names";
-import { CloudinaryFile } from "@/data/cloudinary-files";
+import { CloudinaryFile } from "@/core/types";
 import { useEffect, useState } from "react";
 import FileCard from "./file-card";
 import { AdvancedRadio, Button, RadioGroup } from "rizzui";

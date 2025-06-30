@@ -1,6 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { RoleTypes } from "../../data/roles-permissions";
+import { TableMeta } from "@tanstack/react-table";
+
+// Define custom meta interface
+export interface CustomTableMeta<T> extends TableMeta<T> {
+  handleDeleteRow?: (row: T) => void;
+  handleMultipleDelete?: (rows: T[]) => void;
+  handleEditRow?: (row: T) => void;
+}
+
+export interface CloudinaryFileMeta extends TableMeta<CloudinaryFile> {
+  handleDeleteRow: (row: { public_id: string }) => void;
+  handleCopyLink: (row: { secure_url: string }) => void;
+  handleMultipleDelete: (rows: CloudinaryFile[]) => void;
+  handleEditFile: (row: CloudinaryFile) => void;
+}
+
 export interface UserTypes {
   _id?: string;
   image?: string | null;
@@ -158,7 +174,6 @@ export interface SalesReportProps {
   setSalesReport: any;
 }
 
-
 export interface InvoiceTypes {
   _id: string;
   invoiceNumber: string;
@@ -201,5 +216,157 @@ export interface InvoiceStats {
     newInvoices: { day: string; invoices: number; date: string }[];
     totalAmount: { day: string; total: number; date: string }[];
     finalAmount: { day: string; final: number; date: string }[];
+  };
+}
+
+// ************** Blog Types **************
+
+export type BlogCategoryType = {
+  _id: string;
+  parentCategory: BlogCategoryType | null;
+  subCategories: string[];
+  image: string;
+  name: string;
+  slug: string;
+  status: string;
+  blogs: string[];
+  createdBy?: string | null;
+  updatedBy?: string | null;
+};
+
+export interface BlogTypes extends Document {
+  _id: string;
+  category?: BlogCategoryType | string | null;
+  featuredImage: string;
+  postTitle: string;
+  postDescription: string;
+  slug: string | null;
+  tags: string[];
+  seo: SEO;
+  blogAuthor?: UserTypes | string | null;
+  updatedBy?: UserTypes | string | null;
+  status: "publish" | "draft";
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+// ************** Case Study Types **************
+
+export type CaseStudyCategoryType = {
+  _id: string;
+  parentCategory: CaseStudyCategoryType | null;
+  subCategories: string[];
+  image: string;
+  name: string;
+  slug: string;
+  status: "active" | "inactive";
+  caseStudies: string[];
+  createdBy?: string | null;
+  updatedBy?: string | null;
+};
+
+export type CaseStudyType = {
+  _id: string;
+  category?: string | null | CaseStudyCategoryType;
+  name: string;
+  slug?: string | null;
+  colorScheme: string;
+  status: "active" | "inactive";
+  bodyData?: unknown[];
+  seo: SEO;
+  createdBy?: string | null;
+  updatedBy?: string | null;
+};
+
+// ************** SEO Schema Types Starts **************
+
+export interface OpenGraph {
+  title?: string;
+  description?: string;
+  image?: string | null;
+  type?: string;
+  url?: string;
+  siteName?: string;
+}
+
+export interface TwitterCard {
+  cardType?: string;
+  site?: string;
+  creator?: string;
+  title?: string;
+  description?: string;
+  image?: string | null;
+}
+
+export interface Redirect {
+  type?: "301" | "302" | null;
+  url?: string | null;
+}
+
+export interface SEO {
+  metaTitle: string;
+  metaDescription: string;
+  canonicalLink: string;
+  focusKeyword: string;
+  keywords?: string[];
+  openGraph?: OpenGraph;
+  twitterCard?: TwitterCard;
+  robotsText: string;
+  schemaOrg?: string | null;
+  bodyScript?: string | null;
+  headerScript?: string | null;
+  footerScript?: string | null;
+  priority?: number;
+  changeFrequency?:
+    | "always"
+    | "hourly"
+    | "daily"
+    | "weekly"
+    | "monthly"
+    | "yearly"
+    | "never";
+  lastModified?: Date;
+  redirect?: Redirect;
+}
+
+// ************** SEO Schema Types Ends **************
+
+// ************** Cloudinary File Types **************
+export interface CloudinaryFile {
+  asset_id: string;
+  public_id: string;
+  folder: string;
+  filename: string;
+  format: string;
+  version: number;
+  resource_type: string;
+  type: string;
+  created_at: string;
+  uploaded_at: string;
+  bytes: number;
+  backup_bytes: number;
+  width: number;
+  height: number;
+  aspect_ratio: number;
+  pixels: number;
+  context?: {
+    alt?: string;
+    caption?: string;
+  };
+  url: string;
+  secure_url: string;
+  status: string;
+  access_mode: string;
+  access_control: any | null;
+  etag: string;
+  created_by: {
+    access_key: string;
+  };
+  uploaded_by: {
+    access_key: string;
+  };
+  last_updated: {
+    context_updated_at: string;
+    updated_at: string;
   };
 }

@@ -40,7 +40,7 @@ const CreateEditCoupon = ({ className, couponId, accessToken }: Props) => {
   const setCoupons = useSetAtom(couponActionsAtom);
   const [isLoading, setLoading] = useState(false);
 
-  const coupon = coupons.find((c) => c._id === couponId);
+  const coupon = coupons.find((c) => c?._id === couponId);
 
   const methods = useForm<CouponFormValues>({
     resolver: zodResolver(couponFormSchema),
@@ -53,8 +53,7 @@ const CreateEditCoupon = ({ className, couponId, accessToken }: Props) => {
   useEffect(() => {
     if (!couponId || !accessToken) return;
 
-    const selectedCoupon = coupons.find((c) => c._id === couponId);
-    if (!selectedCoupon) {
+    if (!coupon) {
       setLoading(true);
       setCoupons({
         type: "fetchSingle",
@@ -63,9 +62,9 @@ const CreateEditCoupon = ({ className, couponId, accessToken }: Props) => {
       }).finally(() => setLoading(false));
     } else {
       // Fully reset the form with fetched coupon data, clearing dirty state and errors
-      reset(couponDefaultValues(selectedCoupon));
+      reset(couponDefaultValues(coupon));
     }
-  }, [couponId, accessToken, coupons, setCoupons, reset]);
+  }, [couponId, accessToken, coupon, setCoupons, reset]);
 
   if (couponId && !coupon && isLoading) {
     return (
@@ -82,7 +81,7 @@ const CreateEditCoupon = ({ className, couponId, accessToken }: Props) => {
 
   const onSubmit: SubmitHandler<CouponFormValues> = async (data) => {
     if (!accessToken) return;
-    
+
     setLoading(true);
     try {
       if (couponId) {
@@ -92,12 +91,11 @@ const CreateEditCoupon = ({ className, couponId, accessToken }: Props) => {
           payload: { id: couponId, ...data },
         });
       } else {
-        const response = await setCoupons({
+        await setCoupons({
           type: "create",
           token: accessToken,
           payload: data,
         });
-        console.log("Response : ", response);
         reset(couponDefaultValues(undefined));
       }
     } catch (error) {

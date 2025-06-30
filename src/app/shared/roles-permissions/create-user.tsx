@@ -78,7 +78,6 @@ export default function CreateUser({
           await setUsers({
             type: "create",
             payload: {
-              
               image: data.image,
               name: data.name,
               email: data.email,

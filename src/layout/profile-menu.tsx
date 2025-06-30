@@ -3,11 +3,10 @@
 
 import { Title, Text, Avatar, Button, Popover } from "rizzui";
 import cn from "@core/utils/class-names";
-import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
+import { useSession,signOut } from "next-auth/react";
 import { UserTypes } from "@/core/types";
 import { routes } from "@/config/routes";
 
@@ -32,14 +31,9 @@ export default function ProfileMenu({
           )}
         >
           <Avatar
-            src={
-              session?.user?.image ||
-              `https://avatar.iran.liara.run/username?username=${
-                session?.user?.name?.split(" ")[0] || ""
-              }+${
-                session?.user?.name?.split(" ")[1] || ""
-              }`
-            }
+            src={`https://api.dicebear.com/9.x/initials/svg?seed=${
+              session?.user?.name?.split(" ")[0] || ""
+            }+${session?.user?.name?.split(" ")[1] || ""}`}
             name={session?.user?.name ?? "User"}
             className={cn("!h-9 w-9 sm:!h-10 sm:!w-10", avatarClassName)}
           />
@@ -92,7 +86,7 @@ function DropdownMenu({ user }: { user?: UserTypes }) {
         <Avatar
           src={
             user?.image ||
-            "https://isomorphic-furyroad.s3.amazonaws.com/public/avatars/avatar-11.webp"
+            `https://api.dicebear.com/9.x/initials/svg?seed=${user?.name}`
           }
           name={user?.name ?? "John Doe"}
         />

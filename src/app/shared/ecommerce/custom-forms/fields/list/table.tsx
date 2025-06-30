@@ -10,7 +10,7 @@ import { TableClassNameProps } from "@core/components/table/table-types";
 import cn from "@core/utils/class-names";
 import { exportToCSV } from "@core/utils/export-to-csv";
 import toast from "react-hot-toast";
-import { CustomTableMeta } from "@/app/shared/dashboard/recent-order";
+import { CustomTableMeta } from "@core/types/index";
 import { FieldType } from "@/data/productForms.types";
 import { fieldListColumns } from "./columns";
 import { useAtom } from "jotai";
@@ -82,7 +82,6 @@ export default function FieldsTable({
             },
             token: session?.user?.accessToken ?? "",
           });
-          console.log(_response)
           toast.success(_response.message);
           await fetch("/api/revalidateTags?tags=fields", {
             method: "GET",
@@ -136,7 +135,7 @@ export default function FieldsTable({
 
   // Sync table data with tickets atom
   useEffect(() => {
-    setData(fields.length > 0 ? fields : initialFields);
+    setData(fields.length >= 0 ? fields : initialFields);
   }, [fields, initialFields, setData]);
 
   return (

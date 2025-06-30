@@ -97,7 +97,7 @@ export const roleActionsAtom = atom(
       case "createModule": {
         const data = await roleApiRequest(
           "post",
-          "/permissionModule/create",
+          "/permission-module/create",
           action.token,
           action.payload
         );

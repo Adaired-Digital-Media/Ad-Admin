@@ -6,44 +6,51 @@ import { useState } from "react";
 import { SubmitHandler } from "react-hook-form";
 import { Form } from "@core/ui/form";
 import { Button, Input } from "rizzui";
-import { CloudinaryFile, editFiles } from "@/data/cloudinary-files";
+import { CloudinaryFile } from "@/core/types";
 import toast from "react-hot-toast";
 import { useModal } from "@/app/shared/modal-views/use-modal";
-import axios from "axios";
 import CldImage from "@/core/components/cloudinary-image-component";
+import { useAtom } from "jotai";
+import { cloudinaryActionsAtom } from "@/store/atoms/files.atom";
+import { useSession } from "next-auth/react";
 
 const EditFile = ({ file }: { file: CloudinaryFile }) => {
   const { closeModal } = useModal();
   const [isLoading, setLoading] = useState(false);
+  const { data: session } = useSession();
+  const [, dispatch] = useAtom(cloudinaryActionsAtom);
 
   const onSubmit: SubmitHandler<FileFormInput> = async (data) => {
+    if (!session?.user?.accessToken) {
+      toast.error("User session not found", { position: "top-right" });
+      return;
+    }
+
     setLoading(true);
     try {
       await toast.promise(
-        editFiles({
-          public_id: file.public_id,
-          file: {
-            caption: data.caption,
-            alt: data.alt,
+        dispatch({
+          type: "edit",
+          token: session.user.accessToken,
+          payload: {
+            public_id: file.public_id,
+            file: {
+              caption: data.caption,
+              alt: data.alt,
+            },
           },
         }),
         {
           loading: "Updating file...",
-          success: (response) => {
-            return response.data.message || "File updated successfully!";
-          },
+          success: () => "File updated successfully!",
           error: (error) => error.message || "Failed to update file",
         }
       );
 
-      axios.post("/api/revalidatePage", {
-        path: "/file-manager",
-      });
-
       closeModal();
     } catch (error) {
       console.error("Error updating file:", error);
-      toast.error("Failed to update file: " + error, {
+      toast.error(`Failed to update file: ${error.message || "Unknown error"}`, {
         position: "top-right",
       });
     } finally {

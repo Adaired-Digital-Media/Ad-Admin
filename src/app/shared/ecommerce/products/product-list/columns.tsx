@@ -10,7 +10,7 @@ import { createColumnHelper } from "@tanstack/react-table";
 import Link from "next/link";
 import { ActionIcon, Checkbox, Flex, Text, Tooltip } from "rizzui";
 import { StatusSelect } from "@/core/components/table-utils/status-select";
-import { CustomTableMeta } from "@/app/shared/dashboard/recent-order";
+import { CustomTableMeta } from "@core/types/index";
 
 const statusOptions = [
   { label: "Active", value: "Active" },

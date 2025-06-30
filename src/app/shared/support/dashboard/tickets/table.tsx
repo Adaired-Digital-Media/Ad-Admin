@@ -5,7 +5,7 @@ import Table from "@core/components/table";
 import TablePagination from "@core/components/table/pagination";
 import { ticketsColumns } from "./columns";
 import Filters from "./filters";
-import { CustomTableMeta } from "@/app/shared/dashboard/recent-order";
+import { CustomTableMeta } from "@core/types/index";
 import { Ticket } from "@/data/tickets.types";
 import { Session } from "next-auth";
 import { useAtom } from "jotai";
@@ -100,7 +100,7 @@ export default function TicketsTable({
 
   // Sync table data with tickets atom
   useEffect(() => {
-    setData(tickets.length > 0 ? tickets : initialTickets);
+    setData(tickets.length >= 0 ? tickets : initialTickets);
   }, [tickets, initialTickets, setData]);
 
   return (

@@ -8,7 +8,7 @@ import { createColumnHelper } from "@tanstack/react-table";
 import { PiCaretDownBold, PiCaretUpBold } from "react-icons/pi";
 import { ActionIcon, Text } from "rizzui";
 import { StatusSelect } from "@/core/components/table-utils/status-select";
-import { CustomTableMeta } from "./table";
+import { CustomTableMeta } from "@core/types/index";
 
 const statusOptions = [
   { label: "Pending", value: "Pending" },

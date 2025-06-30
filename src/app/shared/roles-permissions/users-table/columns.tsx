@@ -9,13 +9,8 @@ import { UserTypes } from "@/data/users-data";
 import { StatusSelect } from "@/core/components/table-utils/status-select";
 import { statusOptions } from "./filters";
 import cn from "@/core/utils/class-names";
-import { TableMeta } from "@tanstack/react-table";
+import { CustomTableMeta } from "@core/types/index";
 
-export interface CustomTableMeta<T> extends TableMeta<T> {
-  handleDeleteRow?: (row: T) => void;
-  handleMultipleDelete?: (rows: T[]) => void;
-  handleEditRow?: (row: T) => void;
-}
 
 const columnHelper = createColumnHelper<UserTypes>();
 

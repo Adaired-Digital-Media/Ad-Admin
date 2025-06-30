@@ -1,13 +1,8 @@
 import { FieldType } from "@/data/productForms.types";
-import { createColumnHelper, TableMeta } from "@tanstack/react-table";
+import { createColumnHelper } from "@tanstack/react-table";
 import { Checkbox, Text } from "rizzui";
 import TableRowActionGroup from "@core/components/table-utils/table-row-action-group";
-
-export interface CustomTableMeta<T> extends TableMeta<T> {
-  handleDeleteRow?: (row: T) => void;
-  handleMultipleDelete?: (rows: T[]) => void;
-  handleEditRow?: (row: T) => void;
-}
+import { CustomTableMeta } from "@core/types/index";
 
 const columnHelper = createColumnHelper<FieldType>();
 

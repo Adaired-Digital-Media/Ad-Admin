@@ -13,7 +13,7 @@ import cn from "@core/utils/class-names";
 // import { exportToCSV } from "@core/utils/export-to-csv";
 import { useApiCall } from "@/core/utils/api-config";
 import toast from "react-hot-toast";
-import { CustomTableMeta } from "@/app/shared/dashboard/recent-order";
+import { CustomTableMeta } from "@core/types/index";
 import { useAtom } from "jotai";
 import { couponActionsAtom, couponsAtom } from "@/store/atoms/coupons.atom";
 import { Session } from "next-auth";
@@ -79,7 +79,6 @@ export default function CouponsTable({
             token: session.user.accessToken!,
             payload: { id: row._id },
           });
-          console.log("Response : ", response);
           if (response.success) {
             toast.success(response.message);
           }
@@ -104,7 +103,7 @@ export default function CouponsTable({
           });
         } catch (error) {
           toast.error("Failed to fetch coupons");
-          console.log("Failed to fetch coupons : ", error);
+          console.error("Failed to fetch coupons : ", error);
         }
       };
       fetchCoupons();
@@ -113,7 +112,7 @@ export default function CouponsTable({
 
   // Sync table data with tickets atom
   useEffect(() => {
-    setData(coupons.length > 0 ? coupons : initialCoupons);
+    setData(coupons.length >= 0 ? coupons : initialCoupons);
   }, [coupons, initialCoupons, setData]);
 
   return (

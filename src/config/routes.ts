@@ -56,9 +56,16 @@ export const routes = {
     create: "/media-manager/create",
   },
   blog: {
-    list: "/blog/list",
+    list: "/blog",
     create: "/blog/create",
     edit: (id: string) => `/blog/edit?id=${id}`,
+    categoryList: "/blog/categories",
+  },
+  caseStudies : {
+    list: "/case-studies",
+    create: "/case-studies/create",
+    edit: (id: string) => `/case-studies/edit?id=${id}`,
+    categoryList: "/case-studies/categories",
   },
   staticPages: {
     termsPage: "/static-pages/terms",

@@ -5,10 +5,10 @@ import { createColumnHelper } from "@tanstack/react-table";
 import dayjs from "dayjs";
 import Image from "next/image";
 import { Checkbox, Flex, Text, Title } from "rizzui";
-import { CloudinaryFile } from "@/data/cloudinary-files";
-import imageIcon from "@public/image-icon.svg";
-import folderIcon from "@public/folder-icon.svg";
-import { CloudinaryFileMeta } from "./table";
+import { CloudinaryFile } from "@/core/types";
+// import imageIcon from "@public/image-icon.svg";
+// import folderIcon from "@public/folder-icon.svg";
+import { CloudinaryFileMeta } from "@core/types";
 
 const columnHelper = createColumnHelper<CloudinaryFile>();
 
@@ -39,21 +39,13 @@ export const allFilesColumns = [
     header: "Name",
     cell: ({ row }) => (
       <Flex align="center">
-        <Flex
-          align="center"
-          justify="center"
-          className="size-12 rounded-xl bg-gray-100"
-        >
+        <Flex align="center" justify="center" className="size-12">
           <Image
-            src={
-              row.original.format === "png" || "jpg" || "jpeg" || "svg"
-                ? imageIcon
-                : folderIcon
-            }
-            className="aspect-square"
-            width={26}
-            height={26}
-            alt={row.original.filename}
+            src={row?.original?.secure_url}
+            className="aspect-square rounded-lg bg-gray-100"
+            width={40}
+            height={40}
+            alt={"image"}
           />
         </Flex>
         <Title as="h6" className="mb-0.5 !text-sm font-medium">

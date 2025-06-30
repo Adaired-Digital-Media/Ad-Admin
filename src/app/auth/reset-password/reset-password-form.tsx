@@ -17,7 +17,6 @@ const initialValues: ResetPasswordSchema = {
 };
 
 export default function ForgetPasswordForm({ token }: { token: string }) {
-  console.log("Token : ", token);
   const [reset, setReset] = useState({});
   const isMedium = useMedia("(max-width: 1200px)", false);
   const onSubmit: SubmitHandler<ResetPasswordSchema> = async (data) => {

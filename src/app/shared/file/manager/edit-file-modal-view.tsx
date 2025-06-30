@@ -4,7 +4,7 @@ import { useModal } from "@/app/shared/modal-views/use-modal";
 import { Title, ActionIcon } from "rizzui";
 import { PiXBold } from "react-icons/pi";
 import EditFile from "./edit-file";
-import { CloudinaryFile } from "@/data/cloudinary-files";
+import { CloudinaryFile } from "@/core/types";
 export function EditFileModalView({ file }: { file: CloudinaryFile }) {
   const { closeModal } = useModal();
   return (

@@ -10,7 +10,7 @@ import { TableClassNameProps } from "@core/components/table/table-types";
 import cn from "@core/utils/class-names";
 import { exportToCSV } from "@core/utils/export-to-csv";
 import toast from "react-hot-toast";
-import { CustomTableMeta } from "@/app/shared/dashboard/recent-order";
+import { CustomTableMeta } from "@core/types/index";
 import { FormType } from "@/data/productForms.types";
 import { formListColumns } from "./columns";
 import { formFieldActionsAtom, formsAtom } from "@/store/atoms/forms.atom";
@@ -139,7 +139,7 @@ export default function FormsTable({
 
   // Sync table data with tickets atom
   useEffect(() => {
-    setData(forms.length > 0 ? forms : initialForms);
+    setData(forms.length >= 0 ? forms : initialForms);
   }, [forms, initialForms, setData]);
 
   return (

@@ -7,7 +7,7 @@ import DateCell from "@core/ui/date-cell";
 import { createColumnHelper } from "@tanstack/react-table";
 import { Badge, Checkbox, Text } from "rizzui";
 import { Ticket } from "@/data/tickets.types";
-import { CustomTableMeta } from "@/app/shared/dashboard/recent-order";
+import { CustomTableMeta } from "@core/types/index";
 import { routes } from "@/config/routes";
 import { StatusSelect } from "@/core/components/table-utils/status-select";
 import { UserSelect } from "@/core/components/table-utils/user-select";

@@ -10,7 +10,7 @@ import Filters from "./filters";
 import toast from "react-hot-toast";
 import { useModal } from "@/app/shared/modal-views/use-modal";
 import CreateUser from "../create-user";
-import { CustomTableMeta } from "@/app/shared/dashboard/recent-order";
+import { CustomTableMeta } from "@core/types/index";
 import { Session } from "next-auth";
 import { useAtom, useSetAtom } from "jotai";
 import { userActionsAtom, usersAtom } from "@/store/atoms/users.atom";
@@ -94,7 +94,7 @@ export default function UsersTable({
           });
         } catch (error) {
           toast.error("Failed to fetch users");
-          console.log("Failed to fetch users : ", error);
+          console.error("Failed to fetch users : ", error);
         }
       };
       fetchUsers();

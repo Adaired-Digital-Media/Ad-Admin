@@ -115,7 +115,6 @@ export const ticketActionsAtom = atom(
 
       case "update": {
         const { id, ...updateData } = action.payload;
-        console.log("Payload : ", { id, ...updateData });
         const data = await apiRequest(
           "patch",
           `/tickets/update?id=${id}`,

@@ -13,7 +13,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URI;
 const ENDPOINTS = {
   users: "/user/find",
   roles: "/role/find",
-  modules: "/permissionModule/find",
+  modules: "/permission-module/find",
 };
 
 // Generic fetch function with error handling
@@ -68,7 +68,7 @@ export default async function UserAndRoles() {
   const [users, roles, modules] = await Promise.all([
     fetchData(ENDPOINTS.users, accessToken, "users"),
     fetchData(ENDPOINTS.roles, accessToken, "roles"),
-    fetchData(ENDPOINTS.modules, accessToken, "modules"),
+    fetchData(ENDPOINTS.modules, accessToken, "permission-modules"),
   ]);
 
   return (

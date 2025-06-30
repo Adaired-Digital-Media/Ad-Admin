@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { Box } from "rizzui";
-import { CloudinaryFile } from "@/data/cloudinary-files";
+import { Box, Loader } from "rizzui";
+import { CloudinaryFile } from "@/core/types";
 import Table from "@core/components/table";
 import { useTanStackTable } from "@core/components/table/custom/use-TanStack-Table";
 import TableFooter from "@core/components/table/footer";
@@ -9,25 +10,16 @@ import TablePagination from "@core/components/table/pagination";
 import { allFilesColumns } from "./columns";
 import FileTableFilters from "../file-table-filters";
 import { useModal } from "@/app/shared/modal-views/use-modal";
-
 import toast from "react-hot-toast";
 import { EditFileModalView } from "../edit-file-modal-view";
-import { useEffect } from "react";
-import { CustomTableMeta } from "@/app/shared/dashboard/recent-order";
+import { useEffect, useState } from "react";
 import { useAtom, useSetAtom } from "jotai";
 import {
   cloudinaryActionsAtom,
   cloudinaryFilesAtom,
 } from "@/store/atoms/files.atom";
 import { useSession } from "next-auth/react";
-
-// Define the meta type
-export interface CloudinaryFileMeta extends CustomTableMeta<CloudinaryFile> {
-  handleDeleteRow: (row: { public_id: string }) => void;
-  handleCopyLink: (row: { secure_url: string }) => void;
-  handleMultipleDelete: (rows: CloudinaryFile[]) => void;
-  handleEditFile: (row: CloudinaryFile) => void;
-}
+import { CloudinaryFileMeta } from "@core/types";
 
 export default function FileListTable({
   className,
@@ -40,6 +32,7 @@ export default function FileListTable({
   const { data: session } = useSession();
   const [files] = useAtom(cloudinaryFilesAtom);
   const setFiles = useSetAtom(cloudinaryActionsAtom);
+  const [isLoading, setIsLoading] = useState(false);
 
   const { table, setData } = useTanStackTable<CloudinaryFile>({
     tableData: files.length ? files : initialFiles,
@@ -53,32 +46,42 @@ export default function FileListTable({
       },
       meta: {
         handleDeleteRow: async (row: { public_id: string }) => {
-          const response = await setFiles({
-            type: "delete",
-            token: session?.user?.accessToken ?? "",
-            payload: { public_id: row.public_id },
-          });
-          toast.success(response);
-          await fetch("/api/revalidateTags?tags=cloudinaryFiles", {
-            method: "GET",
-          });
-          table.resetRowSelection();
+          setIsLoading(true);
+          try {
+            const response = await setFiles({
+              type: "delete",
+              token: session?.user?.accessToken ?? "",
+              payload: { public_id: row.public_id },
+            });
+            toast.success(response);
+            table.resetRowSelection();
+          } catch (error) {
+            toast.error("Failed to delete file");
+            console.error("Failed to delete file:", error);
+          } finally {
+            setIsLoading(false);
+          }
         },
         handleMultipleDelete: async (rows: CloudinaryFile[]) => {
-          await Promise.all(
-            rows.map((row) =>
-              setFiles({
-                type: "delete",
-                token: session?.user?.accessToken ?? "",
-                payload: { public_id: row.public_id },
-              })
-            )
-          );
-          toast.success("Files deleted successfully!");
-          await fetch("/api/revalidateTags?tags=cloudinaryFiles", {
-            method: "GET",
-          });
-          table.resetRowSelection();
+          setIsLoading(true);
+          try {
+            await Promise.all(
+              rows.map((row) =>
+                setFiles({
+                  type: "delete",
+                  token: session?.user?.accessToken ?? "",
+                  payload: { public_id: row.public_id },
+                })
+              )
+            );
+            toast.success("Files deleted successfully!");
+            table.resetRowSelection();
+          } catch (error) {
+            toast.error("Failed to delete multiple files");
+            console.error("Failed to delete multiple files:", error);
+          } finally {
+            setIsLoading(false);
+          }
         },
         handleCopyLink: (row: { secure_url: string }) => {
           const link = row.secure_url;
@@ -101,7 +104,8 @@ export default function FileListTable({
   // Fetch files on mount and when access token changes
   useEffect(() => {
     if (session?.user?.accessToken) {
-      const fetchTickets = async () => {
+      const fetchFiles = async () => {
+        setIsLoading(true);
         try {
           await setFiles({
             type: "fetch",
@@ -109,25 +113,35 @@ export default function FileListTable({
             payload: { fileType: "all" },
           });
         } catch (error) {
-          toast.error("Failed to fetch tickets");
-          console.log("Failed to fetch tickets : ", error);
+          toast.error("Failed to fetch files");
+          console.error("Failed to fetch files:", error);
+        } finally {
+          setIsLoading(false);
         }
       };
-      fetchTickets();
+      fetchFiles();
     }
   }, [session?.user?.accessToken, setFiles]);
 
-  // Sync table data with initialFiles whenever it changes
+  // Sync table data with files or initialFiles
   useEffect(() => {
-    setData(files.length > 0 ? files : initialFiles);
+    setData(files.length ? files : initialFiles);
   }, [files, initialFiles, setData]);
 
   return (
     <Box className={className}>
       <FileTableFilters table={table} />
-      <Table table={table} variant="modern" />
-      <TableFooter table={table} />
-      <TablePagination table={table} className="py-4" />
+      {isLoading ? (
+        <div className="flex justify-center items-center h-64">
+          <Loader variant="spinner" className="w-12 h-12" />
+        </div>
+      ) : (
+        <>
+          <Table table={table} variant="modern" />
+          <TableFooter table={table} />
+          <TablePagination table={table} className="py-4" />
+        </>
+      )}
     </Box>
   );
 }

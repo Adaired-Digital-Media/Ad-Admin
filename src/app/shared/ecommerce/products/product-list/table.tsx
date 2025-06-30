@@ -13,7 +13,7 @@ import cn from "@core/utils/class-names";
 import { exportToCSV } from "@core/utils/export-to-csv";
 import { useApiCall } from "@/core/utils/api-config";
 import toast from "react-hot-toast";
-import { CustomTableMeta } from "@/app/shared/dashboard/recent-order";
+import { CustomTableMeta } from "@core/types/index";
 
 
 

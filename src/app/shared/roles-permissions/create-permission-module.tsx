@@ -21,7 +21,7 @@ const CreatePermissionModule = () => {
   const onSubmit: SubmitHandler<CreatePermissionModuleInput> = async (data) => {
     setLoading(true);
     const _response = await apiCall<{ message: string }>({
-      url: "/permissionModule/create",
+      url: "/permission-module/create",
       method: "POST",
       data,
     });

@@ -54,7 +54,6 @@ export default function ProfileSettingsView() {
       }
 
       const updatedUser = response?.data?.data;
-      console.log("Updated User -> ", updatedUser);
 
       // 2. Update local session
       const updateResult = await update({
@@ -65,8 +64,6 @@ export default function ProfileSettingsView() {
           image: updatedUser.image,
         },
       });
-
-      console.log("Updated Session -> ", updateResult);
 
       if (!updateResult) {
         throw new Error("Session update failed");
@@ -88,11 +85,9 @@ export default function ProfileSettingsView() {
       validationSchema={profileFormSchema}
       onSubmit={onSubmit}
       className="@container"
-
       resetValues={defaultValuesWithSession}
     >
       {({ register, setValue, getValues, watch, formState: { errors } }) => {
-
         return (
           <>
             <ProfileHeader
@@ -135,7 +130,7 @@ export default function ProfileSettingsView() {
                 className="pt-7 @2xl:pt-9 @3xl:grid-cols-12 @3xl:pt-11"
               >
                 {status === "loading" ? (
-                  <UploadLoader className="col-span-9"/>
+                  <UploadLoader className="col-span-9" />
                 ) : (
                   <UploadZone
                     name={`image`}
@@ -215,7 +210,9 @@ export function ProfileHeader({
           <Image
             src={
               image ||
-              `https://avatar.iran.liara.run/username?username=${title.split(" ")[0]}+${title.split(" ")[1]}`
+              `https://api.dicebear.com/9.x/initials/svg?seed=${
+                title.split(" ")[0]
+              }+${title.split(" ")[1]}`
             }
             alt="profile-pic"
             fill

@@ -36,7 +36,7 @@ const fileTypeOptions = [
     id: 4,
   },
   {
-    value: 'image',
+    value: 'jpg',
     name: 'Image',
     icon: <ImageIcon className="h-6 w-6" />,
     id: 5,

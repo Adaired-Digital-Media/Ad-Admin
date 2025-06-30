@@ -1,6 +1,6 @@
 import Image from "next/image";
 import cn from "@/core/utils/class-names";
-import { CloudinaryFile } from "@/data/cloudinary-files";
+import { CloudinaryFile } from "@/core/types";
 import { Title } from "rizzui";
 
 interface FileProps {

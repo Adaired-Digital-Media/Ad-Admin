@@ -1,14 +1,16 @@
 import AuthWrapper from "@/app/shared/auth-layout/auth-wrapper";
 import { metaObject } from "@/config/site.config";
-import axios, { AxiosResponse } from "axios";
 
 export const metadata = {
   ...metaObject("Verification"),
 };
 
-const verifyUser = async (
-  token: string
-): Promise<AxiosResponse | { status: number; data: { message: string } }> => {
+interface ErrorResponse {
+  status: number;
+  data: { message: string };
+}
+
+const verifyUser = async (token: string): Promise<ErrorResponse> => {
   const apiUri = process.env.NEXT_PUBLIC_BACKEND_API_URI;
 
   if (!apiUri) {
@@ -22,14 +24,26 @@ const verifyUser = async (
   }
 
   try {
-    const result = await axios.get(`${apiUri}/auth/verify-user?token=${token}`);
-    return result;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    const status = error.response?.status || 500;
+    const response = await fetch(`${apiUri}/auth/verify-user?token=${token}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      return {
+        status: response.status,
+        data: { message: errorData.message || "An unexpected error occurred." },
+      };
+    }
+
+    return await response.json();
+  } catch (error) {
     const message =
-      error.response?.data?.message || "An unexpected error occurred.";
-    return { status, data: { message } };
+      error instanceof Error ? error.message : "An unexpected error occurred.";
+    return { status: 500, data: { message } };
   }
 };
 
@@ -56,57 +70,3 @@ export default async function VerifyUser({
     </AuthWrapper>
   );
 }
-
-// import AuthWrapper from "@/app/shared/auth-layout/auth-wrapper";
-// import { metaObject } from "@/config/site.config";
-// import axios from "axios";
-
-// export const metadata = {
-//   ...metaObject("Verification"),
-// };
-
-// const verifyUser = async (token: string) => {
-//   try {
-//     const result = await axios.get(
-//       `${process.env.NEXT_PUBLIC_BACKEND_API_URI}/auth/verify-user?token=${token}`
-//     );
-//     return result;
-//     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-//   } catch (error: any) {
-//     return (
-//       error.response || {
-//         status: 500,
-//         data: { message: "An unexpected error occurred." },
-//       }
-//     );
-//   }
-// };
-
-// export default async function VerifyUser({
-//   searchParams,
-// }: {
-//   searchParams: { token: string };
-// }) {
-//   const { token } = searchParams;
-
-//   if (!token) {
-//     return (
-//       <AuthWrapper title="Invalid or expired verification link.">
-//         <></>
-//       </AuthWrapper>
-//     );
-//   }
-
-//   const result = await verifyUser(token);
-
-//   const message =
-//     result.status === 200
-//       ? result?.data?.message
-//       : result?.data?.message || "Something went wrong.";
-
-//   return (
-//     <AuthWrapper title={message}>
-//       <></>
-//     </AuthWrapper>
-//   );
-// }

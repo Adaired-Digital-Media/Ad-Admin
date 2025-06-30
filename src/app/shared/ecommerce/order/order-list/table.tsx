@@ -9,18 +9,13 @@ import TablePagination from "@core/components/table/pagination";
 import Filters from "./filters";
 import { TableVariantProps } from "rizzui";
 import { OrderType } from "@/core/types";
-import { TableMeta } from "@tanstack/react-table";
 import toast from "react-hot-toast";
 import { useAtom, useSetAtom } from "jotai";
 import { orderActionsAtom, ordersAtom } from "@/store/atoms/orders.atom";
 import { Session } from "next-auth";
 import { useEffect } from "react";
+import { CustomTableMeta } from "@core/types/index";
 
-// Define custom meta interface
-export interface CustomTableMeta<T> extends TableMeta<T> {
-  handleDeleteRow?: (row: T) => void;
-  handleMultipleDelete?: (rows: T[]) => void;
-}
 
 export default function OrderTable({
   className,
@@ -67,7 +62,7 @@ export default function OrderTable({
 
   // Sync table data with orders atom
   useEffect(() => {
-    setData(orders.length > 0 ? orders : orderData);
+    setData(orders.length >= 0 ? orders : orderData);
   }, [orders, orderData, setData]);
 
   return (

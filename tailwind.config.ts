@@ -1,5 +1,5 @@
 import type { Config } from "tailwindcss";
-import plugin from "tailwindcss";
+import plugin from "tailwindcss/plugin"; // Use plugin from tailwindcss/plugin
 import forms from "@tailwindcss/forms";
 import contentQueries from "@tailwindcss/container-queries";
 
@@ -80,7 +80,6 @@ const config: Omit<Config, "prefix" | "presets" | "content"> = {
         inter: ["var(--font-inter)"],
         lexend: ["var(--font-lexend)"],
       },
-      // required these animations for the Loader component
       animation: {
         blink: "blink 1.4s infinite both;",
         "scale-up": "scaleUp 500ms infinite alternate",
@@ -145,10 +144,10 @@ const config: Omit<Config, "prefix" | "presets" | "content"> = {
   plugins: [
     forms,
     contentQueries,
-    // @ts-ignore
-    plugin(({ addVariant }: any) => {
+    plugin(function ({ addVariant }) {
       addVariant("not-read-only", "&:not(:read-only)");
     }),
   ],
 };
+
 export default config;

@@ -8,7 +8,7 @@ import { FilterDrawerView } from '@core/components/controlled-table/table-filter
 import {
   renderOptionDisplayValue,
   statusOptions,
-} from '@/app/shared/invoice/form-utils';
+} from '@/app/shared/ecommerce/invoice/form-utils';
 import ToggleColumns from '@core/components/table-utils/toggle-columns';
 import { getDateRangeStateValues } from '@core/utils/get-formatted-date';
 import { type Table as ReactTableType } from '@tanstack/react-table';

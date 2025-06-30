@@ -3,7 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import FileGrid from "@/app/shared/file/manager/file-grid";
 import FileListTable from "@/app/shared/file/manager/file-list/table";
-import { CloudinaryFile } from "@/data/cloudinary-files";
+import { CloudinaryFile } from "@/core/types";
 
 export default function PageLayout({ files }: { files: CloudinaryFile[] }) {
   const searchParams = useSearchParams();
