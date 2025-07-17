@@ -58,7 +58,7 @@ const apiRequest = async (
       data: requestData,
     });
 
-    return response.data;
+    return response;
   } catch (error) {
     console.error(`API ${method.toUpperCase()} error:`, error);
     throw error;
@@ -84,9 +84,38 @@ export const ticketActionsAtom = atom(
     }
   ) => {
     switch (action.type) {
+      case "create": {
+        const data = await apiRequest(
+          "post",
+          "/tickets/create",
+          action.token,
+          action.payload
+        );
+        if (data.status !== 201) {
+          return data;
+        }
+        set(ticketsAtom, (prev) => [data.data.data, ...prev]);
+
+        await Promise.all([
+          fetch(`/api/revalidateTags?tags=tickets`),
+          fetch(`/api/revalidateTags?tags=ticket_stats`),
+          fetch(`${process.env.NEXT_PUBLIC_SITE_URI}/api/revalidatePage`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ slug: "/dashboard/support/tickets" }),
+          }),
+        ]);
+        return data;
+      }
+
       case "fetchAll": {
         const data = await apiRequest("get", `/tickets/read`, action.token);
-        set(ticketsAtom, data.data);
+        if (data.status !== 200) {
+          return data;
+        }
+        set(ticketsAtom, data.data.data);
         return data;
       }
 
@@ -97,19 +126,10 @@ export const ticketActionsAtom = atom(
           `/tickets/read?ticketId=${ticketId}`,
           action.token
         );
-        set(currentTicketAtom, data.data[0] || null);
-        return data;
-      }
-
-      case "create": {
-        const data = await apiRequest(
-          "post",
-          "/tickets/create",
-          action.token,
-          action.payload
-        );
-        set(ticketsAtom, (prev) => [data.data, ...prev]);
-        await fetch("/api/revalidateTags?tag=tickets", { method: "GET" });
+        if (data.status !== 200) {
+          return data;
+        }
+        set(currentTicketAtom, data.data.data[0] || null);
         return data;
       }
 
@@ -121,38 +141,71 @@ export const ticketActionsAtom = atom(
           action.token,
           updateData
         );
+        if (data.status !== 200) {
+          return data;
+        }
         // Use functional updates to ensure consistency
         set(ticketsAtom, (prev) =>
           prev.map((t) =>
-            t._id === id ? { ...t, ...data.data, _id: t._id } : t
+            t._id === id ? { ...t, ...data.data.data, _id: t._id } : t
           )
         );
         // Ensure currentTicketAtom gets the full updated object
         if (get(currentTicketAtom)?._id === id) {
           set(currentTicketAtom, (prev) =>
-            prev ? { ...prev, ...data.data, _id: prev._id } : null
+            prev ? { ...prev, ...data.data.data, _id: prev._id } : null
           );
         }
-        await fetch("/api/revalidateTags?tags=tickets", { method: "GET" });
+        await Promise.all([
+          fetch(`/api/revalidateTags?tags=tickets`),
+          fetch(`/api/revalidateTags?tags=ticket_stats`),
+          fetch(`${process.env.NEXT_PUBLIC_SITE_URI}/api/revalidatePage`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              slug: `/dashboard/support/inbox?tkt=${data.data.data.ticketId}`,
+            }),
+          }),
+          fetch(`${process.env.NEXT_PUBLIC_SITE_URI}/api/revalidatePage`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ slug: "/dashboard/support/tickets" }),
+          }),
+        ]);
         return data;
       }
 
       case "delete": {
         const { id } = action.payload;
-        await apiRequest("delete", `/tickets/delete?id=${id}`, action.token);
+        const data = await apiRequest(
+          "delete",
+          `/tickets/delete?id=${id}`,
+          action.token
+        );
         set(ticketsAtom, (prev) => {
           const newTickets = prev.filter((t) => t._id !== id);
           return newTickets;
         });
 
         set(currentTicketAtom, (prev) => (prev?._id === id ? null : prev));
-        await fetch("/api/revalidateTags?tags=tickets", { method: "GET" });
-        return { success: true };
+        await Promise.all([
+          fetch(`/api/revalidateTags?tags=tickets`),
+          fetch(`/api/revalidateTags?tags=ticket_stats`),
+        ]);
+        return data;
       }
 
       case "fetchStats": {
         const data = await apiRequest("get", "/tickets/stats", action.token);
-        set(ticketStatsAtom, data.data);
+        set(ticketStatsAtom, data.data.data);
+        await Promise.all([
+          fetch(`/api/revalidateTags?tags=tickets`),
+          fetch(`/api/revalidateTags?tags=ticket_stats`),
+        ]);
         return data;
       }
     }
@@ -161,9 +214,9 @@ export const ticketActionsAtom = atom(
 
 // Derived atoms for filtered tickets
 export const openTicketsAtom = atom((get) =>
-  get(ticketsAtom).filter((t) => t.status === "Open")
+  get(ticketsAtom).filter((t) => t.status === "open")
 );
 
 export const closedTicketsAtom = atom((get) =>
-  get(ticketsAtom).filter((t) => t.status === "Closed")
+  get(ticketsAtom).filter((t) => t.status === "closed")
 );

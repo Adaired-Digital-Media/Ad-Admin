@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Link from "next/link";
 import { PiPlusBold } from "react-icons/pi";
 import { routes } from "@/config/routes";
@@ -6,43 +7,8 @@ import PageHeader from "@/app/shared/page-header";
 import { metaObject } from "@/config/site.config";
 import CouponsTable from "@/app/shared/ecommerce/coupons/coupon-list/table";
 import { auth } from "@/auth";
-
-
-// Centralized API base URL
-const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URI;
-
-// Fetch endpoints configuration
-const ENDPOINTS = {
-  coupons: "/coupons/read",
-  couponStats: "/coupons/usageStats",
-};
-
-const fetchData = async (
-  endpoint: string,
-  accessToken: string,
-  tag: string
-) => {
-  try {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-      next: {
-        tags: [tag],
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch ${tag}: ${response.statusText}`);
-    }
-
-    const { data } = await response.json();
-    return data;
-  } catch (error) {
-    console.error(`Error fetching ${tag}:`, error);
-    return [];
-  }
-};
+import { fetchData } from "@/core/utils/fetch-function";
+import { CouponTypes } from "@/core/types";
 
 export const metadata = {
   ...metaObject("Coupons"),
@@ -67,14 +33,19 @@ const pageHeader = {
 
 export default async function CouponsPage() {
   const session = await auth();
-  // if (!session) {
-  //   throw new Error("User session is not available.");
-  // }
   const accessToken = session?.user?.accessToken || "";
-  // Parallel data fetching
+
   const [coupons, couponStats] = await Promise.all([
-    fetchData(ENDPOINTS.coupons, accessToken, "coupons"),
-    fetchData(ENDPOINTS.couponStats, accessToken, "couponStats"),
+    fetchData({
+      endpoint: "/coupons/read",
+      accessToken,
+      tag: "coupons",
+    }) as Promise<CouponTypes[]>,
+    fetchData({
+      endpoint: "/coupons/usageStats",
+      accessToken,
+      tag: "couponStats",
+    }) as Promise<any[]>,
   ]);
 
   return (
@@ -93,7 +64,12 @@ export default async function CouponsPage() {
         </div>
       </PageHeader>
 
-      <CouponsTable pageSize={10} initialCoupons={coupons} couponStats={couponStats} session={session!}/>
+      <CouponsTable
+        pageSize={10}
+        initialCoupons={coupons}
+        couponStats={couponStats}
+        session={session!}
+      />
     </>
   );
 }

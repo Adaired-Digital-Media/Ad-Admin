@@ -3,6 +3,7 @@ import { messages } from "@/config/messages";
 
 // form zod validation schema
 export const categoryFormSchema = z.object({
+  _id: z.string().optional(),
   name: z.string().min(1, { message: messages.catNameIsRequired }),
   slug: z.string().min(1, { message: messages.slugIsRequired }),
   parentCategory: z

@@ -17,8 +17,8 @@ type StatusOption = {
 };
 
 const statusOptions: StatusOption[] = [
-  { label: "Active", value: "Active" },
-  { label: "Inactive", value: "Inactive" },
+  { label: "Active", value: "active" },
+  { label: "Inactive", value: "inactive" },
 ];
 
 export default function BasicInformation({

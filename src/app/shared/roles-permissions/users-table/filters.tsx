@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { STATUSES } from "@/data/users-data";
 import { Badge, Box, Button, Flex, Input, Text, Title } from "rizzui";
 import StatusField from "@core/components/controlled-table/status-field";
 import { type Table as ReactTableType } from "@tanstack/react-table";
@@ -12,24 +11,23 @@ import { Session } from "next-auth";
 
 export const statusOptions = [
   {
-    value: STATUSES.Active,
-    label: STATUSES.Active,
+    value: "active",
+    label: "Active",
   },
   {
-    value: STATUSES.Inactive,
-    label: STATUSES.Inactive,
+    value: "inactive",
+    label: "Inactive",
   },
 ];
 
-
 interface TableToolbarProps<T extends Record<string, any>> {
   table: ReactTableType<T>;
-  session:Session
+  session: Session;
 }
 
 export default function Filters<TData extends Record<string, any>>({
   table,
-  session
+  session,
 }: TableToolbarProps<TData>) {
   const isFiltered =
     table.getState().globalFilter || table.getState().columnFilters.length > 0;
@@ -68,15 +66,6 @@ export default function Filters<TData extends Record<string, any>>({
               renderOptionDisplayValue(selected)
             }
           />
-          {/* <StatusField
-            placeholder="Filter by Role"
-            options={roles}
-            value={table.getColumn("role")?.getFilterValue() ?? []}
-            onChange={(e) => table.getColumn("role")?.setFilterValue(e)}
-            getOptionValue={(option) => option.label}
-            dropdownClassName="!z-10"
-            className="@4xl:w-40"
-          /> */}
           {isFiltered && (
             <Button
               size="sm"
@@ -116,7 +105,7 @@ export default function Filters<TData extends Record<string, any>>({
 
 function renderOptionDisplayValue(value: string) {
   switch (value) {
-    case STATUSES.Active:
+    case "active":
       return (
         <div className="flex items-center">
           <Badge color="success" renderAsDot />
@@ -125,7 +114,7 @@ function renderOptionDisplayValue(value: string) {
           </Text>
         </div>
       );
-    case STATUSES.Inactive:
+    case "inactive":
       return (
         <div className="flex items-center">
           <Badge color="danger" renderAsDot />

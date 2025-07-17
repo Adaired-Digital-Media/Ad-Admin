@@ -78,7 +78,9 @@ export const blogCategoryListColumns = () => {
       size: 120,
       header: "Blog Count",
       cell: ({ row }) => (
-        <div className="ps-6">{row.original.blogs.length}</div>
+        <div className="ps-6">
+          {row?.original?.blogs?.length > 0 ? row?.original?.blogs?.length : 0}
+        </div>
       ),
     }),
     columnHelper.accessor("status", {
@@ -86,7 +88,7 @@ export const blogCategoryListColumns = () => {
       size: 120,
       header: "Status",
       enableSorting: false,
-      cell: ({ row }) => getStatusBadge(row.original.status),
+      cell: ({ row }) => getStatusBadge(row?.original?.status ?? ""),
     }),
     columnHelper.display({
       id: "action",

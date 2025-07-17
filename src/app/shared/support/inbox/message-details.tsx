@@ -48,18 +48,18 @@ const defaultValues = {
 };
 
 const priorityOptions = [
-  { value: "Low", label: "Low" },
-  { value: "Medium", label: "Medium" },
-  { value: "High", label: "High" },
-  { value: "Urgent", label: "Urgent" },
+  { value: "low", label: "Low" },
+  { value: "medium", label: "Medium" },
+  { value: "high", label: "High" },
+  { value: "urgent", label: "Urgent" },
 ];
 
 const statusOptions = [
-  { value: "Open", label: "Open" },
-  { value: "In Progress", label: "In Progress" },
-  { value: "Resolved", label: "Resolved" },
-  { value: "Closed", label: "Closed" },
-  { value: "Reopened", label: "Reopened" },
+  { value: "open", label: "Open" },
+  { value: "in progress", label: "In Progress" },
+  { value: "resolved", label: "Resolved" },
+  { value: "closed", label: "Closed" },
+  { value: "reopened", label: "Reopened" },
 ];
 
 export const supportTypes = {
@@ -138,6 +138,8 @@ export default function MessageDetails({
     updateTicket({ priority: newPriority.value as TicketPriority });
   };
 
+
+
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     if (!selectedTicket || !session?.user?.accessToken) return;
 
@@ -152,6 +154,7 @@ export default function MessageDetails({
           attachments: files,
         },
       });
+
       toast.success("Reply sent successfully");
       setFiles([]);
       setIncludeAttachments(false);
@@ -171,15 +174,15 @@ export default function MessageDetails({
 
   const getBadgeColor = (status: TicketStatus) => {
     switch (status) {
-      case "Open":
+      case "open":
         return "success";
-      case "In Progress":
+      case "in progress":
         return "warning";
-      case "Resolved":
+      case "resolved":
         return "success";
-      case "Closed":
+      case "closed":
         return "danger";
-      case "Reopened":
+      case "reopened":
         return "secondary";
       default:
         return "primary";
@@ -397,7 +400,7 @@ export function DotSeparator({ ...props }) {
 
 function renderStatusOptionDisplayValue(value: string) {
   switch (value) {
-    case "Open":
+    case "open":
       return (
         <div className="flex items-center">
           <Badge color="info" renderAsDot />
@@ -406,7 +409,7 @@ function renderStatusOptionDisplayValue(value: string) {
           </Text>
         </div>
       );
-    case "In Progress":
+    case "in progress":
       return (
         <div className="flex items-center">
           <Badge color="warning" renderAsDot />
@@ -415,7 +418,7 @@ function renderStatusOptionDisplayValue(value: string) {
           </Text>
         </div>
       );
-    case "Resolved":
+    case "resolved":
       return (
         <div className="flex items-center">
           <Badge color="success" renderAsDot />
@@ -424,7 +427,7 @@ function renderStatusOptionDisplayValue(value: string) {
           </Text>
         </div>
       );
-    case "Closed":
+    case "closed":
       return (
         <div className="flex items-center">
           <Badge color="danger" renderAsDot />
@@ -433,7 +436,7 @@ function renderStatusOptionDisplayValue(value: string) {
           </Text>
         </div>
       );
-    case "Reopened":
+    case "reopened":
       return (
         <div className="flex items-center">
           <Badge color="secondary" renderAsDot />
@@ -456,7 +459,7 @@ function renderStatusOptionDisplayValue(value: string) {
 
 function renderPriorityOptionDisplayValue(value: string) {
   switch (value) {
-    case "Medium":
+    case "medium":
       return (
         <div className="flex items-center">
           <Badge color="warning" renderAsDot />
@@ -465,7 +468,7 @@ function renderPriorityOptionDisplayValue(value: string) {
           </Text>
         </div>
       );
-    case "Low":
+    case "low":
       return (
         <div className="flex items-center">
           <Badge color="success" renderAsDot />
@@ -474,7 +477,7 @@ function renderPriorityOptionDisplayValue(value: string) {
           </Text>
         </div>
       );
-    case "High":
+    case "high":
       return (
         <div className="flex items-center">
           <Badge color="danger" renderAsDot />
@@ -483,7 +486,7 @@ function renderPriorityOptionDisplayValue(value: string) {
           </Text>
         </div>
       );
-    case "Urgent":
+    case "urgent":
       return (
         <div className="flex items-center">
           <Badge color="danger" renderAsDot />
@@ -503,18 +506,3 @@ function renderPriorityOptionDisplayValue(value: string) {
       );
   }
 }
-
-// function renderAvatarOptionDisplayValue(option: AvatarOptionTypes) {
-//   return (
-//     <div className="flex items-center gap-2">
-//       <Avatar
-//         src={option.avatar}
-//         name={option.label}
-//         className="!h-6 !w-6 rounded-full"
-//       />
-//       <span className="whitespace-nowrap text-xs sm:text-sm">
-//         {option.label}
-//       </span>
-//     </div>
-//   );
-// }

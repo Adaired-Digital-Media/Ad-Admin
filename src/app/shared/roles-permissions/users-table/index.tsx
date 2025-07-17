@@ -1,6 +1,6 @@
 "use client";
 
-import { UserTypes } from "@/data/users-data";
+import { UserTypes } from "@/core/types";
 import { useTanStackTable } from "@core/components/table/custom/use-TanStack-Table";
 import { usersColumns } from "./columns";
 import Table from "@core/components/table";

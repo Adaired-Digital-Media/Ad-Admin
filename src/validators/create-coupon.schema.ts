@@ -33,9 +33,7 @@ export const couponFormSchema = z
       .min(1, { message: "Minimum order amount must be at least 1" })
       .default(1),
 
-    maxDiscountAmount: z.coerce
-      .number({ invalid_type_error: "Enter a valid number" })
-      .default(Infinity),
+    maxDiscountAmount: z.coerce.number().optional(),
 
     specificProducts: z.array(z.string()).default([]),
     productCategories: z.array(z.string()).default([]),

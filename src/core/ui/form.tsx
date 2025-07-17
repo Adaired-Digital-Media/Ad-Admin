@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { Schema } from 'zod';
+import type { ZodTypeAny } from 'zod';
 import { useEffect } from 'react';
 import {
   useForm,
@@ -18,7 +18,7 @@ type FormProps<TFormValues extends FieldValues> = {
   onSubmit: SubmitHandler<TFormValues>;
   children: (methods: UseFormReturn<TFormValues>) => React.ReactNode;
   useFormProps?: UseFormProps<TFormValues>;
-  validationSchema?: Schema<TFormValues>;
+  validationSchema?: ZodTypeAny;
   fieldErrors?: any[] | null;
   formError?: string | string[] | null | any;
   serverError?: ServerErrors<Partial<TFormValues>> | null;

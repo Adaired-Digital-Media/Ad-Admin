@@ -12,7 +12,10 @@ import { MdOutlineDashboard } from "react-icons/md";
 import ProjectWriteIcon from "@/core/components/icons/project-write";
 import { TbBrandBlogger } from "react-icons/tb";
 import { FiFileText } from "react-icons/fi";
-import { PermissionEntities, PermissionActions } from "@/config/permissions.config";
+import {
+  PermissionEntities,
+  PermissionActions,
+} from "@/config/permissions.config";
 
 export interface DropdownItem {
   name: string;
@@ -69,12 +72,6 @@ export const menuItems: MenuItem[] = [
         href: routes.products.categories,
         entity: PermissionEntities.PRODUCTS,
         action: PermissionActions.READ,
-      },
-      {
-        name: "Create Categories",
-        href: routes.products.createCategory,
-        entity: PermissionEntities.PRODUCTS,
-        action: PermissionActions.CREATE,
       },
     ],
   },

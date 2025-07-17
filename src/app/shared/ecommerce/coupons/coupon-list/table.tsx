@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { CouponTypes } from "@/data/coupons.types";
+import { CouponTypes } from "@/core/types";
 import Table from "@core/components/table";
 import { useTanStackTable } from "@core/components/table/custom/use-TanStack-Table";
 import TablePagination from "@core/components/table/pagination";
@@ -10,20 +10,16 @@ import { couponsListColumns } from "./columns";
 import TableFooter from "@core/components/table/footer";
 import { TableClassNameProps } from "@core/components/table/table-types";
 import cn from "@core/utils/class-names";
-// import { exportToCSV } from "@core/utils/export-to-csv";
-import { useApiCall } from "@/core/utils/api-config";
 import toast from "react-hot-toast";
 import { CustomTableMeta } from "@core/types/index";
 import { useAtom } from "jotai";
 import { couponActionsAtom, couponsAtom } from "@/store/atoms/coupons.atom";
 import { Session } from "next-auth";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function CouponsTable({
   initialCoupons = [],
-  // couponStats = [],
   pageSize = 5,
-  // hideFilters = false,
   hidePagination = false,
   hideFooter = false,
   classNames = {
@@ -43,13 +39,12 @@ export default function CouponsTable({
   couponStats?: any[];
   session: Session;
 }) {
-  const { apiCall } = useApiCall();
-
-  const [coupons] = useAtom(couponsAtom);
   const [, dispatch] = useAtom(couponActionsAtom);
+  const [coupons, setCoupons] = useAtom(couponsAtom);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   const { table, setData } = useTanStackTable<CouponTypes>({
-    tableData: coupons.length ? coupons : initialCoupons,
+    tableData: coupons.length > 0 ? coupons : initialCoupons,
     columnConfig: couponsListColumns,
     options: {
       initialState: {
@@ -60,18 +55,25 @@ export default function CouponsTable({
       },
       meta: {
         handleMultipleDelete: async (rows: any) => {
-          rows.forEach(async (r: CouponTypes) => {
-            const _response = await apiCall<{ message: string }>({
-              url: `/coupons/delete?id=${r._id}`,
-              method: "DELETE",
+          const deletePromises = rows.map(async (row: CouponTypes) => {
+            const response = await dispatch({
+              type: "delete",
+              payload: { id: row._id },
+              token: session.user.accessToken!,
             });
-            if (_response.status === 200) {
-              toast.success(_response.data.message);
+            if (!response.success) {
+              toast.error(response.data.message || "Failed to delete coupon");
+              return false;
             }
+            return true;
           });
-          await fetch("/api/revalidateTags?tags=products", {
-            method: "GET",
-          });
+          const results = await Promise.all(deletePromises);
+          if (results.every((success) => success)) {
+            toast.success("All selected coupons deleted successfully");
+            table.resetRowSelection();
+          } else {
+            toast.error("Some coupons could not be deleted");
+          }
         },
         handleDeleteRow: async (row: { _id: string }) => {
           const response = await dispatch({
@@ -79,12 +81,11 @@ export default function CouponsTable({
             token: session.user.accessToken!,
             payload: { id: row._id },
           });
-          if (response.success) {
-            toast.success(response.message);
+          if (!response.success) {
+            toast.error(response.data.message || "Failed to delete coupon");
+            return;
           }
-          await fetch("/api/revalidateTags?tags=coupons", {
-            method: "GET",
-          });
+          toast.success(response.data.message || "Coupon deleted successfully");
           table.resetRowSelection();
         },
       } as CustomTableMeta<CouponTypes>,
@@ -97,34 +98,36 @@ export default function CouponsTable({
     if (session?.user?.accessToken) {
       const fetchCoupons = async () => {
         try {
-          await dispatch({
+          const response = await dispatch({
             type: "fetchAll",
             token: session.user.accessToken!,
           });
+
+          if (response.success) {
+            setIsInitialLoad(false);
+          } else {
+            toast.error(response.data.message || "Failed to fetch coupons");
+            setCoupons(initialCoupons);
+          }
         } catch (error) {
           toast.error("Failed to fetch coupons");
           console.error("Failed to fetch coupons : ", error);
+          setCoupons(initialCoupons);
         }
       };
       fetchCoupons();
     }
-  }, [session?.user?.accessToken, dispatch]);
+  }, [session?.user?.accessToken, dispatch, initialCoupons, setCoupons]);
 
-  // Sync table data with tickets atom
   useEffect(() => {
-    setData(coupons.length >= 0 ? coupons : initialCoupons);
-  }, [coupons, initialCoupons, setData]);
+    setData(isInitialLoad && coupons.length === 0 ? initialCoupons : coupons);
+  }, [coupons, initialCoupons, setData, isInitialLoad]);
 
   return (
     <>
       {/* {!hideFilters && <Filters table={table} />} */}
       <Table table={table} variant="modern" classNames={classNames} />
-      {!hideFooter && (
-        <TableFooter
-          table={table}
-          // onExport={handleExportData}
-        />
-      )}
+      {!hideFooter && <TableFooter table={table} />}
       {!hidePagination && (
         <TablePagination
           table={table}

@@ -1,16 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { atom } from "jotai";
 import axios from "axios";
-import { FormType, FieldType } from "@/data/productForms.types";
+import { FormType, FieldType } from "@/core/types";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URI;
 
 // State atoms
 export const formsAtom = atom<FormType[]>([]);
-export const currentFormAtom = atom<FormType | null>(null);
 
 export const fieldsAtom = atom<FieldType[]>([]);
-export const currentFieldAtom = atom<FieldType | null>(null);
 
 // Helper function for API calls
 const apiRequest = async (
@@ -52,7 +50,7 @@ type FormFieldActionPayload =
         productType?: string;
         title?: string;
         fields?: Array<{ field: string; fieldOrder: number }>;
-        status?: "Active" | "Inactive";
+        status?: "active" | "inactive";
       };
     }
   | {
@@ -84,7 +82,18 @@ export const formFieldActionsAtom = atom(
   null,
   async (get, set, action: FormFieldActionPayload) => {
     switch (action.type) {
-      // Form Actions
+      case "createForm": {
+        const data = await apiRequest(
+          "post",
+          "/product/form/create-form",
+          action.token,
+          action.payload
+        );
+        set(formsAtom, (prev) => [data.form, ...prev]);
+        await fetch("/api/revalidateTags?tags=forms");
+        return data;
+      }
+
       case "fetchAllForms": {
         const data = await apiRequest(
           "get",
@@ -103,19 +112,6 @@ export const formFieldActionsAtom = atom(
           `/product/form/read-form?formId=${formId}`,
           action.token
         );
-        set(currentFormAtom, data.form || null);
-        return data;
-      }
-
-      case "createForm": {
-        const data = await apiRequest(
-          "post",
-          "/product/form/create-form",
-          action.token,
-          action.payload
-        );
-        set(formsAtom, (prev) => [data.form, ...prev]);
-        await fetch("/api/revalidateTags?tags=forms", { method: "GET" });
         return data;
       }
 
@@ -133,12 +129,7 @@ export const formFieldActionsAtom = atom(
             f._id === formId ? { ...f, ...data.form, _id: f._id } : f
           )
         );
-        if (get(currentFormAtom)?._id === formId) {
-          set(currentFormAtom, (prev) =>
-            prev ? { ...prev, ...data.form, _id: prev._id } : null
-          );
-        }
-        await fetch("/api/revalidateTags?tags=forms", { method: "GET" });
+        await fetch("/api/revalidateTags?tags=forms");
         return data;
       }
 
@@ -151,7 +142,6 @@ export const formFieldActionsAtom = atom(
           action.token
         );
         set(formsAtom, (prev) => prev.filter((f) => f._id !== formId));
-        set(currentFormAtom, (prev) => (prev?._id === formId ? null : prev));
         await fetch("/api/revalidateTags?tags=forms", { method: "GET" });
         return res;
       }
@@ -175,7 +165,6 @@ export const formFieldActionsAtom = atom(
           `/product/form/read-fields?fieldId=${fieldId}`,
           action.token
         );
-        set(currentFieldAtom, data.field || null);
         return data;
       }
 
@@ -205,11 +194,6 @@ export const formFieldActionsAtom = atom(
             f._id === fieldId ? { ...f, ...data.field, _id: f._id } : f
           )
         );
-        if (get(currentFieldAtom)?._id === fieldId) {
-          set(currentFieldAtom, (prev) =>
-            prev ? { ...prev, ...data.field, _id: prev._id } : null
-          );
-        }
         await fetch("/api/revalidateTags?tags=fields", { method: "GET" });
         return data;
       }
@@ -223,7 +207,6 @@ export const formFieldActionsAtom = atom(
           action.token
         );
         set(fieldsAtom, (prev) => prev.filter((f) => f._id !== fieldId));
-        set(currentFieldAtom, (prev) => (prev?._id === fieldId ? null : prev));
         await fetch("/api/revalidateTags?tags=fields", { method: "GET" });
         return res;
       }
@@ -233,11 +216,11 @@ export const formFieldActionsAtom = atom(
 
 // Derived atoms for filtered data
 export const activeFormsAtom = atom((get) =>
-  get(formsAtom).filter((f) => f.status === "Active")
+  get(formsAtom).filter((f) => f.status === "active")
 );
 
 export const inactiveFormsAtom = atom((get) =>
-  get(formsAtom).filter((f) => f.status === "Inactive")
+  get(formsAtom).filter((f) => f.status === "inactive")
 );
 
 export const requiredFieldsAtom = atom((get) =>

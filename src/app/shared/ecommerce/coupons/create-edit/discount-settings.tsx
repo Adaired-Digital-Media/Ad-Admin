@@ -92,7 +92,7 @@ export default function DiscountSettings({
           prefix={<PiCurrencyDollarDuotone className="w-5" />}
           suffix=".00"
           placeholder="e.g., 200"
-          {...register("maxDiscountAmount", { valueAsNumber: true })}
+          {...register("maxDiscountAmount")}
           error={errors?.maxDiscountAmount?.message as string}
         />
       </div>

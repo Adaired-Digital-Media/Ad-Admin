@@ -5,7 +5,6 @@ import PageHeader from "@/app/shared/page-header";
 import { auth } from "@/auth";
 import { routes } from "@/config/routes";
 import { metaObject } from "@/config/site.config";
-import React from "react";
 
 export const metadata = {
   ...metaObject("Custom Forms"),
@@ -76,7 +75,6 @@ const CustomForms = async () => {
   // Parallel data fetching
   const [forms] = await Promise.all([
     fetchData(ENDPOINTS.forms, accessToken, "forms"),
-
   ]);
 
   return (
@@ -89,7 +87,7 @@ const CustomForms = async () => {
           modalSize="xl"
         />
       </PageHeader>
-      <FormsTable initialForms={forms}  pageSize={10} session={session} />
+      <FormsTable initialForms={forms} pageSize={10} session={session} />
     </>
   );
 };

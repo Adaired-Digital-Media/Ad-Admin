@@ -10,10 +10,11 @@ export function blogDefaultValues(blog?: BlogTypes): BlogFormInput {
     featuredImage: blog?.featuredImage || "",
     category:
       blog?.category && typeof blog.category === "object"
-        ? (blog.category as { _id: string })?._id
-        : blog?.category?.toString() || "",
-    tags: blog?.tags || [],
-    status: blog?.status || "draft",
+        ? (blog.category as { _id: string })?._id 
+        : blog?.category?.toString() || null,
+    tags: blog?.tags ?? [],
+    status: blog?.status ?? "draft",
+    scheduledPublishDate: blog?.scheduledPublishDate ?? null,
     seo: {
       metaTitle: blog?.seo?.metaTitle || "",
       metaDescription: blog?.seo?.metaDescription || "",

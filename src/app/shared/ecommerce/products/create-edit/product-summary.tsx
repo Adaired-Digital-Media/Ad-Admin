@@ -6,10 +6,10 @@ import dynamic from "next/dynamic";
 import SelectLoader from "@core/components/loader/select-loader";
 import QuillLoader from "@core/components/loader/quill-loader";
 import { useEffect, useState } from "react";
-import {
-  fetchProductCategories,
-  ProductCategoryType,
-} from "@/data/product-categories";
+import { ProductCategoryType } from "@/core/types";
+import { fetchData } from "@/core/utils/fetch-function";
+import { useSession } from "next-auth/react";
+
 const Select = dynamic(() => import("rizzui").then((mod) => mod.Select), {
   ssr: false,
   loading: () => <SelectLoader />,
@@ -27,12 +27,16 @@ const QuillEditor = dynamic(() => import("@core/ui/quill-editor"), {
 });
 
 export default function ProductSummary({ className }: { className?: string }) {
+  const { data: session } = useSession();
   const [categories, setCategories] = useState<ProductCategoryType[]>([]);
   const [subCategories, setSubCategories] = useState<ProductCategoryType[]>([]);
 
   useEffect(() => {
     const fetchCategories = async () => {
-      const response = await fetchProductCategories();
+      const response: ProductCategoryType[] = await fetchData({
+        endpoint: "/product/category/read-category",
+        accessToken: session?.user?.accessToken || "",
+      });
       setCategories(response);
 
       // Filter top-level categories (those with no parentCategory)

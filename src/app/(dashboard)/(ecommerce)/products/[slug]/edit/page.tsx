@@ -1,47 +1,13 @@
-import { Metadata } from "next";
 import CreateEditProduct from "@/app/shared/ecommerce/products/create-edit";
 import PageHeader from "@/app/shared/page-header";
 import { metaObject } from "@/config/site.config";
 import { routes } from "@/config/routes";
+import { auth } from "@/auth";
+import { fetchData } from "@/core/utils/fetch-function";
+import { ProductFormValues } from "@/validators/create-product.schema";
 
-
-type Props = {
-  params: { slug: string };
-};
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  // read route params
-  const slug = params.slug;
-
-  return metaObject(`Edit ${slug}`);
-}
-
-const fetchProduct = async ({ slug }: { slug: string }) => {
-  const apiUri = process.env.NEXT_PUBLIC_BACKEND_API_URI;
-
-  if (!apiUri) {
-    throw new Error("Backend API URI is not defined in the environment variables.");
-  }
-
-  try {
-    const response = await fetch(
-      `${apiUri}/product/read-product?query=${slug}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch product: ${response.statusText}`);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error(error);
-    throw new Error("Failed to fetch product");
-  }
+export const metadata = {
+  ...metaObject("Edit Product"),
 };
 
 const pageHeader = {
@@ -57,6 +23,7 @@ const pageHeader = {
     },
     {
       name: "Edit",
+      isCurrent: true,
     },
   ],
 };
@@ -66,13 +33,22 @@ export default async function EditProductPage({
 }: {
   params: { slug: string };
 }) {
-  const product = await fetchProduct({
-    slug: params.slug,
+  const session = await auth();
+  if (!session) return;
+  const accessToken = session?.user?.accessToken || "";
+  const data = await fetchData({
+    endpoint: `/product/read-product?query=${params.slug}`,
+    accessToken,
+    tag: "products",
   });
+
   return (
     <>
       <PageHeader title={pageHeader.title} breadcrumb={pageHeader.breadcrumb} />
-      <CreateEditProduct slug={params.slug} product={product.data} />
+      <CreateEditProduct
+        product={data as ProductFormValues}
+        accessToken={session.user.accessToken!}
+      />
     </>
   );
 }

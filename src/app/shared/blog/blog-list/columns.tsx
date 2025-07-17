@@ -7,12 +7,13 @@ import { createColumnHelper } from "@tanstack/react-table";
 import { Text, Checkbox } from "rizzui";
 import { StatusSelect } from "@/core/components/table-utils/status-select";
 import { CustomTableMeta } from "@core/types/index";
-import { BlogTypes } from "@/core/types";
+import { BlogTypes, UserTypes } from "@/core/types";
 import { PermissionEntities } from "@/config/permissions.config";
 
 const statusOptions = [
   { label: "Publish", value: "publish" },
   { label: "Draft", value: "draft" },
+  { label: "Scheduled", value: "scheduled" },
 ];
 
 const columnHelper = createColumnHelper<BlogTypes>();
@@ -144,13 +145,18 @@ export const blogColumns = () => {
       enableSorting: false,
       cell: ({ row }) => {
         const form = row.original;
+        // Filter status options based on scheduledPublishDate
+        const filteredStatusOptions = form.scheduledPublishDate
+          ? statusOptions
+          : statusOptions.filter((option) => option.value !== "scheduled");
         return (
           <StatusSelect
             key={`status-${form._id}`}
             selectItem={form.status}
-            options={statusOptions}
+            options={filteredStatusOptions}
             endpoint={`/blog/update?id=${row.original._id}`}
             revalidatePath={[`/api/revalidateTags?tags=blog`]}
+            disabled={filteredStatusOptions.length === 1}
           />
         );
       },
@@ -166,7 +172,7 @@ export const blogColumns = () => {
             deletePopoverTitle={`Delete the order`}
             deletePopoverDescription={`Are you sure you want to delete this #${row.original._id} order?`}
             onDelete={() => meta?.handleDeleteRow?.(row.original)}
-            entity={PermissionEntities.BLOG}
+            entity={PermissionEntities.BLOGS}
           />
         );
       },

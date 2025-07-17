@@ -6,35 +6,8 @@ import PageHeader from "@/app/shared/page-header";
 import { metaObject } from "@/config/site.config";
 import BlogTable from "@/app/shared/blog/blog-list/table";
 import { auth } from "@/auth";
-
-const fetchData = async (
-  endpoint: string,
-  accessToken: string,
-  tag: string
-) => {
-  try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_API_URI}${endpoint}`,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-        next: {
-          tags: [tag],
-        },
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch ${tag}: ${response.statusText}`);
-    }
-    const { data } = await response.json();
-    return data;
-  } catch (error) {
-    console.error(`Error fetching ${tag}:`, error);
-    return [];
-  }
-};
+import { fetchData } from "@/core/utils/fetch-function";
+import { BlogTypes } from "@/core/types";
 
 export const metadata = {
   ...metaObject("Blog"),
@@ -60,7 +33,11 @@ const pageHeader = {
 const BlogPage = async () => {
   const session = await auth();
   const accessToken = session?.user?.accessToken || "";
-  const blogList = await fetchData("/blog/read", accessToken, "blog");
+  const blogList = await fetchData({
+    endpoint: "/blog/read",
+    accessToken,
+    tag: "blog",
+  });
   return (
     <div className="p-4">
       <PageHeader title={pageHeader.title} breadcrumb={pageHeader.breadcrumb}>
@@ -73,7 +50,7 @@ const BlogPage = async () => {
           </Link>
         </div>
       </PageHeader>
-      <BlogTable initialBlogs={blogList} session={session!} />
+      <BlogTable initialBlogs={blogList as BlogTypes[]} session={session!} />
     </div>
   );
 };

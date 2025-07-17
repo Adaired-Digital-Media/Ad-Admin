@@ -64,7 +64,7 @@ export const blogActionsAtom = atom(
           return data;
         }
         set(blogsAtom, (prev) => [...prev, data.data]);
-        await fetch("/api/revalidate?tag=blog");
+        await fetch("/api/revalidateTags?tags=blog");
         // Revalidate the blog page to ensure the new blog is reflected
         await fetch(`${process.env.NEXT_PUBLIC_SITE_URI}/api/revalidatePage`, {
           method: "POST",
@@ -75,6 +75,7 @@ export const blogActionsAtom = atom(
         });
         return data;
       }
+
       case "fetchAllBlog": {
         const data = await blogApiRequest("get", "/blog/read", action.token);
         if (data.status !== 200) {
@@ -83,6 +84,7 @@ export const blogActionsAtom = atom(
         set(blogsAtom, data.data.data);
         return data;
       }
+      
       case "fetchSingleBlog": {
         const { id } = action.payload;
         const data = await blogApiRequest(
@@ -114,7 +116,7 @@ export const blogActionsAtom = atom(
             blog._id === id ? { ...blog, ...updatedBlog.data } : blog
           )
         );
-        await fetch("/api/revalidate?tag=blog");
+        await fetch("/api/revalidateTags?tags=blog");
         // Revalidate the blog to ensure the updated blog is reflected
         await fetch(`${process.env.NEXT_PUBLIC_SITE_URI}/api/revalidatePage`, {
           method: "POST",
@@ -136,9 +138,10 @@ export const blogActionsAtom = atom(
           return response;
         }
         set(blogsAtom, (prev) => prev.filter((blog) => blog._id !== id));
-        await fetch("/api/revalidate?tag=blog");
+        await fetch("/api/revalidateTags?tags=blog");
         return response;
       }
+      
       case "createCategory": {
         const categoryData = await blogApiRequest(
           "post",
@@ -149,8 +152,8 @@ export const blogActionsAtom = atom(
         if (categoryData.status !== 201) {
           return categoryData;
         }
-        set(blogCategoryAtom, (prev) => [...prev, categoryData.data]);
-        await fetch("/api/revalidate?tag=blog-category");
+        set(blogCategoryAtom, (prev) => [...prev, categoryData.data.data]);
+        await fetch("/api/revalidateTags?tags=blog-category");
         return categoryData;
       }
       case "fetchAllCategories": {
@@ -196,7 +199,7 @@ export const blogActionsAtom = atom(
               : category
           )
         );
-        await fetch("/api/revalidate?tag=blog-category");
+        await fetch("/api/revalidateTags?tags=blog-category");
         return updatedCategory;
       }
       case "deleteCategory": {
@@ -212,7 +215,7 @@ export const blogActionsAtom = atom(
         set(blogCategoryAtom, (prev) =>
           prev.filter((category) => category._id !== id)
         );
-        await fetch("/api/revalidate?tag=blog-category");
+        await fetch("/api/revalidateTags?tags=blog-category");
         return response;
       }
     }

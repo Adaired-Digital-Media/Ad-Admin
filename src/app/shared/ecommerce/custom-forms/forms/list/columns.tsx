@@ -1,4 +1,4 @@
-import { FormType } from "@/data/productForms.types";
+import { FormType } from "@/core/types";
 import { createColumnHelper } from "@tanstack/react-table";
 import { Checkbox, Text } from "rizzui";
 import { StatusSelect } from "@core/components/table-utils/status-select";
@@ -6,8 +6,8 @@ import TableRowActionGroup from "@core/components/table-utils/table-row-action-g
 import { CustomTableMeta } from "@core/types/index";
 
 const statusOptions = [
-  { label: "Active", value: "Active" },
-  { label: "Inactive", value: "Inactive" },
+  { label: "Active", value: "active" },
+  { label: "Inactive", value: "inactive" },
 ];
 
 const columnHelper = createColumnHelper<FormType>();

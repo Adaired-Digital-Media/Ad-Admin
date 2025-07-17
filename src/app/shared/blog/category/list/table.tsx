@@ -12,7 +12,7 @@ import { BlogCategoryType } from "@/core/types";
 import { Session } from "next-auth";
 import { useAtom, useSetAtom } from "jotai";
 import { blogActionsAtom, blogCategoryAtom } from "@/store/atoms/blog.atom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useModal } from "@/app/shared/modal-views/use-modal";
 import CreateEditCategory from "../create-edit";
 import { CustomTableMeta } from "@core/types/index";
@@ -24,12 +24,13 @@ export default function BlogCategoryTable({
   initialCategories: BlogCategoryType[];
   session: Session;
 }) {
-  const [blogCategories] = useAtom(blogCategoryAtom);
-  const setCategories = useSetAtom(blogActionsAtom);
   const { openModal } = useModal();
+  const setCategories = useSetAtom(blogActionsAtom);
+  const [categories, setCategoriesState] = useAtom(blogCategoryAtom);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   const { table, setData } = useTanStackTable<BlogCategoryType>({
-    tableData: blogCategories.length ? blogCategories : initialCategories,
+    tableData: initialCategories,
     columnConfig: blogCategoryListColumns(),
     options: {
       initialState: {
@@ -48,26 +49,34 @@ export default function BlogCategoryTable({
             token: session.user.accessToken!,
           });
           if (response.status !== 200) {
-            toast.error(response.data.message);
+            toast.error(response.data.message || "Failed to delete category");
             return;
           }
-          toast.success(response.data.message);
+          toast.success(
+            response.data.message || "Category deleted successfully"
+          );
+          table.resetRowSelection();
         },
         handleMultipleDelete: async (rows) => {
-          rows.forEach(async (row: BlogCategoryType) => {
-            const _response = await setCategories({
+          const deletePromises = rows.map(async (row: BlogCategoryType) => {
+            const response = await setCategories({
               type: "deleteCategory",
-              payload: {
-                id: row._id,
-              },
+              payload: { id: row._id },
               token: session.user.accessToken!,
             });
-            if (_response.status !== 200) {
-              toast.error(_response.data.message);
-              return;
+            if (response.status !== 200) {
+              toast.error(response.data.message || "Failed to delete category");
+              return false;
             }
-            toast.success(_response.data.message);
+            return true;
           });
+          const results = await Promise.all(deletePromises);
+          if (results.every((success) => success)) {
+            toast.success("All selected categories deleted successfully");
+            table.resetRowSelection();
+          } else {
+            toast.error("Some categories could not be deleted");
+          }
         },
         handleEditRow: (row: BlogCategoryType) => {
           openModal({
@@ -85,28 +94,42 @@ export default function BlogCategoryTable({
     },
   });
 
-  // Fetch coupons on mount and when access token changes
+  // Fetch categories on mount and when access token changes
   useEffect(() => {
     if (session?.user?.accessToken) {
       const fetchCategories = async () => {
         try {
-          await setCategories({
+          const response = await setCategories({
             type: "fetchAllCategories",
             token: session.user.accessToken!,
           });
+          if (response.status === 200) {
+            setIsInitialLoad(false);
+          } else {
+            toast.error("Failed to fetch categories");
+            setCategoriesState(initialCategories);
+          }
         } catch (error) {
-          toast.error("Failed to fetch Categories");
-          console.error("Failed to fetch Categories : ", error);
+          toast.error("Failed to fetch categories");
+          console.error("Failed to fetch categories: ", error);
+          setCategoriesState(initialCategories);
         }
       };
       fetchCategories();
     }
-  }, [session?.user?.accessToken, setCategories]);
+  }, [
+    session?.user?.accessToken,
+    setCategories,
+    initialCategories,
+    setCategoriesState,
+  ]);
 
-  // Sync table data with tickets atom
+  // Update table data when categories or initialCategories change
   useEffect(() => {
-    setData(blogCategories.length >= 0 ? blogCategories : initialCategories);
-  }, [blogCategories, initialCategories, setData]);
+    const dataToUse =
+      isInitialLoad && categories.length === 0 ? initialCategories : categories;
+    setData(dataToUse);
+  }, [categories, initialCategories, setData, isInitialLoad]);
 
   return (
     <>

@@ -1,20 +1,16 @@
 "use client";
 
-import DeletePopover from "@core/components/delete-popover";
-import { routes } from "@/config/routes";
-import PencilIcon from "@core/components/icons/pencil";
 import { createColumnHelper } from "@tanstack/react-table";
 import Image from "next/image";
-import Link from "next/link";
-import { ActionIcon, Checkbox, Text, Title, Tooltip } from "rizzui";
-import { ProductCategoryType } from "@/data/product-categories";
+import { Checkbox, Text, Title } from "rizzui";
+import { ProductCategoryType } from "@/core/types";
 import { StatusSelect } from "@/core/components/table-utils/status-select";
 import { CustomTableMeta } from "@core/types/index";
+import TableRowActionGroup from "@/core/components/table-utils/table-row-action-group";
 
 const statusOptions = [
-  { label: "Active", value: "Active" },
-  { label: "Inactive", value: "Inactive" },
-  { label: "Draft", value: "Draft" },
+  { label: "Active", value: "active" },
+  { label: "Inactive", value: "inactive" },
 ];
 
 const columnHelper = createColumnHelper<ProductCategoryType>();
@@ -64,17 +60,7 @@ export const categoriesColumns = [
     header: "Parent Category",
     cell: ({ row }) => (
       <Text className="truncate !text-sm">
-        {row.original.parentCategory?.name}
-      </Text>
-    ),
-  }),
-  columnHelper.display({
-    id: "description",
-    size: 250,
-    header: "Description",
-    cell: ({ row }) => (
-      <Text className="truncate !text-sm">
-        {row.original.description}
+        {row.original?.parentCategory?.name}
       </Text>
     ),
   }),
@@ -89,7 +75,7 @@ export const categoriesColumns = [
     size: 120,
     header: "Products",
     cell: ({ row }) => (
-      <div className="ps-6">{row.original.products.length}</div>
+      <div className="ps-6">{row?.original?.products?.length || 0}</div>
     ),
   }),
   columnHelper.accessor("status", {
@@ -97,13 +83,18 @@ export const categoriesColumns = [
     size: 120,
     header: "Status",
     enableSorting: false,
-    cell: ({ row, getValue }) => (
-      <StatusSelect
-        selectItem={getValue()}
-        options={statusOptions}
-        endpoint={`/product/category/update-category?identifier=${row.original.slug}`}
-      />
-    ),
+    cell: ({ row, getValue }) => {
+      const statusValue = getValue() || "inactive";
+      return (
+        <StatusSelect
+          key={`status-select-${row.original._id}`}
+          selectItem={statusValue}
+          options={statusOptions}
+          endpoint={`/product/category/update-category?id=${row.original?._id}`}
+          revalidatePath={["/api/revalidateTags?tags=product-categories"]}
+        />
+      );
+    },
   }),
   columnHelper.display({
     id: "action",
@@ -111,20 +102,14 @@ export const categoriesColumns = [
     cell: ({ row, table }) => {
       const meta = table.options.meta as CustomTableMeta<ProductCategoryType>;
       return (
-        <div className="flex items-center justify-end gap-3 pe-4">
-          <Tooltip content={"Edit Category"} placement="top" color="invert">
-            <Link href={routes.products.editCategory(row.original._id)}>
-              <ActionIcon size="sm" variant="outline">
-                <PencilIcon className="h-4 w-4" />
-              </ActionIcon>
-            </Link>
-          </Tooltip>
-          <DeletePopover
-            title={`Delete the category`}
-            description={`Are you sure you want to delete this #${row.original.name} category?`}
-            onDelete={() => meta?.handleDeleteRow?.(row.original)}
-          />
-        </div>
+        <TableRowActionGroup
+          deletePopoverTitle={`Delete this category`}
+          deletePopoverDescription={`Are you sure you want to delete this category?`}
+          onDelete={() => meta?.handleDeleteRow?.(row.original)}
+          editUrl={() => {
+            meta?.handleEditRow?.(row.original);
+          }}
+        />
       );
     },
   }),

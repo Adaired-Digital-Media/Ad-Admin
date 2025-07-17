@@ -6,9 +6,9 @@ export const createTicketSchema = z.object({
   subject: z.string().min(1, { message: "Subject is required" }),
   description: z.string().min(1, { message: "Description is required" }),
   status: z
-    .enum(["Open", "In Progress", "Resolved", "Closed", "Reopened"])
+    .enum(["open", "in progress", "resolved", "closed", "reopened"])
     .optional(),
-  priority: z.enum(["Low", "Medium", "High", "Urgent"]).optional(),
+  priority: z.enum(["low", "medium", "high", "urgent"]).optional(),
   assignedTo: z.string().optional(),
   customer: z.string().optional(),
   attachments: z.any().optional(),

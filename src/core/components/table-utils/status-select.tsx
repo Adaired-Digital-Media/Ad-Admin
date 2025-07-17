@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useApiCall } from "@/core/utils/api-config";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import {
   PiCheckCircleBold,
@@ -24,35 +24,58 @@ export function StatusSelect({
 }: {
   placeholder?: string;
   toUpdate?: string;
-  selectItem?: string;
+  selectItem: string;
   options: SelectOption[];
   method?: "POST" | "GET" | "PUT" | "DELETE" | "PATCH";
   endpoint: string;
   revalidatePath?: string[];
 }) {
-  const initialValue = options.find(
-    (option) =>
-      option.value.toString().toLowerCase() === selectItem?.toLowerCase()
-  );
+  const initialValue =
+    options.find(
+      (option) =>
+        option.value.toString().toLowerCase() === selectItem?.toLowerCase()
+    ) || options[0];
+
   const [value, setValue] = useState<SelectOption | undefined>(initialValue);
+
+  // Reinitialize value when selectItem changes
+  useEffect(() => {
+    const newValue =
+      options.find(
+        (option) =>
+          option.value.toString().toLowerCase() === selectItem?.toLowerCase()
+      ) || options[0];
+    if (!selectItem) {
+      console.warn(
+        "StatusSelect: selectItem is undefined, defaulting to",
+        newValue.value
+      );
+    }
+    setValue(newValue);
+  }, [selectItem, options]);
+
   const { apiCall } = useApiCall();
 
   const handleStatusChange = async (selectedOption: SelectOption) => {
+    console.log("Updating status to:", selectedOption.value);
     const response = await apiCall<{ message: string }>({
       url: endpoint,
       method: method ?? "PATCH",
       data: { [toUpdate]: selectedOption.value },
     });
 
+    console.log("API response:", response);
     if (response.status === 200) {
       toast.success(response.data.message);
       if (revalidatePath) {
-        revalidatePath.forEach(async (path) => {
-          await fetch(path, {
-            method: "GET",
-          });
-        });
+        for (const path of revalidatePath) {
+          await fetch(path);
+        }
       }
+      return true;
+    } else {
+      toast.error(response?.data?.message || "Failed to update");
+      return false;
     }
   };
 
@@ -63,9 +86,10 @@ export function StatusSelect({
       placeholder={placeholder}
       options={options}
       value={value}
-      onChange={(value: SelectOption) => {
+      onChange={async (value: SelectOption) => {
+        if (!value) return;
+        await handleStatusChange(value);
         setValue(value);
-        if (value) handleStatusChange(value);
       }}
       displayValue={(option: { value: any }) =>
         renderOptionDisplayValue(option.value as string)
@@ -76,16 +100,7 @@ export function StatusSelect({
 
 export function renderOptionDisplayValue(value: string) {
   switch (value) {
-    case "Scheduled":
-      return (
-        <div className="flex items-center">
-          <PiClockBold className="shrink-0 fill-green-dark text-base" />
-          <Text className="ms-1.5 text-sm font-medium capitalize text-gray-700">
-            {value}
-          </Text>
-        </div>
-      );
-    case "Archived":
+    case "archived":
       return (
         <div className="flex items-center">
           <PiArchiveBold className="shrink-0 fill-orange text-base" />
@@ -94,8 +109,7 @@ export function renderOptionDisplayValue(value: string) {
           </Text>
         </div>
       );
-
-    case "Closed":
+    case "closed":
       return (
         <div className="flex items-center">
           <PiPlusCircle className="shrink-0 rotate-45 fill-red-dark text-lg" />
@@ -105,57 +119,11 @@ export function renderOptionDisplayValue(value: string) {
         </div>
       );
 
-    case "Inactive":
-      return (
-        <div className="flex items-center">
-          <PiPlusCircle className="shrink-0 rotate-45 fill-red-dark text-lg" />
-          <Text className="ms-1.5 text-sm font-medium capitalize text-gray-700">
-            {value}
-          </Text>
-        </div>
-      );
-    case "Out of Stock":
+    // Product Statuses
+    case "out of stock":
       return (
         <div className="flex items-center">
           <PiEmptyBold className="shrink-0 fill-red-dark text-lg" />
-          <Text className="ms-1.5 text-sm font-medium capitalize text-gray-700">
-            {value}
-          </Text>
-        </div>
-      );
-
-    case "Live":
-      return (
-        <div className="flex items-center">
-          <PiCheckCircleBold className="shrink-0 fill-green-dark text-lg" />
-          <Text className="ms-1.5 text-sm font-medium capitalize text-gray-700">
-            {value}
-          </Text>
-        </div>
-      );
-    case "Active":
-      return (
-        <div className="flex items-center">
-          <PiCheckCircleBold className="shrink-0 fill-green-dark text-lg" />
-          <Text className="ms-1.5 text-sm font-medium capitalize text-gray-700">
-            {value}
-          </Text>
-        </div>
-      );
-
-    case "Waiting":
-      return (
-        <div className="flex items-center">
-          <PiCheckCircleBold className="shrink-0 fill-orange text-base" />
-          <Text className="ms-1.5 text-sm font-medium capitalize text-gray-700">
-            {value}
-          </Text>
-        </div>
-      );
-    case "Draft":
-      return (
-        <div className="flex items-center">
-          <PiCheckCircleBold className="shrink-0 fill-orange text-base" />
           <Text className="ms-1.5 text-sm font-medium capitalize text-gray-700">
             {value}
           </Text>
@@ -175,6 +143,16 @@ export function renderOptionDisplayValue(value: string) {
     case "draft":
       return (
         <div className="flex items-center">
+          <PiArchiveBold className="shrink-0 fill-orange text-base" />
+
+          <Text className="ms-1.5 text-sm font-medium capitalize text-gray-700">
+            {value}
+          </Text>
+        </div>
+      );
+    case "scheduled":
+      return (
+        <div className="flex items-center">
           <PiClockBold className="shrink-0 fill-orange text-base" />
           <Text className="ms-1.5 text-sm font-medium capitalize text-gray-700">
             {value}
@@ -183,7 +161,7 @@ export function renderOptionDisplayValue(value: string) {
       );
 
     // Order Statuses
-    case "Pending":
+    case "pending":
       return (
         <div className="flex items-center">
           <PiHourglassBold className="shrink-0 fill-black text-base" />
@@ -192,7 +170,7 @@ export function renderOptionDisplayValue(value: string) {
           </Text>
         </div>
       );
-    case "Processing":
+    case "processing":
       return (
         <div className="flex items-center">
           <PiClockBold className="shrink-0 fill-orange text-base" />
@@ -201,7 +179,7 @@ export function renderOptionDisplayValue(value: string) {
           </Text>
         </div>
       );
-    case "Confirmed":
+    case "confirmed":
       return (
         <div className="flex items-center">
           <PiCheckCircleBold className="shrink-0 fill-green-dark text-base" />
@@ -210,7 +188,7 @@ export function renderOptionDisplayValue(value: string) {
           </Text>
         </div>
       );
-    case "Completed":
+    case "completed":
       return (
         <div className="flex items-center">
           <PiChecksBold className="shrink-0 fill-green-dark text-lg" />
@@ -219,7 +197,7 @@ export function renderOptionDisplayValue(value: string) {
           </Text>
         </div>
       );
-    case "Cancelled":
+    case "cancelled":
       return (
         <div className="flex items-center">
           <PiEmptyBold className="shrink-0 fill-red-dark text-lg" />
@@ -230,7 +208,7 @@ export function renderOptionDisplayValue(value: string) {
       );
 
     // Payment methods
-    case "Unpaid":
+    case "unpaid":
       return (
         <div className="flex items-center">
           <PiPlusCircle className="shrink-0 rotate-45 fill-red-dark text-lg" />
@@ -239,7 +217,7 @@ export function renderOptionDisplayValue(value: string) {
           </Text>
         </div>
       );
-    case "Paid":
+    case "paid":
       return (
         <div className="flex items-center">
           <PiCheckCircleBold className="shrink-0 fill-green-dark text-lg" />
@@ -248,7 +226,7 @@ export function renderOptionDisplayValue(value: string) {
           </Text>
         </div>
       );
-    case "Refunded":
+    case "refunded":
       return (
         <div className="flex items-center">
           <PiArchiveBold className="shrink-0 fill-orange text-base" />
@@ -257,7 +235,7 @@ export function renderOptionDisplayValue(value: string) {
           </Text>
         </div>
       );
-    case "Failed":
+    case "failed":
       return (
         <div className="flex items-center">
           <PiEmptyBold className="shrink-0 fill-red-dark text-lg" />
@@ -268,7 +246,7 @@ export function renderOptionDisplayValue(value: string) {
       );
 
     // Tickets methods
-    case "Open":
+    case "open":
       return (
         <div className="flex items-center">
           <PiHourglassBold className="shrink-0 fill-black text-base" />
@@ -277,7 +255,7 @@ export function renderOptionDisplayValue(value: string) {
           </Text>
         </div>
       );
-    case "In Progress":
+    case "in progress":
       return (
         <div className="flex items-center">
           <PiClockBold className="shrink-0 fill-orange text-base" />
@@ -286,7 +264,7 @@ export function renderOptionDisplayValue(value: string) {
           </Text>
         </div>
       );
-    case "Resolved":
+    case "resolved":
       return (
         <div className="flex items-center">
           <PiCheckCircleBold className="shrink-0 fill-green-dark text-base" />
@@ -295,10 +273,30 @@ export function renderOptionDisplayValue(value: string) {
           </Text>
         </div>
       );
-    case "Reopened":
+    case "reopened":
       return (
         <div className="flex items-center">
           <PiHourglassBold className="shrink-0 fill-black text-base" />
+          <Text className="ms-1.5 text-sm font-medium capitalize text-gray-700">
+            {value}
+          </Text>
+        </div>
+      );
+
+    // ******************************* Active & Inactive ********************************
+    case "inactive":
+      return (
+        <div className="flex items-center">
+          <PiPlusCircle className="shrink-0 rotate-45 fill-red-dark text-lg" />
+          <Text className="ms-1.5 text-sm font-medium capitalize text-gray-700">
+            {value}
+          </Text>
+        </div>
+      );
+    case "active":
+      return (
+        <div className="flex items-center">
+          <PiCheckCircleBold className="shrink-0 fill-green-dark text-lg" />
           <Text className="ms-1.5 text-sm font-medium capitalize text-gray-700">
             {value}
           </Text>

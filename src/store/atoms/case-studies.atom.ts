@@ -64,7 +64,7 @@ export const caseStudyActionsAtom = atom(
           return data;
         }
         set(caseStudiesAtom, (prev) => [...prev, data.data]);
-        await fetch("/api/revalidate?tag=case-study");
+        await fetch("/api/revalidateTags?tags=case-study");
         return data;
       }
       case "fetchAllCaseStudies": {
@@ -110,7 +110,7 @@ export const caseStudyActionsAtom = atom(
             caseStudy._id === id ? { ...caseStudy, ...updatedCaseStudy.data } : caseStudy
           )
         );
-        await fetch("/api/revalidate?tag=case-study");
+        await fetch("/api/revalidateTags?tags=case-study");
         return updatedCaseStudy;
       }
       case "deleteCaseStudy": {
@@ -124,7 +124,7 @@ export const caseStudyActionsAtom = atom(
           return response;
         }
         set(caseStudiesAtom, (prev) => prev.filter((caseStudy) => caseStudy._id !== id));
-        await fetch("/api/revalidate?tag=case-study");
+        await fetch("/api/revalidateTags?tags=case-study");
         return response;
       }
       case "createCategory": {
@@ -138,7 +138,7 @@ export const caseStudyActionsAtom = atom(
           return categoryData;
         }
         set(caseStudyCategoryAtom, (prev) => [...prev, categoryData.data.data]);
-        await fetch("/api/revalidate?tag=case-study-categories");
+        await fetch("/api/revalidateTags?tags=case-study-categories");
         return categoryData;
       }
       case "fetchAllCategories": {
@@ -184,7 +184,7 @@ export const caseStudyActionsAtom = atom(
               : category
           )
         );
-        await fetch("/api/revalidate?tag=case-study-categories");
+        await fetch("/api/revalidateTags?tags=case-study-categories");
         return updatedCategory;
       }
       case "deleteCategory": {
@@ -200,7 +200,7 @@ export const caseStudyActionsAtom = atom(
         set(caseStudyCategoryAtom, (prev) =>
           prev.filter((category) => category._id !== id)
         );
-        await fetch("/api/revalidate?tag=case-study-categories");
+        await fetch("/api/revalidateTags?tags=case-study-categories");
         return response;
       }
     }

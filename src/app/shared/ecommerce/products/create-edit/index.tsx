@@ -22,7 +22,10 @@ import toast from "react-hot-toast";
 import cn from "@/core/utils/class-names";
 import FormFooter from "@core/components/form-footer";
 import { Element } from "react-scroll";
-import { useApiCall } from "@/core/utils/api-config";
+import { useSetAtom } from "jotai";
+import { productActionsAtom } from "@/store/atoms/product.atom";
+import { useRouter } from "next/navigation";
+import { routes } from "@/config/routes";
 
 const MAP_STEP_TO_COMPONENT = {
   [formParts.summary]: ProductSummary,
@@ -34,69 +37,54 @@ const MAP_STEP_TO_COMPONENT = {
 };
 
 interface IndexProps {
-  slug?: string;
   className?: string;
   product?: ProductFormValues;
+  accessToken: string;
 }
 export default function CreateEditProduct({
   className,
-  slug,
   product,
+  accessToken,
 }: IndexProps) {
-  const { apiCall } = useApiCall();
+  const router = useRouter();
+  const setProduct = useSetAtom(productActionsAtom);
   const [isLoading, setLoading] = useState(false);
-  const methods = useForm<ProductFormValues>({
+
+  const methods = useForm({
     resolver: zodResolver(productFormSchema),
     defaultValues: defaultValues(product),
   });
-
-  const handleCreateProduct = async (data: ProductFormValues) => {
-    try {
-      const _response = await apiCall<{ message: string }>({
-        url: `/product/create-product`,
-        method: "POST",
-        data,
-      });
-
-      if (_response.status === 201) {
-        toast.success(_response.data.message);
-        await fetch("/api/revalidateTags?tags=products", {
-          method: "GET",
-        });
-      }
-    } catch (error: any) {
-      console.error("Error creating product:", error);
-      toast.error(error.message);
-    }
-  };
-
-  const handleUpdateProduct = async (data: ProductFormValues) => {
-    try {
-      const _response = await apiCall<{ message: string }>({
-        url: `/product/update-product?query=${slug}`,
-        method: "PATCH",
-        data,
-      });
-      if (_response.status === 200) {
-        toast.success(_response.data.message);
-        await fetch("/api/revalidateTags?tags=products", {
-          method: "GET",
-        });
-      }
-    } catch (error: any) {
-      console.error("Error updating product:", error);
-      toast.error(error.message);
-    }
-  };
-
   const onSubmit: SubmitHandler<ProductFormValues> = async (data) => {
     setLoading(true);
     if (product) {
-      await handleUpdateProduct(data);
+      const response = await setProduct({
+        type: "updateProduct",
+        payload: { id: product._id, ...data },
+        token: accessToken,
+      });
+      if (response.status !== 200) {
+        toast.error(response.data.message);
+        console.error("Failed to update product:", response);
+        setLoading(false);
+        return;
+      }
+      toast.success(response.data.message);
+      router.push(routes.products.products);
     } else {
-      await handleCreateProduct(data);
+      const response = await setProduct({
+        type: "createProduct",
+        payload: data,
+        token: accessToken,
+      });
+      if (response.status !== 201) {
+        toast.error(response.data.message);
+        console.error("Failed to create product:", response);
+        setLoading(false);
+        return;
+      }
+      toast.success(response.data.message);
+      router.push(routes.products.products);
     }
-
     setLoading(false);
   };
 
@@ -124,7 +112,7 @@ export default function CreateEditProduct({
 
           <FormFooter
             isLoading={isLoading}
-            submitBtnText={slug ? "Update Product" : "Create Product"}
+            submitBtnText={product ? "Update Product" : "Create Product"}
           />
         </form>
       </FormProvider>

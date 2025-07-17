@@ -48,7 +48,7 @@ export default function FieldsTable({
   const [fields] = useAtom<FieldType[]>(fieldsAtom);
   const [, dispatchAction] = useAtom(formFieldActionsAtom);
   const { table, setData } = useTanStackTable<FieldType>({
-    tableData: fields.length ? fields : initialFields,
+    tableData: fields.length > 0 ? fields : initialFields,
     columnConfig: fieldListColumns,
     options: {
       initialState: {
@@ -133,9 +133,10 @@ export default function FieldsTable({
     }
   }, [session?.user?.accessToken, dispatchAction]);
 
-  // Sync table data with tickets atom
   useEffect(() => {
-    setData(fields.length >= 0 ? fields : initialFields);
+    setData(
+      fields.length === 0 && initialFields.length > 0 ? initialFields : fields
+    );
   }, [fields, initialFields, setData]);
 
   return (

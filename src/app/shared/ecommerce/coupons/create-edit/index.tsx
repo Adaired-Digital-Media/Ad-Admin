@@ -1,9 +1,9 @@
 "use client";
 
 import cn from "@/core/utils/class-names";
-import { couponActionsAtom, couponsAtom } from "@/store/atoms/coupons.atom";
-import { useAtom, useSetAtom } from "jotai";
-import React, { useState, useEffect } from "react";
+import { couponActionsAtom } from "@/store/atoms/coupons.atom";
+import { useSetAtom } from "jotai";
+import React, { useState } from "react";
 import { Loader } from "rizzui";
 import { Element } from "react-scroll";
 import FormNav, {
@@ -21,6 +21,10 @@ import BasicInformation from "./basic-information";
 import DiscountSettings from "./discount-settings";
 import ApplicabilityConditions from "./applicability-conditions";
 import UsageLimits from "./usage-limits";
+import { useRouter } from "next/navigation";
+import { CouponTypes } from "@/core/types";
+import toast from "react-hot-toast";
+import { routes } from "@/config/routes";
 
 const MAP_STEP_TO_COMPONENT = {
   [formParts.basicInfo]: BasicInformation,
@@ -31,42 +35,23 @@ const MAP_STEP_TO_COMPONENT = {
 
 type Props = {
   className?: string;
-  couponId?: string;
+  coupon?: CouponTypes;
   accessToken?: string;
 };
 
-const CreateEditCoupon = ({ className, couponId, accessToken }: Props) => {
-  const [coupons] = useAtom(couponsAtom);
+const CreateEditCoupon = ({ className, coupon, accessToken }: Props) => {
+  const router = useRouter();
   const setCoupons = useSetAtom(couponActionsAtom);
   const [isLoading, setLoading] = useState(false);
 
-  const coupon = coupons.find((c) => c?._id === couponId);
-
-  const methods = useForm<CouponFormValues>({
+  const methods = useForm({
     resolver: zodResolver(couponFormSchema),
     defaultValues: couponDefaultValues(coupon),
   });
 
-  const { handleSubmit, reset } = methods;
+  const { handleSubmit } = methods;
 
-  // Fetch coupon data and reset form when coupon updates
-  useEffect(() => {
-    if (!couponId || !accessToken) return;
-
-    if (!coupon) {
-      setLoading(true);
-      setCoupons({
-        type: "fetchSingle",
-        token: accessToken,
-        payload: { couponId },
-      }).finally(() => setLoading(false));
-    } else {
-      // Fully reset the form with fetched coupon data, clearing dirty state and errors
-      reset(couponDefaultValues(coupon));
-    }
-  }, [couponId, accessToken, coupon, setCoupons, reset]);
-
-  if (couponId && !coupon && isLoading) {
+  if (!coupon && isLoading) {
     return (
       <div
         className={cn(
@@ -84,19 +69,34 @@ const CreateEditCoupon = ({ className, couponId, accessToken }: Props) => {
 
     setLoading(true);
     try {
-      if (couponId) {
-        await setCoupons({
+      if (coupon) {
+        const response = await setCoupons({
           type: "update",
           token: accessToken,
-          payload: { id: couponId, ...data },
+          payload: { id: coupon._id, ...data },
         });
+        if (!response.success) {
+          toast.error(response.message);
+          console.error("Failed to update coupon:", response);
+          setLoading(false);
+          return;
+        }
+        toast.success(response.message);
+        router.push(routes.coupons.allCoupons);
       } else {
-        await setCoupons({
+        const response = await setCoupons({
           type: "create",
           token: accessToken,
           payload: data,
         });
-        reset(couponDefaultValues(undefined));
+        if (!response.success) {
+          toast.error(response.message);
+          console.error("Failed to create coupon:", response);
+          setLoading(false);
+          return;
+        }
+        toast.success(response.message);
+        router.push(routes.coupons.allCoupons);
       }
     } catch (error) {
       console.error("Failed to save coupon:", error);
@@ -162,7 +162,7 @@ const CreateEditCoupon = ({ className, couponId, accessToken }: Props) => {
             isLoading={isLoading}
             altBtnText="Save as Inactive"
             // handleAltBtn={handleSaveAsInactive}
-            submitBtnText={couponId ? "Update Coupon" : "Create Coupon"}
+            submitBtnText={coupon ? "Update Coupon" : "Create Coupon"}
           />
         </form>
       </FormProvider>

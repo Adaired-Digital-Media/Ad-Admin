@@ -11,25 +11,25 @@ import { StatusSelect } from "@/core/components/table-utils/status-select";
 import { CustomTableMeta } from "@core/types/index";
 
 const statusOptions = [
-  { label: "Pending", value: "Pending" },
-  { label: "Processing", value: "Processing" },
-  { label: "Confirmed", value: "Confirmed" },
-  { label: "Completed", value: "Completed" },
-  { label: "Cancelled", value: "Cancelled" },
+  { label: "Pending", value: "pending" },
+  { label: "Processing", value: "processing" },
+  { label: "Confirmed", value: "confirmed" },
+  { label: "Completed", value: "completed" },
+  { label: "Cancelled", value: "cancelled" },
 ];
 
 const paymentOptions = [
-  { label: "Unpaid", value: "Unpaid" },
-  { label: "Paid", value: "Paid" },
-  { label: "Refunded", value: "Refunded" },
-  { label: "Failed", value: "Failed" },
+  { label: "Unpaid", value: "unpaid" },
+  { label: "Paid", value: "paid" },
+  { label: "Refunded", value: "refunded" },
+  { label: "Failed", value: "failed" },
 ];
 
 const columnHelper = createColumnHelper<OrderType>();
 
 export const ordersColumns = (expanded: boolean = true) => {
   const columns = [
-    columnHelper.accessor('orderNumber',{
+    columnHelper.accessor("orderNumber", {
       id: "orderNumber",
       size: 100,
       header: "Order No.",
@@ -52,7 +52,7 @@ export const ordersColumns = (expanded: boolean = true) => {
         return user?.name?.toLowerCase().includes(filterValue?.toLowerCase());
       },
     }),
-    columnHelper.accessor('totalQuantity',{
+    columnHelper.accessor("totalQuantity", {
       id: "totalQuantity",
       size: 80,
       header: "Items",
