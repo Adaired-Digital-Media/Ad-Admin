@@ -51,7 +51,7 @@ export default function ProductSummary({ className }: { className?: string }) {
       setSubCategories(filteredSubCategories);
     };
     fetchCategories();
-  }, []);
+  }, [session]);
 
   const {
     register,
