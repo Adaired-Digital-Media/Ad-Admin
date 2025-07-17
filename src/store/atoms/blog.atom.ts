@@ -102,6 +102,7 @@ export const blogActionsAtom = atom(
         );
         return data;
       }
+
       case "updateBlog": {
         const { id, ...updateData } = action.payload;
         const updatedBlog = await blogApiRequest(
@@ -118,6 +119,7 @@ export const blogActionsAtom = atom(
             blog._id === id ? { ...blog, ...updatedBlog.data } : blog
           )
         );
+
         await Promise.all([
           fetch("/api/revalidateTags?tags=blog"),
           fetch(`${process.env.NEXT_PUBLIC_SITE_URI}/api/revalidatePage`, {
@@ -125,7 +127,7 @@ export const blogActionsAtom = atom(
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ slug: `/blog/${updatedBlog.slug}` }),
+            body: JSON.stringify({ slug: `/blog/${updatedBlog.data.data.slug}` }),
           }),
         ]);
 
