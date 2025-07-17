@@ -64,15 +64,16 @@ export const productActionsAtom = atom(
           return data;
         }
         set(productsAtom, (prev) => [...prev, data.data]);
-        await fetch("/api/revalidateTags?tags=products");
-        // Revalidate the BHW landing page to ensure the new product is reflected
-        await fetch(`${process.env.NEXT_PUBLIC_SITE_URI}/api/revalidatePage`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ slug: "/expert-content-solutions" }),
-        });
+        await Promise.all([
+          fetch("/api/revalidateTags?tags=products"),
+          fetch(`${process.env.NEXT_PUBLIC_SITE_URI}/api/revalidatePage`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ slug: "/expert-content-solutions" }),
+          }),
+        ]);
         return data;
       }
 
