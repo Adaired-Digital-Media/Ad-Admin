@@ -187,7 +187,6 @@ export function UserSelect({
       }));
   }, [users]);
 
-  console.log(users)
 
   // Determine the selected user's ID
   const selectedUserId =
