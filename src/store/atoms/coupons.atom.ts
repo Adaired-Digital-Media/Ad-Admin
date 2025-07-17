@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
 import { atom } from "jotai";
-import { CouponTypes } from "@/data/coupons.types";
-import toast from "react-hot-toast";
+import { CouponTypes } from "@/core/types";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URI || "";
 
@@ -89,9 +88,8 @@ export const couponActionsAtom = atom(
           action.token,
           action.payload
         );
-        toast.success(data.message);
         set(couponsAtom, (prev) => [data.data, ...prev]);
-        await fetch("/api/revalidateTags?tag=coupons", { method: "GET" });
+        await fetch("/api/revalidateTags?tags=coupons", { method: "GET" });
         return data;
       }
 
@@ -103,7 +101,6 @@ export const couponActionsAtom = atom(
           action.token,
           updateData
         );
-        toast.success(data.message);
         // Use functional updates to ensure consistency
         set(couponsAtom, (prev) =>
           prev.map((t) =>

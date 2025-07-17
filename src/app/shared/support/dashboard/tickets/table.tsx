@@ -6,11 +6,11 @@ import TablePagination from "@core/components/table/pagination";
 import { ticketsColumns } from "./columns";
 import Filters from "./filters";
 import { CustomTableMeta } from "@core/types/index";
-import { Ticket } from "@/data/tickets.types";
+import { Ticket } from "@/core/types";
 import { Session } from "next-auth";
 import { useAtom } from "jotai";
 import { ticketActionsAtom, ticketsAtom } from "@/store/atoms/tickets.atom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 export interface TicketsTableMeta<T> extends CustomTableMeta<T> {
@@ -26,12 +26,13 @@ export default function TicketsTable({
   tickets: Ticket[];
   session: Session;
 }) {
-  const [tickets] = useAtom(ticketsAtom);
   const [, dispatch] = useAtom(ticketActionsAtom);
+  const [tickets, setTicketsState] = useAtom(ticketsAtom);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   // Initialize table with tickets from atom or initialTickets
   const { table, setData } = useTanStackTable<Ticket>({
-    tableData: tickets.length ? tickets : initialTickets,
+    tableData: initialTickets,
     columnConfig: ticketsColumns,
     options: {
       initialState: {
@@ -42,15 +43,16 @@ export default function TicketsTable({
       },
       meta: {
         handleDeleteRow: async (row) => {
-          await dispatch({
+          const response = await dispatch({
             type: "delete",
             token: session.user.accessToken!,
             payload: { id: row._id },
           });
-          toast.success("Ticket deleted successfully");
-          await fetch("/api/revalidateTags?tags=tickets", {
-            method: "GET",
-          });
+          if (response.status !== 200) {
+            toast.error(response.data.message || "Failed to delete ticket");
+            return;
+          }
+          toast.success(response.data.message || "Ticket deleted successfully");
           table.resetRowSelection();
         },
         handleMultipleDelete: async (rows) => {
@@ -77,7 +79,7 @@ export default function TicketsTable({
       const fetchData = async () => {
         try {
           // Execute both requests in parallel
-          await Promise.all([
+          const response = await Promise.all([
             dispatch({
               type: "fetchAll",
               token: session.user.accessToken!,
@@ -85,23 +87,31 @@ export default function TicketsTable({
             dispatch({
               type: "fetchStats",
               token: session.user.accessToken!,
-            })
+            }),
           ]);
+
+          if (response[0]?.status === 200 && response[1].status === 200) {
+            setIsInitialLoad(false);
+          } else {
+            toast.error("Failed to fetch tickets");
+            setTicketsState(initialTickets);
+          }
         } catch (error) {
           // Handle errors from either request
           toast.error("Failed to fetch ticket data");
           console.error("Failed to fetch ticket data:", error);
+          setTicketsState(initialTickets);
         }
       };
-  
+
       fetchData();
     }
-  }, [session?.user?.accessToken, dispatch]);
+  }, [session?.user?.accessToken, initialTickets, setTicketsState, dispatch]);
 
   // Sync table data with tickets atom
   useEffect(() => {
-    setData(tickets.length >= 0 ? tickets : initialTickets);
-  }, [tickets, initialTickets, setData]);
+    setData(isInitialLoad && tickets.length === 0 ? initialTickets : tickets);
+  }, [tickets, initialTickets, setData, isInitialLoad]);
 
   return (
     <>

@@ -1,4 +1,4 @@
-import { CouponTypes } from "@/data/coupons.types";
+import { CouponTypes } from "@/core/types";
 import { CouponFormValues } from "@/validators/create-coupon.schema";
 
 export function couponDefaultValues(coupon?: CouponTypes): CouponFormValues {

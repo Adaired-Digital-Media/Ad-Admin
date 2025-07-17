@@ -6,24 +6,24 @@ import AvatarCard from "@core/ui/avatar-card";
 import DateCell from "@core/ui/date-cell";
 import { createColumnHelper } from "@tanstack/react-table";
 import { Badge, Checkbox, Text } from "rizzui";
-import { Ticket } from "@/data/tickets.types";
+import { Ticket } from "@/core/types";
 import { CustomTableMeta } from "@core/types/index";
 import { routes } from "@/config/routes";
 import { StatusSelect } from "@/core/components/table-utils/status-select";
 import { UserSelect } from "@/core/components/table-utils/user-select";
 
 const statusOptions = [
-  { label: "Open", value: "Open" },
-  { label: "In Progress", value: "In Progress" },
-  { label: "Resolved", value: "Resolved" },
-  { label: "Closed", value: "Closed" },
-  { label: "Reopened", value: "Reopened" },
+  { label: "Open", value: "open" },
+  { label: "In Progress", value: "in progress" },
+  { label: "Resolved", value: "resolved" },
+  { label: "Closed", value: "closed" },
+  { label: "Reopened", value: "reopened" },
 ];
 
 const colors = {
-  Low: "success",
-  Medium: "warning",
-  High: "danger",
+  low: "success",
+  medium: "warning",
+  high: "danger",
   urgent: "danger",
 };
 
@@ -80,17 +80,17 @@ export const ticketsColumns = [
     filterFn: (row, columnId, filterValue: [Date, Date]) => {
       const date = new Date(row.getValue(columnId));
       const [start, end] = filterValue;
-      
+
       // Add null checks and proper date comparison
       if (!start || !end) return true;
-      
+
       // Compare dates without time component
       const dateTime = date.setHours(0, 0, 0, 0);
       const startTime = start.setHours(0, 0, 0, 0);
       const endTime = end.setHours(0, 0, 0, 0);
-      
+
       return dateTime >= startTime && dateTime <= endTime;
-    }
+    },
   }),
   columnHelper.accessor("priority", {
     id: "priority",
@@ -102,7 +102,7 @@ export const ticketsColumns = [
           renderAsDot
           color={colors[row.original.priority as keyof typeof colors] as any}
         />
-        <span>{row.original.priority}</span>
+        <span className="capitalize">{row.original.priority}</span>
       </div>
     ),
   }),
@@ -118,7 +118,10 @@ export const ticketsColumns = [
           selectItem={ticket.status}
           options={statusOptions}
           endpoint={`/tickets/update?id=${ticket._id}`}
-          revalidatePath={[`/api/revalidateTags?tags=tickets`]}
+          revalidatePath={[
+            `/api/revalidateTags?tags=tickets`,
+            `/api/revalidateTags?tags=ticket_stats`,
+          ]}
         />
       );
     },
@@ -131,7 +134,10 @@ export const ticketsColumns = [
       <UserSelect
         assignedTo={row.original.assignedTo}
         endpoint={`/tickets/update?id=${row.original._id}`}
-        revalidatePath={[`/api/revalidateTags?tags=tickets`]}
+          revalidatePath={[
+            `/api/revalidateTags?tags=tickets`,
+            `/api/revalidateTags?tags=ticket_stats`,
+          ]}
       />
     ),
   }),

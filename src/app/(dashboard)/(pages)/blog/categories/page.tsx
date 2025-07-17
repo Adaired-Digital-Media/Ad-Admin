@@ -5,35 +5,8 @@ import { metaObject } from "@/config/site.config";
 import BlogCategoryTable from "@/app/shared/blog/category/list/table";
 import { auth } from "@/auth";
 import CreateEditCategory from "@/app/shared/blog/category/create-edit";
-
-const fetchData = async (
-  endpoint: string,
-  accessToken: string,
-  tag: string
-) => {
-  try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_API_URI}${endpoint}`,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-        next: {
-          tags: [tag],
-        },
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch ${tag}: ${response.statusText}`);
-    }
-    const { data } = await response.json();
-    return data;
-  } catch (error) {
-    console.error(`Error fetching ${tag}:`, error);
-    return [];
-  }
-};
+import { fetchData } from "@/core/utils/fetch-function";
+import { BlogCategoryType } from "@/core/types";
 
 export const metadata = {
   ...metaObject("Blog Categories"),
@@ -60,11 +33,11 @@ const pageHeader = {
 const BlogCategoryPage = async () => {
   const session = await auth();
   const accessToken = session?.user?.accessToken || "";
-  const blogCategoryList = await fetchData(
-    "/blog-category/read",
+  const blogCategoryList = await fetchData({
+    endpoint: "/blog-category/read",
     accessToken,
-    "blog-categories"
-  );
+    tag: "blog-categories",
+  });
 
   return (
     <div className="p-4">
@@ -79,7 +52,7 @@ const BlogCategoryPage = async () => {
         </div>
       </PageHeader>
       <BlogCategoryTable
-        initialCategories={blogCategoryList}
+        initialCategories={blogCategoryList as BlogCategoryType[]}
         session={session!}
       />
     </div>

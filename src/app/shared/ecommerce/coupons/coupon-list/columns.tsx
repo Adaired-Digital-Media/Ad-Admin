@@ -1,17 +1,17 @@
 "use client";
 
 import { routes } from "@/config/routes";
-import { CouponTypes } from "@/data/coupons.types";
+import { CouponTypes } from "@/core/types";
 import { createColumnHelper } from "@tanstack/react-table";
 import { Checkbox, Text, Title } from "rizzui";
 import { StatusSelect } from "@/core/components/table-utils/status-select";
-import { CustomTableMeta } from "@/app/shared/dashboard/recent-order";
+import { CustomTableMeta } from "@/core/types";
 import DateCell from "@/core/ui/date-cell";
 import TableRowActionGroup from "@/core/components/table-utils/table-row-action-group";
 
 const statusOptions = [
-  { label: "Active", value: "Active" },
-  { label: "Inactive", value: "Inactive" },
+  { label: "Active", value: "active" },
+  { label: "Inactive", value: "inactive" },
 ];
 
 const columnHelper = createColumnHelper<CouponTypes>();

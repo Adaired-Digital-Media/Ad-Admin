@@ -13,6 +13,7 @@ import {
   Text,
   Switch,
   Select,
+  SelectOption,
 } from "rizzui";
 import { useModal } from "@/app/shared/modal-views/use-modal";
 import { useAtom } from "jotai";
@@ -62,6 +63,20 @@ export default function CreateTicket({
     resolver: zodResolver(createTicketSchema),
   });
 
+  const priorityOptions: SelectOption[] = [
+    { label: "Low", value: "low" },
+    { label: "Medium", value: "medium" },
+    { label: "High", value: "high" },
+    { label: "Urgent", value: "urgent" },
+  ];
+  const statusOptions: SelectOption[] = [
+    { label: "Open", value: "open" },
+    { label: "In Progress", value: "in progress" },
+    { label: "Resolved", value: "resolved" },
+    { label: "Closed", value: "closed" },
+    { label: "Reopened", value: "reopened" },
+  ];
+
   const handleFilesSelected = (selectedFiles: File[]) => {
     setFiles(selectedFiles);
   };
@@ -85,7 +100,7 @@ export default function CreateTicket({
             customer: data.customer,
           },
         });
-        if (newTicket.success) {
+        if (newTicket.status === 201) {
           toast.success("Ticket Raised successfully");
           router.push(routes.support.inbox(newTicket.data.ticketId));
           closeModal();
@@ -135,19 +150,14 @@ export default function CreateTicket({
             render={({ field: { onChange, value } }) => (
               <Select
                 dropdownClassName="!z-0"
-                options={[
-                  "Open",
-                  "In Progress",
-                  "Resolved",
-                  "Closed",
-                  "Reopened",
-                ].map((status) => ({
-                  value: status,
-                  label: status,
-                }))}
+                options={statusOptions}
                 value={value}
                 onChange={onChange}
                 label="Status"
+                displayValue={(selected) =>
+                  statusOptions.find((s) => s.value === selected)?.label ??
+                  "open"
+                }
                 error={errors?.status?.message as string}
                 getOptionValue={(option) => option.value}
               />
@@ -159,14 +169,15 @@ export default function CreateTicket({
             render={({ field: { onChange, value } }) => (
               <Select
                 dropdownClassName="!z-0"
-                options={["Low", "Medium", "High", "Urgent"].map((status) => ({
-                  value: status,
-                  label: status,
-                }))}
+                options={priorityOptions}
                 value={value}
                 onChange={onChange}
                 label="Priority"
                 error={errors?.priority?.message as string}
+                displayValue={(selected) =>
+                  priorityOptions.find((s) => s.value === selected)?.label ??
+                  "low"
+                }
                 getOptionValue={(option) => option.value}
               />
             )}

@@ -5,6 +5,8 @@ import { routes } from "@/config/routes";
 import { metaObject } from "@/config/site.config";
 import ModalButton from "@/app/shared/modal-button";
 import CreateTicket from "@/app/shared/support/dashboard/tickets/create-ticket";
+import { fetchData } from "@/core/utils/fetch-function";
+import { Ticket, TicketStatsResponse, UserTypes } from "@/core/types";
 
 export const metadata = {
   ...metaObject("Support"),
@@ -27,42 +29,11 @@ const pageHeader = {
   ],
 };
 
-// Centralized API base URL
-const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URI;
-
 // Fetch endpoints configuration
 const ENDPOINTS = {
   tickets: "/tickets/read",
   stats: "/tickets/stats",
   users: "/user/find",
-};
-
-// Generic fetch function with error handling
-const fetchData = async (
-  endpoint: string,
-  accessToken: string,
-  tag: string
-) => {
-  try {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-      next: {
-        tags: [tag],
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch ${tag}: ${response.statusText}`);
-    }
-
-    const { data } = await response.json();
-    return data;
-  } catch (error) {
-    console.error(`Error fetching ${tag}:`, error);
-    return [];
-  }
 };
 
 export default async function SupportDashboardPage() {
@@ -75,9 +46,9 @@ export default async function SupportDashboardPage() {
 
   // Parallel data fetching
   const [tickets, stats, users] = await Promise.all([
-    fetchData(ENDPOINTS.tickets, accessToken, "tickets"),
-    fetchData(ENDPOINTS.stats, accessToken, "ticket_stats"),
-    fetchData(ENDPOINTS.users, accessToken, "users"),
+    fetchData({ endpoint: ENDPOINTS.tickets, accessToken, tag: "tickets" }),
+    fetchData({ endpoint: ENDPOINTS.stats, accessToken, tag: "ticket_stats" }),
+    fetchData({ endpoint: ENDPOINTS.users, accessToken, tag: "users" }),
   ]);
 
   return (
@@ -85,10 +56,14 @@ export default async function SupportDashboardPage() {
       <PageHeader title={pageHeader.title} breadcrumb={pageHeader.breadcrumb}>
         <ModalButton
           label="Create New Ticket"
-          view={<CreateTicket session={session} users={users} />}
+          view={<CreateTicket session={session} users={users as UserTypes[]} />}
         />
       </PageHeader>
-      <SupportDashboard tickets={tickets} stats={stats} session={session} />
+      <SupportDashboard
+        tickets={tickets as Ticket[]}
+        stats={stats as TicketStatsResponse}
+        session={session}
+      />
     </>
   );
 }

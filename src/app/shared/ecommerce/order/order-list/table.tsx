@@ -16,7 +16,6 @@ import { Session } from "next-auth";
 import { useEffect } from "react";
 import { CustomTableMeta } from "@core/types/index";
 
-
 export default function OrderTable({
   className,
   variant = "modern",
@@ -60,10 +59,31 @@ export default function OrderTable({
     },
   });
 
-  // Sync table data with orders atom
+  // Fetch orders on mount and when access token changes
   useEffect(() => {
-    setData(orders.length >= 0 ? orders : orderData);
-  }, [orders, orderData, setData]);
+    if (session?.user?.accessToken) {
+      const fetchCoupons = async () => {
+        try {
+          await setOrders({
+            type: "fetchAll",
+            token: session.user.accessToken!,
+          });
+        } catch (error) {
+          toast.error("Failed to fetch orders");
+          console.error("Failed to fetch orders : ", error);
+        }
+      };
+      fetchCoupons();
+    }
+  }, [session?.user?.accessToken, setOrders]);
+
+    useEffect(() => {
+      setData(
+        orders.length === 0 && orderData.length > 0
+          ? orderData
+          : orders
+      );
+    }, [orders, orderData, setData]);
 
   return (
     <div className={className}>

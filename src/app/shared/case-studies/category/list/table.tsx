@@ -14,7 +14,7 @@ import {
   caseStudyActionsAtom,
   caseStudyCategoryAtom,
 } from "@/store/atoms/case-studies.atom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useModal } from "@/app/shared/modal-views/use-modal";
 import { CaseStudyCategoryType } from "@/core/types";
 import CreateEditCategory from "../create-edit";
@@ -27,14 +27,13 @@ export default function CaseStudyCategoryTable({
   initialCategories: CaseStudyCategoryType[];
   session: Session;
 }) {
-  const [caseStudyCategories] = useAtom(caseStudyCategoryAtom);
-  const setCategories = useSetAtom(caseStudyActionsAtom);
   const { openModal } = useModal();
+  const setCategories = useSetAtom(caseStudyActionsAtom);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [categories, setCategoriesState] = useAtom(caseStudyCategoryAtom);
 
   const { table, setData } = useTanStackTable<CaseStudyCategoryType>({
-    tableData: caseStudyCategories.length
-      ? caseStudyCategories
-      : initialCategories,
+    tableData: initialCategories,
     columnConfig: caseStudyCategoryListColumns,
     options: {
       initialState: {
@@ -53,26 +52,38 @@ export default function CaseStudyCategoryTable({
             token: session.user.accessToken!,
           });
           if (response.status !== 200) {
-            toast.error(response.data.message);
+            toast.error(response.data.message || "Failed to delete category");
             return;
           }
-          toast.success(response.data.message);
+          toast.success(
+            response.data.message || "Category deleted successfully"
+          );
+          table.resetRowSelection();
         },
         handleMultipleDelete: async (rows) => {
-          rows.forEach(async (row: CaseStudyCategoryType) => {
-            const _response = await setCategories({
-              type: "deleteCategory",
-              payload: {
-                id: row._id,
-              },
-              token: session.user.accessToken!,
-            });
-            if (_response.status !== 200) {
-              toast.error(_response.data.message);
-              return;
+          const deletePromises = rows.map(
+            async (row: CaseStudyCategoryType) => {
+              const response = await setCategories({
+                type: "deleteCategory",
+                payload: { id: row._id },
+                token: session.user.accessToken!,
+              });
+              if (response.status !== 200) {
+                toast.error(
+                  response.data.message || "Failed to delete category"
+                );
+                return false;
+              }
+              return true;
             }
-            toast.success(_response.data.message);
-          });
+          );
+          const results = await Promise.all(deletePromises);
+          if (results.every((success) => success)) {
+            toast.success("All selected categories deleted successfully");
+            table.resetRowSelection();
+          } else {
+            toast.error("Some categories could not be deleted");
+          }
         },
         handleEditRow: (row: CaseStudyCategoryType) => {
           openModal({
@@ -91,30 +102,42 @@ export default function CaseStudyCategoryTable({
     },
   });
 
-  // Fetch coupons on mount and when access token changes
+  // Fetch categories on mount and when access token changes
   useEffect(() => {
     if (session?.user?.accessToken) {
       const fetchCategories = async () => {
         try {
-          await setCategories({
+          const response = await setCategories({
             type: "fetchAllCategories",
             token: session.user.accessToken!,
           });
+          if (response.status === 200) {
+            setIsInitialLoad(false);
+          } else {
+            toast.error("Failed to fetch categories");
+            setCategoriesState(initialCategories);
+          }
         } catch (error) {
-          toast.error("Failed to fetch Categories");
-          console.error("Failed to fetch Categories : ", error);
+          toast.error("Failed to fetch categories");
+          console.error("Failed to fetch categories: ", error);
+          setCategoriesState(initialCategories);
         }
       };
       fetchCategories();
     }
-  }, [session?.user?.accessToken, setCategories]);
+  }, [
+    session?.user?.accessToken,
+    setCategories,
+    initialCategories,
+    setCategoriesState,
+  ]);
 
-  // Sync table data with tickets atom
+  // Update table data when categories or initialCategories change
   useEffect(() => {
-    setData(
-      caseStudyCategories.length >= 0 ? caseStudyCategories : initialCategories
-    );
-  }, [caseStudyCategories, initialCategories, setData]);
+    const dataToUse =
+      isInitialLoad && categories.length === 0 ? initialCategories : categories;
+    setData(dataToUse);
+  }, [categories, initialCategories, setData, isInitialLoad]);
 
   return (
     <>

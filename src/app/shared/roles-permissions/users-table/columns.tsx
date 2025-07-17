@@ -5,12 +5,11 @@ import DateCell from "@core/ui/date-cell";
 import { createColumnHelper } from "@tanstack/react-table";
 import { Checkbox, Text } from "rizzui";
 import TableRowActionGroup from "@core/components/table-utils/table-row-action-group";
-import { UserTypes } from "@/data/users-data";
+import { UserTypes } from "@/core/types";
 import { StatusSelect } from "@/core/components/table-utils/status-select";
 import { statusOptions } from "./filters";
 import cn from "@/core/utils/class-names";
 import { CustomTableMeta } from "@core/types/index";
-
 
 const columnHelper = createColumnHelper<UserTypes>();
 
@@ -44,7 +43,7 @@ export const usersColumns = [
       <AvatarCard
         src={row.original.image || ""}
         name={row.original.name || "-"}
-        description={row.original.email|| "-"}
+        description={row.original.email || "-"}
       />
     ),
   }),
@@ -54,7 +53,7 @@ export const usersColumns = [
     header: "Phone Number",
     enableSorting: false,
     cell: ({ row }) => (
-      <Text className="truncate !text-sm">{row.original?.contact|| "-"}</Text>
+      <Text className="truncate !text-sm">{row.original?.contact || "-"}</Text>
     ),
   }),
   columnHelper.accessor("role", {
@@ -86,7 +85,7 @@ export const usersColumns = [
     enableSorting: false,
     cell: ({ row, getValue }) => (
       <StatusSelect
-        selectItem={getValue()}
+        selectItem={getValue() ?? "active"}
         options={statusOptions}
         endpoint={`/user/update?identifier=${row.original._id}`}
         revalidatePath={[`/api/revalidateTags?tags=users`]}
@@ -106,7 +105,6 @@ export const usersColumns = [
           editUrl={() => {
             meta?.handleEditRow?.(row.original);
           }}
-          
         />
       );
     },

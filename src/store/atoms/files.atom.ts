@@ -92,10 +92,10 @@ export const cloudinaryActionsAtom = atom(
         );
         const updatedFiles = await fetchFiles(action.payload?.fileType);
         set(cloudinaryFilesAtom, updatedFiles);
-        await fetch("/api/revalidateTags?tag=cloudinaryFiles", {
+        await fetch("/api/revalidateTags?tags=cloudinaryFiles", {
           method: "GET",
         });
-        await fetch("/api/revalidateTags?tag=cloudinaryUsage", {
+        await fetch("/api/revalidateTags?tags=cloudinaryUsage", {
           method: "GET",
         });
         return response;
@@ -120,7 +120,7 @@ export const cloudinaryActionsAtom = atom(
         );
         const updatedFiles = await fetchFiles(action.payload?.fileType);
         set(cloudinaryFilesAtom, updatedFiles);
-        await fetch("/api/revalidateTags?tag=cloudinaryFiles", {
+        await fetch("/api/revalidateTags?tags=cloudinaryFiles", {
           method: "GET",
         });
         return response.data;
@@ -133,10 +133,10 @@ export const cloudinaryActionsAtom = atom(
           `/multer/deleteFile?public_id=${public_id}`,
           action.token
         );
-        await fetch("/api/revalidateTags?tag=cloudinaryFiles", {
+        await fetch("/api/revalidateTags?tags=cloudinaryFiles", {
           method: "GET",
         });
-        await fetch("/api/revalidateTags?tag=cloudinaryUsage", {
+        await fetch("/api/revalidateTags?tags=cloudinaryUsage", {
           method: "GET",
         });
         set(cloudinaryFilesAtom, (prev) =>

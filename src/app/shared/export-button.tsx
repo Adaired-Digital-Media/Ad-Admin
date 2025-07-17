@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import { PiArrowLineUpBold } from 'react-icons/pi';
@@ -6,7 +7,7 @@ import cn from '@core/utils/class-names';
 import { exportToCSV } from '@core/utils/export-to-csv';
 
 type ExportButtonProps = {
-  data: unknown[];
+  data: any[];
   header: string;
   fileName: string;
   className?: string;

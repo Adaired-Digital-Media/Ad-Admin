@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { atom } from "jotai";
-import { UserTypes } from "@/data/users-data";
+import { UserTypes } from "@/core/types";
 import axios from "axios";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URI || "";
@@ -50,7 +50,7 @@ export const userActionsAtom = atom(
     get,
     set,
     action: {
-      type: "fetchAll" | "create" | "update" | "delete";
+      type: "fetchAll" | "create" | "update" | "delete" | "fetch_not_customers";
       token: string;
       payload?: any;
     }
@@ -59,6 +59,18 @@ export const userActionsAtom = atom(
       case "fetchAll": {
         const data = await userApiRequest("get", "/user/find", action.token);
         set(usersAtom, data.data);
+        return data;
+      }
+
+      case "fetch_not_customers": {
+        const data = await userApiRequest("get", "/user/find", action.token);
+        set(
+          usersAtom,
+          data.data.filter(
+            (user: UserTypes) =>
+              typeof user?.role === "object" && user?.role?.name !== "customer"
+          )
+        );
         return data;
       }
 

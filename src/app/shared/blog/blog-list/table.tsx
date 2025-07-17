@@ -11,7 +11,7 @@ import toast from "react-hot-toast";
 import { Session } from "next-auth";
 import { useAtom, useSetAtom } from "jotai";
 import { blogActionsAtom, blogsAtom } from "@/store/atoms/blog.atom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { BlogTypes } from "@/core/types";
 import { CustomTableMeta } from "@core/types/index";
 
@@ -22,11 +22,12 @@ export default function BlogTable({
   initialBlogs: BlogTypes[];
   session: Session;
 }) {
-  const [blogs] = useAtom(blogsAtom);
   const setBlogs = useSetAtom(blogActionsAtom);
+  const [blogs, setBlogsState] = useAtom(blogsAtom);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   const { table, setData } = useTanStackTable<BlogTypes>({
-    tableData: blogs.length ? blogs : initialBlogs,
+    tableData: initialBlogs,
     columnConfig: blogColumns(),
     options: {
       initialState: {
@@ -45,26 +46,32 @@ export default function BlogTable({
             token: session.user.accessToken!,
           });
           if (response.status !== 200) {
-            toast.error(response.data.message);
+            toast.error(response.data.message || "Failed to delete blog");
             return;
           }
-          toast.success(response.data.message);
+          toast.success(response.data.message || "Blog deleted successfully");
+          table.resetRowSelection();
         },
         handleMultipleDelete: async (rows) => {
-          rows.forEach(async (row: BlogTypes) => {
-            const _response = await setBlogs({
+          const deletePromises = rows.map(async (row: BlogTypes) => {
+            const response = await setCategories({
               type: "deleteBlog",
-              payload: {
-                id: row._id,
-              },
+              payload: { id: row._id },
               token: session.user.accessToken!,
             });
-            if (_response.status !== 200) {
-              toast.error(_response.data.message);
-              return;
+            if (response.status !== 200) {
+              toast.error(response.data.message || "Failed to delete blog");
+              return false;
             }
-            toast.success(_response.data.message);
+            return true;
           });
+          const results = await Promise.all(deletePromises);
+          if (results.every((success) => success)) {
+            toast.success("All selected blog deleted successfully");
+            table.resetRowSelection();
+          } else {
+            toast.error("Some blog could not be deleted");
+          }
         },
       } as CustomTableMeta<BlogTypes>,
       enableColumnResizing: false,
@@ -76,10 +83,16 @@ export default function BlogTable({
     if (session?.user?.accessToken) {
       const fetchBlogs = async () => {
         try {
-          await setBlogs({
+          const response = await setBlogs({
             type: "fetchAllBlog",
             token: session.user.accessToken!,
           });
+          if (response.status === 200) {
+            setIsInitialLoad(false);
+          } else {
+            toast.error("Failed to fetch categories");
+            setBlogsState(initialCategories);
+          }
         } catch (error) {
           toast.error("Failed to fetch Blog");
           console.error("Failed to fetch Blog : ", error);
@@ -87,12 +100,13 @@ export default function BlogTable({
       };
       fetchBlogs();
     }
-  }, [session?.user?.accessToken, setBlogs]);
+  }, [session?.user?.accessToken, setBlogs, setBlogsState]);
 
-  // Sync table data with blogs atom
   useEffect(() => {
-    setData(blogs.length >= 0 ? blogs : initialBlogs);
-  }, [blogs, initialBlogs, setData]);
+    const dataToUse =
+      isInitialLoad && blogs.length === 0 ? initialBlogs : blogs;
+    setData(dataToUse);
+  }, [blogs, initialBlogs, setData, isInitialLoad]);
 
   return (
     <>

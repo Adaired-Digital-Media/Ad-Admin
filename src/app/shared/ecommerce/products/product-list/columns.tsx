@@ -3,7 +3,7 @@
 import DeletePopover from "@core/components/delete-popover";
 import { getStockStatus } from "@core/components/table-utils/get-stock-status";
 import { routes } from "@/config/routes";
-import { ProductType } from "@/data/products";
+import { ProductType } from "@/core/types";
 import PencilIcon from "@core/components/icons/pencil";
 import AvatarCard from "@core/ui/avatar-card";
 import { createColumnHelper } from "@tanstack/react-table";
@@ -13,10 +13,10 @@ import { StatusSelect } from "@/core/components/table-utils/status-select";
 import { CustomTableMeta } from "@core/types/index";
 
 const statusOptions = [
-  { label: "Active", value: "Active" },
-  { label: "Inactive", value: "Inactive" },
-  { label: "Archived", value: "Archived" },
-  { label: "Out of Stock", value: "Out of Stock" },
+  { label: "Active", value: "active" },
+  { label: "Inactive", value: "inactive" },
+  { label: "Archived", value: "archived" },
+  { label: "Out of Stock", value: "out of stock" },
 ];
 
 const columnHelper = createColumnHelper<ProductType>();

@@ -13,7 +13,7 @@ import { invoiceActionsAtom, invoicesAtom } from "@/store/atoms/invoices.atom";
 import { CustomTableMeta } from "@core/types/index";
 import { Session } from "next-auth";
 import toast from "react-hot-toast";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function InvoiceTable({
   initialInvoices,
@@ -22,11 +22,12 @@ export default function InvoiceTable({
   initialInvoices: InvoiceTypes[];
   session: Session;
 }) {
-  const [invoices] = useAtom(invoicesAtom);
-  const setInvoices = useSetAtom(invoiceActionsAtom);
+  const [invoices, setInvoices] = useAtom(invoicesAtom);
+  const dispatch = useSetAtom(invoiceActionsAtom);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   const { table, setData } = useTanStackTable<InvoiceTypes>({
-    tableData: invoices.length ? invoices : initialInvoices,
+    tableData: initialInvoices,
     columnConfig: invoiceListColumns,
     options: {
       initialState: {
@@ -37,26 +38,40 @@ export default function InvoiceTable({
       },
       meta: {
         handleDeleteRow: async (row: { _id: string }) => {
-          const response = await setInvoices({
+          const response = await dispatch({
             type: "delete",
             payload: {
               id: row._id,
             },
             token: session.user.accessToken!,
           });
-          toast.success(response.message);
+          if (!response.success) {
+            toast.error(response.message || "Failed to delete Invoice");
+            return;
+          }
+          toast.success(response.message || "Invoice deleted successfully");
+          table.resetRowSelection();
         },
         handleMultipleDelete: async (rows) => {
-          rows.forEach(async (row: InvoiceTypes) => {
-            const _response = await setInvoices({
+          const deletePromises = rows.map(async (row: InvoiceTypes) => {
+            const response = await dispatch({
               type: "delete",
-              payload: {
-                id: row._id,
-              },
+              payload: { id: row._id },
               token: session.user.accessToken!,
             });
-            toast.success(_response.message);
+            if (!response.success) {
+              toast.error(response.message || "Failed to delete invoice");
+              return false;
+            }
+            return true;
           });
+          const results = await Promise.all(deletePromises);
+          if (results.every((success) => success)) {
+            toast.success("All selected invoices deleted successfully");
+            table.resetRowSelection();
+          } else {
+            toast.error("Some invoices could not be deleted");
+          }
         },
       } as CustomTableMeta<InvoiceTypes>,
       enableColumnResizing: false,
@@ -68,23 +83,31 @@ export default function InvoiceTable({
     if (session?.user?.accessToken) {
       const fetchCoupons = async () => {
         try {
-          await setInvoices({
+          const response = await dispatch({
             type: "fetchAll",
             token: session.user.accessToken!,
           });
+          if (response.success) {
+            setIsInitialLoad(false);
+          } else {
+            toast.error("Failed to fetch invoices");
+            setInvoices(initialInvoices);
+          }
         } catch (error) {
           toast.error("Failed to fetch invoices");
           console.error("Failed to fetch invoices : ", error);
+          setInvoices(initialInvoices);
         }
       };
       fetchCoupons();
     }
-  }, [session?.user?.accessToken, setInvoices]);
+  }, [session?.user?.accessToken, setInvoices, initialInvoices, dispatch]);
 
-  // Sync table data with tickets atom
   useEffect(() => {
-    setData(invoices.length >= 0 ? invoices : initialInvoices);
-  }, [invoices, initialInvoices, setData]);
+    setData(
+      isInitialLoad && invoices.length === 0 ? initialInvoices : invoices
+    );
+  }, [invoices, initialInvoices, setData, isInitialLoad]);
 
   const selectedData = table
     .getSelectedRowModel()

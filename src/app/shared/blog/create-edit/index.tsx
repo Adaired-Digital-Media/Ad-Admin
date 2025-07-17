@@ -2,10 +2,9 @@
 "use client";
 
 import cn from "@/core/utils/class-names";
-import { useAtom, useSetAtom } from "jotai";
-import { blogActionsAtom, blogsAtom } from "@/store/atoms/blog.atom";
-import { useState, useEffect } from "react";
-import { Loader } from "rizzui";
+import { useSetAtom } from "jotai";
+import { blogActionsAtom } from "@/store/atoms/blog.atom";
+import { useState } from "react";
 import { Element } from "react-scroll";
 import { blogFormSchema, BlogFormInput } from "@/validators/blog.schema";
 import FormFooter from "@/core/components/form-footer";
@@ -19,6 +18,7 @@ import toast from "react-hot-toast";
 import { blogDefaultValues } from "./form-utils";
 import { routes } from "@/config/routes";
 import { useRouter } from "next/navigation";
+import { BlogTypes } from "@/core/types";
 
 const MAP_STEP_TO_COMPONENT = {
   [formParts.blogImage]: BlogImage,
@@ -28,78 +28,31 @@ const MAP_STEP_TO_COMPONENT = {
 
 type Props = {
   className?: string;
-  id?: string;
+  blog?: BlogTypes;
   accessToken?: string;
 };
 
-const CreateEditBlog = ({ className, id, accessToken }: Props) => {
+const CreateEditBlog = ({ className, blog, accessToken }: Props) => {
   const router = useRouter();
-  const [blogs] = useAtom(blogsAtom);
   const setBlogs = useSetAtom(blogActionsAtom);
   const [isLoading, setLoading] = useState(false);
 
-  const blog = blogs.find((b) => b?._id === id);
-
-  const methods = useForm<BlogFormInput>({
+  const methods = useForm({
     resolver: zodResolver(blogFormSchema),
     defaultValues: blogDefaultValues(blog),
   });
 
   const { handleSubmit, reset } = methods;
 
-  useEffect(() => {
-    if (!id || !accessToken) return;
-
-    const fetchBlog = async () => {
-      setLoading(true);
-      try {
-        if (!blog) {
-          const response = await setBlogs({
-            type: "fetchAllBlog",
-            payload: { id },
-            token: accessToken,
-          });
-          if (response.status !== 200) {
-            toast.error(response.message);
-            console.error("Failed to fetch blogs:", response.data);
-            setLoading(false);
-            return;
-          }
-        } else {
-          reset(blogDefaultValues(blog));
-        }
-        setLoading(false);
-      } catch (error: any) {
-        console.error("Failed to fetch blogs:", error);
-      }
-    };
-    fetchBlog();
-  }, [id, accessToken, blog, setBlogs, reset]);
-
-  if (id && !blog && isLoading) {
-    return (
-      <div
-        className={cn(
-          `@container h-full w-full flex items-center justify-center`,
-          className
-        )}
-      >
-        <Loader variant="spinner" size="xl" />
-      </div>
-    );
-  }
-
   const onSubmit: SubmitHandler<BlogFormInput> = async (data) => {
     if (!accessToken) return;
-    console.log("Blog data ->", data);
-
     setLoading(true);
     try {
-      if (id) {
+      if (blog) {
         const response = await setBlogs({
           type: "updateBlog",
           token: accessToken,
-          payload: { id: id, ...data },
+          payload: { id: blog._id, ...data },
         });
         if (response.status !== 200) {
           toast.error(response.data.message);
@@ -147,7 +100,7 @@ const CreateEditBlog = ({ className, id, accessToken }: Props) => {
           </div>
           <FormFooter
             isLoading={isLoading}
-            submitBtnText={id ? "Update Blog" : "Create Blog"}
+            submitBtnText={blog ? "Update Blog" : "Create Blog"}
           />
         </form>
       </FormProvider>

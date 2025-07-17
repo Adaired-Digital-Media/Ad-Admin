@@ -16,11 +16,15 @@ import {
   CategoryFormInput,
   categoryFormSchema,
 } from "@/validators/create-category.schema";
-import { ProductCategoryType } from "@/data/product-categories";
 import UploadZone from "@/core/ui/file-upload/upload-zone";
 import { zodResolver } from "@hookform/resolvers/zod";
 import toast from "react-hot-toast";
-import { useApiCall } from "@core/utils/api-config";
+import {
+  productActionsAtom,
+  productsCategoryAtom,
+} from "@/store/atoms/product.atom";
+import { useAtom, useSetAtom } from "jotai";
+import { useModal } from "@/app/shared/modal-views/use-modal";
 const Select = dynamic(() => import("rizzui").then((mod) => mod.Select), {
   ssr: false,
   loading: () => <SelectLoader />,
@@ -75,15 +79,18 @@ export default function CreateCategory({
   id,
   isModalView = true,
   category,
-  categories,
+  accessToken,
 }: {
   id?: string;
   isModalView?: boolean;
   category?: CategoryFormInput;
-  categories: ProductCategoryType[];
+  accessToken?: string;
 }) {
+  const { closeModal } = useModal();
+  const [categories] = useAtom(productsCategoryAtom);
+  const setCategory = useSetAtom(productActionsAtom);
+
   const [isLoading, setLoading] = useState(false);
-  const { apiCall, sessionStatus } = useApiCall();
   const methods = useForm({
     mode: "onChange",
     resolver: zodResolver(categoryFormSchema),
@@ -104,48 +111,42 @@ export default function CreateCategory({
   });
   const {
     register,
-    reset,
+    getValues,
     control,
     handleSubmit,
     formState: { errors },
   } = methods;
 
   const onSubmit: SubmitHandler<CategoryFormInput> = async (data) => {
-    if (sessionStatus === "loading") {
-      return;
-    }
-
+    if (!accessToken) return;
     setLoading(true);
     try {
-      let response;
       if (category) {
-        response = await apiCall<{ message: string }>({
-          url: `/product/category/update-category?identifier=${id}`,
-          method: "PATCH",
-          data,
+        const response = await setCategory({
+          type: "updateCategory",
+          token: accessToken,
+          payload: { id: category._id, ...data },
         });
+        if (response.status !== 200) {
+          toast.error(response.data.message);
+          console.error("Failed to update category:", response);
+          return;
+        }
+        toast.success(response.data.message);
       } else {
-        response = await apiCall<{ message: string }>({
-          url: "/product/category/create-category",
-          method: "POST",
-          data,
+        const response = await setCategory({
+          type: "createCategory",
+          token: accessToken,
+          payload: data,
         });
+        if (response.status !== 201) {
+          toast.error(response.data.message);
+          console.error("Failed to create category:", response);
+          return;
+        }
+        toast.success(response.data.message);
       }
-      reset({
-        name: "",
-        description: "",
-        parentCategory: "",
-        slug: "",
-        image: "",
-        metaTitle: "",
-        metaDescription: "",
-        canonicalLink: "",
-        status: "",
-      });
-      toast.success(response?.data?.message || "Category created successfully");
-      await fetch("/api/revalidateTags?tags=product-categories", {
-        method: "GET",
-      });
+      closeModal();
     } catch (error) {
       console.error(
         "Error submitting form:",
@@ -193,6 +194,7 @@ export default function CreateCategory({
                 control={control}
                 render={({ field: { onChange, value } }) => (
                   <Select
+                    label="Parent Category"
                     dropdownClassName="!z-0"
                     options={categories.map((category) => ({
                       value: category._id,
@@ -200,11 +202,14 @@ export default function CreateCategory({
                     }))}
                     value={value}
                     onChange={onChange}
-                    label="Parent Category"
                     error={errors?.parentCategory?.message as string}
                     getOptionValue={(option) => option.value}
-                    displayValue={(value) =>
-                      categories.find((cat) => cat._id === value)?.name || ""
+                    displayValue={(selected) =>
+                      categories
+                        .filter(
+                          (cat) => cat._id === getValues("parentCategory")
+                        )
+                        .find((cat) => cat._id === selected)?.name || ""
                     }
                   />
                 )}

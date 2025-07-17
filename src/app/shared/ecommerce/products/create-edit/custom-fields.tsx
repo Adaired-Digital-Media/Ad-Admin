@@ -15,10 +15,19 @@ const Select = dynamic(() => import("rizzui").then((mod) => mod.Select), {
   ssr: false,
   loading: () => <SelectLoader />,
 });
+import { SelectOption } from "rizzui";
 
 interface ProductIdentifiersProps {
   className?: string;
 }
+
+const statusOptions: SelectOption[] = [
+  { label: "Active", value: "active" },
+  { label: "Inactive", value: "inactive" },
+  { label: "Archived", value: "archived" },
+  { label: "Out of Stock", value: "out of stock" },
+];
+
 export default function CustomFields({ className }: ProductIdentifiersProps) {
   const { apiCall, sessionStatus } = useApiCall();
   const {
@@ -79,31 +88,35 @@ export default function CustomFields({ className }: ProductIdentifiersProps) {
               placeholder="Select a form type"
               displayValue={(selectedValue: string) =>
                 forms.length > 0
-                  ? forms.find((f:any) => f._id === selectedValue)?.productType ||
-                    forms.find((f:any) => f._id === selectedValue)?.title
+                  ? forms.find((f: any) => f._id === selectedValue)
+                      ?.productType ||
+                    forms.find((f: any) => f._id === selectedValue)?.title
                   : ""
               }
               selectClassName="capitalize"
             />
           )}
         />
+
         <Controller
           name="status"
           control={control}
           render={({ field: { onChange, value } }) => (
             <Select
               dropdownClassName="h-auto"
-              options={["Active", "Inactive", "Archived", "Out of Stock"].map(
-                (i) => ({
-                  value: i,
-                  label: i,
-                })
-              )}
+              options={statusOptions.map((option) => ({
+                value: option.value,
+                label: option.label,
+              }))}
               value={value}
               onChange={onChange}
               label="Status"
               error={errors?.status?.message as string}
               getOptionValue={(option) => option.value}
+              displayValue={(selected) =>
+                statusOptions.find((s) => s.value === selected)?.label ??
+                "active"
+              }
               placeholder="Select product status"
             />
           )}

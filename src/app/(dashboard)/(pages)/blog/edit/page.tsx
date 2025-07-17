@@ -3,6 +3,8 @@ import PageHeader from "@/app/shared/page-header";
 import { routes } from "@/config/routes";
 import CreateEditBlog from "@/app/shared/blog/create-edit";
 import { auth } from "@/auth";
+import { fetchData } from "@/core/utils/fetch-function";
+import { BlogTypes } from "@/core/types";
 
 type Props = {
   searchParams: { id?: string };
@@ -32,11 +34,17 @@ const pageHeader = {
 export default async function EditCouponPage({ searchParams }: Props) {
   const session = await auth();
   if (!session) return;
+  const accessToken = session?.user?.accessToken || "";
+  const blog = await fetchData<BlogTypes[]>({
+    endpoint: `/blog/read?id=${searchParams.id}`,
+    accessToken,
+    tag: "blog",
+  });
   return (
     <>
       <PageHeader title={pageHeader.title} breadcrumb={pageHeader.breadcrumb} />
       <CreateEditBlog
-        id={searchParams.id}
+        blog={blog[0]}
         accessToken={session?.user?.accessToken}
       />
     </>

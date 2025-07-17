@@ -5,18 +5,21 @@ import { useAtom, useSetAtom } from "jotai";
 import { useState } from "react";
 import { Title, Input, Select, Button, ActionIcon } from "rizzui";
 import { Controller, SubmitHandler } from "react-hook-form";
-import { blogActionsAtom, blogCategoryAtom } from "@/store/atoms/blog.atom";
 import {
-  BlogCategoryFormInput,
-  blogCategoryFormSchema,
-} from "@/validators/blog-category.schema";
+  productActionsAtom,
+  productsCategoryAtom,
+} from "@/store/atoms/product.atom";
+import {
+  ProductCategoryFormInput,
+  productCategoryFormSchema,
+} from "@/validators/product-category.schema";
 import { categoryDefaultValues } from "./form-utils";
 import toast from "react-hot-toast";
 import UploadZone from "@/core/ui/file-upload/upload-zone";
 import { useModal } from "@/app/shared/modal-views/use-modal";
 import { Form } from "@/core/ui/form";
 import { PiXBold } from "react-icons/pi";
-import { BlogCategoryType } from "@/core/types";
+import { ProductCategoryType } from "@/core/types";
 
 // Define the type for status options
 type StatusOption = {
@@ -31,7 +34,7 @@ const statusOptions: StatusOption[] = [
 
 type Props = {
   className?: string;
-  category?: BlogCategoryType;
+  category?: ProductCategoryType;
   accessToken?: string;
 };
 
@@ -41,16 +44,17 @@ export default function CreateEditCategory({
   accessToken,
 }: Props) {
   const { closeModal } = useModal();
-  const [blogCategories] = useAtom(blogCategoryAtom);
-  const setCategory = useSetAtom(blogActionsAtom);
+  const [productCategories] = useAtom(productsCategoryAtom);
+  const setCategory = useSetAtom(productActionsAtom);
   const [isLoading, setLoading] = useState(false);
 
   // Filter valid categories
-  const validCategories = blogCategories.filter(
-    (category) => category && category._id && category.name
+  const validCategories = productCategories.filter(
+    (cat) =>
+      cat && cat._id && cat.name && (!category || cat._id !== category._id)
   );
 
-  const onSubmit: SubmitHandler<BlogCategoryFormInput> = async (data) => {
+  const onSubmit: SubmitHandler<ProductCategoryFormInput> = async (data) => {
     if (!accessToken) return;
     setLoading(true);
     try {
@@ -81,7 +85,7 @@ export default function CreateEditCategory({
       }
       closeModal();
     } catch (error) {
-      console.error("Failed to save coupon:", error);
+      console.error("Failed to save category:", error);
     } finally {
       setLoading(false);
     }
@@ -93,7 +97,7 @@ export default function CreateEditCategory({
       useFormProps={{
         defaultValues: categoryDefaultValues(category),
       }}
-      validationSchema={blogCategoryFormSchema}
+      validationSchema={productCategoryFormSchema}
       className={cn(
         "grid grid-cols-1 gap-6 p-6 @container md:grid-cols-2 [&_.rizzui-input-label]:font-medium [&_.rizzui-input-label]:text-gray-900",
         className
@@ -129,19 +133,19 @@ export default function CreateEditCategory({
             />
             <Input
               label="Name *"
-              placeholder="e.g., My Blog Category"
+              placeholder="e.g., My Category"
               required
               {...register("name")}
               error={errors?.name?.message as string}
             />
             <Input
               label="Slug *"
-              placeholder="e.g., my-blog-category"
+              placeholder="e.g., my-category"
               required
               {...register("slug")}
               error={errors?.slug?.message as string}
             />
-<Controller
+            <Controller
               name="parentCategory"
               control={control}
               render={({ field: { onChange, value } }) => (
@@ -157,10 +161,13 @@ export default function CreateEditCategory({
                   getOptionValue={(option) => option.value}
                   displayValue={(selected) =>
                     selected
-                      ? validCategories.find((cat) => cat._id === selected)?.name || ""
+                      ? validCategories.find((cat) => cat._id === selected)
+                          ?.name || ""
                       : ""
                   }
                   error={errors?.parentCategory?.message as string}
+                  clearable={value !== null}
+                  onClear={() => setValue("parentCategory", null)}
                 />
               )}
             />
@@ -176,7 +183,7 @@ export default function CreateEditCategory({
                   getOptionValue={(option) => option.value}
                   displayValue={(selected) =>
                     statusOptions.find((s) => s.value === selected)?.label ??
-                    "active"
+                    statusOptions[0].value
                   }
                   error={errors?.status?.message as string}
                 />
