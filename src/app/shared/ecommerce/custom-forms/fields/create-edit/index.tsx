@@ -3,7 +3,7 @@
 import { useModal } from "@/app/shared/modal-views/use-modal";
 import { Form } from "@/core/ui/form";
 import cn from "@/core/utils/class-names";
-import { FieldType } from "@/data/productForms.types";
+import { FieldType } from "@/core/types";
 import { formFieldActionsAtom } from "@/store/atoms/forms.atom";
 import {
   CreateFieldInput,
@@ -122,7 +122,6 @@ const CreateEditField = ({
     >
       {({ register, setValue, watch, formState: { errors } }) => (
         <>
-
           <div className="col-span-full flex items-center justify-between border-b border-gray-200 pb-4">
             <Title as="h4" className="font-semibold text-gray-900">
               {field ? "Edit Field" : "Add Field"}
@@ -134,7 +133,7 @@ const CreateEditField = ({
 
           <div className="col-span-1">
             <Input
-              label="Label Name"
+              label="Label Name *"
               type="text"
               placeholder="e.g. Label Field Name"
               {...register("label")}
@@ -147,21 +146,40 @@ const CreateEditField = ({
               label="Input Type"
               options={[
                 { value: "text", label: "Text" },
-                { value: "textarea", label: "Textarea" },
-                { value: "number", label: "Number" },
-                { value: "checkbox", label: "Checkbox" },
-                { value: "select", label: "Select" },
                 { value: "email", label: "Email" },
                 { value: "password", label: "Password" },
-                { value: "date", label: "Date" },
-                { value: "time", label: "Time" },
-                { value: "file", label: "File" },
+                { value: "number", label: "Number" },
+                { value: "tel", label: "Phone" },
+                { value: "url", label: "URL" },
+                { value: "select", label: "Select" },
+                { value: "checkbox", label: "Checkbox" },
                 { value: "radio", label: "Radio" },
-                { value: "range", label: "Range" },
+                { value: "textarea", label: "Textarea" },
+                { value: "file", label: "File" },
+                { value: "date", label: "Date" },
+                { value: "datetime-local", label: "Date & Time" },
+                { value: "time", label: "Time" },
               ]}
               value={watch("inputType")}
-              onChange={(option: { value: string; name: string }) =>
-                setValue("inputType", option.value)
+              onChange={(option: { value: string; label: string }) =>
+                setValue(
+                  "inputType",
+                  option.value as
+                    | "number"
+                    | "date"
+                    | "text"
+                    | "email"
+                    | "password"
+                    | "tel"
+                    | "url"
+                    | "select"
+                    | "checkbox"
+                    | "radio"
+                    | "textarea"
+                    | "file"
+                    | "datetime-local"
+                    | "time"
+                )
               }
               error={errors.inputType?.message}
               className="w-full"
@@ -169,7 +187,7 @@ const CreateEditField = ({
           </div>
           <div className="col-span-1">
             <Input
-              label="Input Name"
+              label="Input Name *"
               type="text"
               placeholder="e.g. input_name"
               {...register("name")}
@@ -222,8 +240,10 @@ const CreateEditField = ({
                 { value: "url", label: "URL" },
               ]}
               value={watch("inputValidationPattern")}
-              onChange={(value: string) =>
-                setValue("inputValidationPattern", value)
+              onChange={(
+                selectedOption: { value: string; label: string } | null
+              ) =>
+                setValue("inputValidationPattern", selectedOption?.value || "")
               }
               error={errors.inputValidationPattern?.message}
               className="w-full"
@@ -288,7 +308,7 @@ const CreateEditField = ({
               className="w-full"
             />
           </div>
-          <div className="col-span-full flex justify-end border-t border-gray-200 pt-4">
+          <div className="col-span-full flex justify-end  border-gray-200 pt-4">
             <Button
               type="submit"
               isLoading={isLoading}

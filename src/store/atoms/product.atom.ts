@@ -56,7 +56,7 @@ export const productActionsAtom = atom(
       case "createProduct": {
         const data = await productApiRequest(
           "post",
-          "/products/create-product",
+          "/product/create-product",
           action.token,
           action.payload
         );

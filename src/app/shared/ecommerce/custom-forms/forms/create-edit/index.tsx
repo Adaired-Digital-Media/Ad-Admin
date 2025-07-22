@@ -21,16 +21,46 @@ import { Form } from "@/core/ui/form";
 import { useAtom } from "jotai";
 import { formFieldActionsAtom, fieldsAtom } from "@/store/atoms/forms.atom";
 import { Session } from "next-auth";
-import { FieldType, FormType } from "@/data/productForms.types";
+import { FieldType, FormType } from "@/core/types";
 import toast from "react-hot-toast";
 import ModalButton from "@/app/shared/modal-button";
 import CreateEditField from "../../fields/create-edit";
-import MainTable from "@core/components/table"; // Import the provided MainTable component
+import MainTable from "@core/components/table";
 import {
   createColumnHelper,
   useReactTable,
   getCoreRowModel,
 } from "@tanstack/react-table";
+
+// New component for the Field Order cell
+function FieldOrderCell({
+  fieldId,
+  selectedFields,
+  selectedFieldIds,
+  handleFieldOrderChange,
+}: {
+  fieldId: string;
+  selectedFields: Array<{ field: string; fieldOrder: number }>;
+  selectedFieldIds: string[];
+  handleFieldOrderChange: (fieldId: string, value: number) => void;
+}) {
+  const [inputValue, setInputValue] = useState(
+    selectedFields.find((f) => f.field === fieldId)?.fieldOrder || ""
+  );
+
+  return selectedFieldIds.includes(fieldId) ? (
+    <Input
+      key={fieldId} // Stable key to prevent re-creation
+      type="number"
+      value={inputValue}
+      onChange={(e) => setInputValue(e.target.value)} // Update local state on change
+      onBlur={
+        (e) => handleFieldOrderChange(fieldId, parseInt(e.target.value) || 1) // Update global state on blur
+      }
+      className="w-full"
+    />
+  ) : null;
+}
 
 export default function CreateEditForm({
   form,
@@ -178,7 +208,6 @@ export default function CreateEditForm({
           })),
         };
 
-
         if (form) {
           await dispatchAction({
             type: "updateForm",
@@ -237,19 +266,9 @@ export default function CreateEditForm({
         cell: ({ row }) => {
           const { inputType, label, inputRequired } = row.original;
           return inputType === "checkbox" ? (
-            <Checkbox
-              checked={inputRequired}
-              readOnly
-              label={label}
-              className="bg-gray-200 border-none w-full"
-            />
+            <Checkbox checked={inputRequired} label={label} disabled />
           ) : inputType === "textarea" ? (
-            <Textarea
-              value={label}
-              readOnly
-              size="sm"
-              className="bg-gray-200 border-none w-full"
-            />
+            <Textarea value={label} disabled size="sm" />
           ) : (
             <Input
               value={label}
@@ -282,39 +301,23 @@ export default function CreateEditForm({
                   | "datetime-local"
                   | undefined
               }
-              readOnly
-              className="bg-gray-200 border-none w-full"
+              disabled
             />
           );
         },
       }),
+
       columnHelper.accessor("_id", {
         header: "Field Order",
         size: 100,
-        cell: ({ row }) =>
-          selectedFieldIds.includes(row.original._id) ? (
-            <Input
-              type="number"
-              value={
-                selectedFields.find((f) => f.field === row.original._id)
-                  ?.fieldOrder || 1
-              }
-              onChange={(e) =>
-                handleFieldOrderChange(
-                  row.original._id,
-                  parseInt(e.target.value) || 1
-                )
-              }
-              onBlur={(e) =>
-                handleFieldOrderChange(
-                  row.original._id,
-                  parseInt(e.target.value) || 1
-                )
-              }
-              min={1}
-              className="w-full"
-            />
-          ) : null,
+        cell: ({ row }) => (
+          <FieldOrderCell
+            fieldId={row.original._id}
+            selectedFields={selectedFields}
+            selectedFieldIds={selectedFieldIds}
+            handleFieldOrderChange={handleFieldOrderChange}
+          />
+        ),
       }),
     ],
     [

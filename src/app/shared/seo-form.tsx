@@ -374,7 +374,7 @@ export default function SEOForm({ className, namespace = "" }: SEOFormProps) {
       {/* Schema.org */}
       <FormGroup
         title="Schema.org"
-        description="Add structured data for search engine optimization"
+        description="Structured data for search engine optimization (auto-generated, editable)"
         className={className}
       >
         <Textarea
@@ -461,4 +461,3 @@ function ItemCrud({
     </div>
   );
 }
-

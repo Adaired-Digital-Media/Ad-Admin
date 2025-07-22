@@ -1,4 +1,4 @@
-import { FieldType } from "@/data/productForms.types";
+import { FieldType } from "@/core/types";
 import { createColumnHelper } from "@tanstack/react-table";
 import { Checkbox, Text } from "rizzui";
 import TableRowActionGroup from "@core/components/table-utils/table-row-action-group";

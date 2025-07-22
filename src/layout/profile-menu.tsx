@@ -6,7 +6,7 @@ import cn from "@core/utils/class-names";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useSession,signOut } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { UserTypes } from "@/core/types";
 import { routes } from "@/config/routes";
 
@@ -94,7 +94,12 @@ function DropdownMenu({ user }: { user?: UserTypes }) {
           <Title as="h6" className="font-semibold">
             {user?.name ?? "Guest"}
           </Title>
-          <Text className="text-gray-600">{user?.email ?? "No email"}</Text>
+          <Text className="text-gray-600">
+            {" "}
+            {(user?.email ?? "").length > 25
+              ? `${(user?.email ?? "").slice(0, 20)}...`
+              : user?.email}
+          </Text>
         </div>
       </div>
       <div className="grid px-3.5 py-3.5 font-medium text-gray-700">

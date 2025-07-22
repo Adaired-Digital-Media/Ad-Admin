@@ -6,7 +6,6 @@ export const routes = {
     "access-denied": "/access-denied",
   },
   root: {
-    website: "",
     dashboard: "/",
     unauthorized: "/unauthorized",
   },

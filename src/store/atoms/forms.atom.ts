@@ -185,7 +185,7 @@ export const formFieldActionsAtom = atom(
         if (!fieldId) throw new Error("fieldId is required");
         const data = await apiRequest(
           "patch",
-          `/product/form/update-field?fieldId${fieldId}`,
+          `/product/form/update-field?fieldId=${fieldId}`,
           action.token,
           updateData
         );

@@ -11,7 +11,7 @@ import cn from "@core/utils/class-names";
 import { exportToCSV } from "@core/utils/export-to-csv";
 import toast from "react-hot-toast";
 import { CustomTableMeta } from "@core/types/index";
-import { FieldType } from "@/data/productForms.types";
+import { FieldType } from "@/core/types";
 import { fieldListColumns } from "./columns";
 import { useAtom } from "jotai";
 import { useModal } from "@/app/shared/modal-views/use-modal";

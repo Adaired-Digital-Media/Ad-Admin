@@ -44,7 +44,6 @@ export default function FormsTable({
   paginationClassName,
   session,
 }: FormsTableProps) {
-  console.log("Initial Forms:", initialForms);
   const { openModal } = useModal();
   const [, dispatchAction] = useAtom(formFieldActionsAtom);
   const [isInitialLoad, setIsInitialLoad] = useState(true);

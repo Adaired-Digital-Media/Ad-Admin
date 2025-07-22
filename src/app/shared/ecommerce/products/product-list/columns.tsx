@@ -51,7 +51,9 @@ export const productsListColumns = [
       <AvatarCard
         src={row.original.featuredImage}
         name={row.original.name}
-        description={row.original?.category?.name}
+        description={typeof row.original.category === "object" && row.original.category !== null
+          ? row.original.category.name
+          : row.original.category}
         avatarProps={{
           name: row.original.name,
           size: "lg",

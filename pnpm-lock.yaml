@@ -44,6 +44,9 @@ importers:
       html-react-parser:
         specifier: ^5.2.5
         version: 5.2.5(@types/react@18.3.23)(react@18.3.1)
+      jose:
+        specifier: ^6.0.12
+        version: 6.0.12
       jotai:
         specifier: ^2.12.5
         version: 2.12.5(@types/react@18.3.23)(react@18.3.1)
@@ -146,6 +149,9 @@ importers:
       simplebar-react:
         specifier: ^3.3.1
         version: 3.3.2(react@18.3.1)
+      slugify:
+        specifier: ^1.6.6
+        version: 1.6.6
       tailwind-merge:
         specifier: ^3.3.1
         version: 3.3.1
@@ -2062,8 +2068,8 @@ packages:
     resolution: {integrity: sha512-/imKNG4EbWNrVjoNC/1H5/9GFy+tqjGBHCaSsN+P2RnPqjsLmv6UD3Ej+Kj8nBWaRAwyk7kK5ZUc+OEatnTR3A==}
     hasBin: true
 
-  jose@6.0.11:
-    resolution: {integrity: sha512-QxG7EaliDARm1O1S8BGakqncGT9s25bKL1WSf6/oa17Tkqwi8D2ZNglqCF+DsYF88/rV66Q/Q2mFAy697E1DUg==}
+  jose@6.0.12:
+    resolution: {integrity: sha512-T8xypXs8CpmiIi78k0E+Lk7T2zlK4zDyg+o1CZ4AkOHgDg98ogdP2BeZ61lTFKFyoEwJ9RgAgN+SdM3iPgNonQ==}
 
   jotai-cache@0.5.0:
     resolution: {integrity: sha512-29pUuEfSXL7Ba6lxZmiNDARc73TspWzAzCy0jCkk2uEOnFJ6kaUBZTp/AZSwnIsh1ndfUfM9/QpbLU7uJAQL0A==}
@@ -2951,6 +2957,10 @@ packages:
     peerDependencies:
       react: '>=16.8.0'
 
+  slugify@1.6.6:
+    resolution: {integrity: sha512-h+z7HKHYXj6wJU+AnS/+IH8Uh9fdcX1Lrhg1/VMdf9PwoBQXFcXiAdsy2tSK0P6gKwJLXp02r90ahUCqHk9rrw==}
+    engines: {node: '>=8.0.0'}
+
   source-map-js@1.2.1:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
     engines: {node: '>=0.10.0'}
@@ -3284,7 +3294,7 @@ snapshots:
   '@auth/core@0.40.0':
     dependencies:
       '@panva/hkdf': 1.2.1
-      jose: 6.0.11
+      jose: 6.0.12
       oauth4webapi: 3.5.5
       preact: 10.24.3
       preact-render-to-string: 6.5.11(preact@10.24.3)
@@ -5302,7 +5312,7 @@ snapshots:
 
   jiti@1.21.7: {}
 
-  jose@6.0.11: {}
+  jose@6.0.12: {}
 
   jotai-cache@0.5.0(jotai@2.12.5(@types/react@18.3.23)(react@18.3.1)):
     dependencies:
@@ -6264,6 +6274,8 @@ snapshots:
     dependencies:
       react: 18.3.1
       simplebar-core: 1.3.2
+
+  slugify@1.6.6: {}
 
   source-map-js@1.2.1: {}
 
