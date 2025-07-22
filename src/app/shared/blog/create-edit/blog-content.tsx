@@ -606,6 +606,7 @@ export default function BasicDetails({ className }: { className?: string }) {
       // Remove undefined fields to keep JSON clean
       const cleanedSchemaOrgData = Object.fromEntries(
         Object.entries(schemaOrgData).filter(
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           ([_, value]) => value !== undefined
         )
       );
