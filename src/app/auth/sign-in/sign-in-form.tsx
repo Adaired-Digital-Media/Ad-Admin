@@ -14,7 +14,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 
 const initialValues: LoginSchema = {
-  email: "",
+  identifier: "",
   password: "",
   rememberMe: false,
 };
@@ -33,10 +33,20 @@ export default function SignInForm() {
   }, [searchParams]);
 
   useEffect(() => {
-    if (error === "CredentialsSignin") {
+    if (error) {
       router.replace(routes.auth.signIn);
       setError(null);
-      toast.error("Invalid credentials!");
+      if (error === "CredentialsSignin") {
+        toast.error("Invalid username or password!");
+      } else if (error === "GoogleAuthFailed") {
+        toast.error("Google authentication failed. Please try again.");
+      } else if (error === "AccessDenied") {
+        toast.error(
+          "Access denied. You may not have permission to access this resource."
+        );
+      } else {
+        toast.error("An error occurred during sign-in. Please try again.");
+      }
     }
   }, [error, router]);
 
@@ -68,13 +78,13 @@ export default function SignInForm() {
         }) => (
           <div className="space-y-5 lg:space-y-6">
             <Input
-              type="email"
+              type="text"
               size={isMedium ? "lg" : "xl"}
               label="Email"
-              placeholder="Enter your email"
+              placeholder="Enter your email or username"
               className="[&>label>span]:font-medium"
-              {...register("email")}
-              error={errors.email?.message}
+              {...register("identifier")}
+              error={errors.identifier?.message}
             />
             <Password
               label="Password"

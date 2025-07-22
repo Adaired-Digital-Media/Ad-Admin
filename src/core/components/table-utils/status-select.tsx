@@ -82,7 +82,7 @@ export function StatusSelect({
   return (
     <Select
       dropdownClassName="!z-10"
-      className="min-w-[70px]"
+      className="min-w-28"
       placeholder={placeholder}
       options={options}
       value={value}

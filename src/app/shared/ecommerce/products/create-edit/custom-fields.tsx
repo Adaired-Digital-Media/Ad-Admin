@@ -42,7 +42,7 @@ export default function CustomFields({ className }: ProductIdentifiersProps) {
         const response = await apiCall<{
           forms: ProductFormValues[] | undefined;
         }>({
-          url: "/product/form/read-form",
+          url: "/product/form/read-form?status=active",
           method: "GET",
         });
         if (response.status === 200) {

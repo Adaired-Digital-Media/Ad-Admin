@@ -444,19 +444,20 @@ export type FieldType = {
   name: string;
   label: string;
   inputType:
-    | "number"
-    | "email"
-    | "url"
-    | "date"
-    | "time"
-    | "tel"
-    | "search"
-    | "month"
-    | "week"
-    | "datetime-local"
     | "text"
+    | "email"
+    | "password"
+    | "number"
+    | "tel"
+    | "url"
+    | "select"
     | "checkbox"
+    | "radio"
     | "textarea"
+    | "file"
+    | "date"
+    | "datetime-local"
+    | "time"
     | undefined;
   inputMinLength?: number | null;
   inputMaxLength?: number | null;

@@ -10,8 +10,8 @@ export function blogDefaultValues(blog?: BlogTypes): BlogFormInput {
     featuredImage: blog?.featuredImage || "",
     category:
       blog?.category && typeof blog.category === "object"
-        ? (blog.category as { _id: string })?._id 
-        : blog?.category?.toString() || null,
+        ? (blog.category as { _id: string })?._id
+        : blog?.category?.toString() || undefined,
     tags: blog?.tags ?? [],
     status: blog?.status ?? "draft",
     scheduledPublishDate: blog?.scheduledPublishDate ?? null,
